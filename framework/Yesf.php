@@ -12,6 +12,8 @@
 
 namespace yesf;
 
+use yesf\library\Loader;
+
 if (!defined('YESF_ROOT')) {
 	define('YESF_ROOT', __DIR__ . '/');
 }
@@ -35,11 +37,6 @@ class Yesf {
 	//是否已经给HTTP请求绑定了处理方法
 	protected $serverHttp = FALSE;
 	/**
-	 * 不属于框架的一些namespace
-	 * 用于自动加载
-	 */
-	protected $namespace = [];
-	/**
 	 * 初始化
 	 */
 	public function app() {
@@ -62,14 +59,18 @@ class Yesf {
 		} else {
 			throw new \yesf\library\exception\StartException('Config can not be recognised');
 		}
-		if (defined('APP_PATH')) {
-			$config->replace('application.dir', str_replace('{APP_PATH}', APP_PATH, $config->get('application.dir')));
-		}		
+		$config->replace('application.dir', APP_PATH);
+		if ($config->has('application.namespace')) {
+			$appNamespace = $config->get('application.namespace');
+			Loader::registerNamespace($appNamespace . '\\controller', APP_PATH . 'controller/');
+			Loader::registerNamespace($appNamespace . '\\model', APP_PATH . 'model/');
+			Loader::registerNamespace($appNamespace . '\\module', APP_PATH . 'module/');
+		}
 		//编码相关
 		if (function_exists('mb_internal_encoding')) {
 			mb_internal_encoding($config->get('application.charset'));
 		}
-		$this->server = new \swoole_http_server($config->get('swoole.ip'), $config->get('swoole.port'));
+		$this->server = new \swoole_http_server($config->get('swoole.ip'), $config->get('swoole.port')); 
 		//基本事件
 		$this->server->on('Start', ['\yesf\library\event\Server', 'eventStart']);
 		$this->server->on('ManagerStart', ['\yesf\library\event\Server', 'eventManagerStart']);
@@ -79,39 +80,6 @@ class Yesf {
 		//完成初始化
 		$this->config = $config;
 		self::$_instance = $this;
-	}
-	/**
-	 * Autoload
-	 */
-	public function autoload($className) {
-		//解析namespace名
-		if (strpos($className, 'yesf\\') === 0) {
-			//框架类
-			$fileName = substr($className, 4) . '.php';
-			$fileName = YESF_ROOT . str_replace('\\', '/', $fileName);
-		} elseif ($this->getConfig()->has('application.class.' . $className)) {
-			$fileName = $this->getConfig()->get('application.dir') . static::$app->get('application.class.' . $className);
-		} else {
-			//可能是应用自身注册的namespace
-			foreach ($this->namespace as $k => $v) {
-				if (styrpos($className, $k) === 0) {
-					$fileName = $v . str_replace('\\', '/', substr($className, strlen($k))) . '.php';
-					break;
-				}
-			}
-		}
-		if (isset($fileName) && is_file($fileName)) {
-			require($fileName);
-		}
-	}
-	/**
-	 * 注册一个namespace，用于自动加载
-	 * 此namespace不需要完全匹配，即yesf\library\event\这样的namespace可以被yesf\library\匹配到
-	 * @param string $namespace
-	 * @param string $dir 从何目录下加载，默认为应用目录下的library
-	 */
-	public function registerNamespace($namespace, $dir = NULL) {
-		$this->namespace[$namespace] = $dir;
 	}
 	/**
 	 * 将部分变量对外暴露
@@ -130,7 +98,10 @@ class Yesf {
 	 */
 	protected function init() {
 		//注册自动加载
-		spl_autoload_register([$this, 'autoload'], TRUE, TRUE);
+		if (!class_exists('yesf\\library\\Loader', FALSE)) {
+			require(YESF_ROOT . 'library/Loader.php');
+		}
+		Loader::register();
 	}
 	public function bootstrap() {
 		$bootstrap = $this->getConfig()->get('application.bootstrap');
