@@ -7,7 +7,7 @@
  * @category Base
  * @link https://www.sylingd.com/
  * @copyright Copyright (c) 2017 ShuangYa
- * @license https://yef.sylibs.com/license
+ * @license https://yesf.sylibs.com/license
  */
 
 namespace yesf;
@@ -45,7 +45,7 @@ class Yesf {
 		if (!extension_loaded('swoole')) {
 			throw new \yesf\library\exception\ExtensionNotFoundException('Extension "Swoole" is required', '10027');
 		}
-		//配置检查
+		//配置
 		if (is_string($config) && is_file($config)) {
 			$config = new \yesf\library\Config(parse_ini_file($config));
 		} elseif (is_array($config)) {
@@ -53,6 +53,9 @@ class Yesf {
 		} else {
 			throw new \yesf\library\exception\StartException('Config can not be recognised');
 		}
+		if (defined('APP_PATH')) {
+			$config->replace('application.dir', str_replace('{APP_PATH}', APP_PATH, $config->get('application.dir')));
+		}		
 		//编码相关
 		if (function_exists('mb_internal_encoding')) {
 			mb_internal_encoding($config->get('application.charset'));
@@ -88,9 +91,9 @@ class Yesf {
 		spl_autoload_register([$this, 'autoload'], TRUE, TRUE);
 	}
 	public function bootstrap() {
-		$bootstrap = $config->get('application.bootstrap');
+		$bootstrap = $this->config->get('application.bootstrap');
 		if (empty($bootstrap)) {
-			$bootstrap = $config->get('application.dir') . 'Bootstrap.php';
+			$bootstrap = $this->config->get('application.dir') . 'Bootstrap.php';
 		}
 		if (is_file($bootstrap)) {
 			require($bootstrap);

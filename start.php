@@ -1,5 +1,5 @@
 <?php
-define("APP_PATH",  realpath(__DIR__ . '/../'));
+define("APP_PATH",  __DIR__ . '/application/');
 require('framework/Yesf.php');
-$app  = new yesf\Yesf(APP_PATH . "/application/config.ini");
+$app  = new yesf\Yesf(APP_PATH . "/config.ini");
 $app->bootstrap()->run();
