@@ -36,10 +36,12 @@ class Yesf {
 	protected $server = NULL;
 	//是否已经给HTTP请求绑定了处理方法
 	protected $serverHttp = FALSE;
+	//单例化
+	protected static $_instance = NULL;
 	/**
 	 * 初始化
 	 */
-	public function app() {
+	public static function app() {
 		if (self::$_instance === NULL) {
 			throw new \yesf\library\exception\StartException('Yesf have not been construct yet');
 		}
@@ -48,7 +50,7 @@ class Yesf {
 	public function __construct($config) {
 		$this->init();
 		//swoole检查
-		if (!extension_loaded('swoole')) {
+		if (!extension_loaded('swoole') && !defined('YESF_UNIT')) {
 			throw new \yesf\library\exception\ExtensionNotFoundException('Extension "Swoole" is required', '10027');
 		}
 		//配置
@@ -70,13 +72,15 @@ class Yesf {
 		if (function_exists('mb_internal_encoding')) {
 			mb_internal_encoding($config->get('application.charset'));
 		}
-		$this->server = new \swoole_http_server($config->get('swoole.ip'), $config->get('swoole.port')); 
-		//基本事件
-		$this->server->on('Start', ['\yesf\library\event\Server', 'eventStart']);
-		$this->server->on('ManagerStart', ['\yesf\library\event\Server', 'eventManagerStart']);
-		$this->server->on('WorkerStart', ['\yesf\library\event\Server', 'eventWorkerStart']);
-		$this->server->on('WorkerError', ['\yesf\library\event\Server', 'eventWorkerError']);
-		$this->server->on('Finish', ['\yesf\library\event\Server', 'eventFinish']);
+		if (extension_loaded('swoole')) {
+			$this->server = new \swoole_http_server($config->get('swoole.ip'), $config->get('swoole.port')); 
+			//基本事件
+			$this->server->on('Start', ['\yesf\library\event\Server', 'eventStart']);
+			$this->server->on('ManagerStart', ['\yesf\library\event\Server', 'eventManagerStart']);
+			$this->server->on('WorkerStart', ['\yesf\library\event\Server', 'eventWorkerStart']);
+			$this->server->on('WorkerError', ['\yesf\library\event\Server', 'eventWorkerError']);
+			$this->server->on('Finish', ['\yesf\library\event\Server', 'eventFinish']);
+		}
 		//完成初始化
 		$this->config = $config;
 		self::$_instance = $this;

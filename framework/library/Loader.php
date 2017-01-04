@@ -12,6 +12,8 @@
 
 namespace yesf\library;
 
+use \yesf\Yesf;
+
 class Loader {
 	/**
 	 * 不属于框架的一些namespace
@@ -27,8 +29,8 @@ class Loader {
 			//框架类
 			$fileName = substr($className, 4) . '.php';
 			$fileName = YESF_ROOT . str_replace('\\', '/', $fileName);
-		} elseif (Yasf::app()->getConfig()->has('application.class.' . $className)) {
-			$fileName = Yasf::app()->getConfig()->get('application.dir') . static::$app->get('application.class.' . $className);
+		} elseif (Yesf::app()->getConfig()->has('application.class.' . $className)) {
+			$fileName = Yesf::app()->getConfig()->get('application.dir') . Yesf::app()->getConfig()->get('application.class.' . $className);
 		} else {
 			//可能是应用自身注册的namespace
 			foreach (self::$namespace as $k => $v) {
