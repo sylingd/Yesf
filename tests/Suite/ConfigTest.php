@@ -19,8 +19,13 @@ class ConfigTest extends PHPUnit_Framework_TestCase {
 			$this->assertEquals('127.0.0.1', $config->get('MySQL.host'));
 			$this->assertEquals(NULL, $config->get('a_null_key'));
 		}
+		//test ini
+		$config = new Config(YESF_TEST_DATA . 'config_sample.ini', self::AppName);
+		$this->assertEquals('MyTest', $config->get('test'));
+		$this->assertEquals('127.0.0.1', $config->get('MySQL.host'));
+		$this->assertEquals(NULL, $config->get('a_null_key'));
 		//test php
-		$config = new Config(YESF_TEST_DATA . 'config_sample.php', self::AppName);
+		$config = new Config(require(YESF_TEST_DATA . 'config_sample.php'), self::AppName);
 		$this->assertEquals('MyTest', $config->get('test'));
 		$this->assertEquals('127.0.0.1', $config->get('MySQL.host'));
 		$this->assertEquals(NULL, $config->get('a_null_key'));

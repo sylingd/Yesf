@@ -54,9 +54,7 @@ class Yesf {
 			throw new \yesf\library\exception\ExtensionNotFoundException('Extension "Swoole" is required', '10027');
 		}
 		//配置
-		if (is_string($config) && is_file($config)) {
-			$config = new \yesf\library\Config(parse_ini_file($config));
-		} elseif (is_array($config)) {
+		if ((is_string($config) && is_file($config)) || is_array($config)) {
 			$config = new \yesf\library\Config($config);
 		} else {
 			throw new \yesf\library\exception\StartException('Config can not be recognised');

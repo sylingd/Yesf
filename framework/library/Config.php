@@ -36,7 +36,7 @@ final class Config {
 			$this->type = self::QCONF;
 		} elseif (is_file($conf)) {
 			$this->type = self::FILE;
-			$this->conf = require($conf);
+			$this->conf = parse_ini_file($conf, TRUE);
 		} else {
 			//throw new SYException();
 		}
