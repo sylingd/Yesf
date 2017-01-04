@@ -5,9 +5,6 @@ use \yesf\library\Config;
 class ConfigTest extends PHPUnit_Framework_TestCase {
 	const AppName = 'MyApplication';
 	const YafDir = '/web/yaconf';
-	public function setUp() {
-		//require('../init.php');
-	}
 	public function testAll() {
 		if (extension_loaded('Yaconf')) {
 			//copy ini file to yaconf dir
