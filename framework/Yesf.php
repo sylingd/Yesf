@@ -12,6 +12,10 @@
 
 namespace yesf;
 
+if (!defined('YESF_ROOT')) {
+	define('YESF_ROOT', __DIR__ . '/');
+}
+
 class Yesf {
 	/**
 	 * 运行环境，需要与配置文件中同名
@@ -30,6 +34,11 @@ class Yesf {
 	protected $server = NULL;
 	//是否已经给HTTP请求绑定了处理方法
 	protected $serverHttp = FALSE;
+	/**
+	 * 不属于框架的一些namespace
+	 * 用于自动加载
+	 */
+	protected $namespace = [];
 	/**
 	 * 初始化
 	 */
@@ -72,6 +81,39 @@ class Yesf {
 		self::$_instance = $this;
 	}
 	/**
+	 * Autoload
+	 */
+	public function autoload($className) {
+		//解析namespace名
+		if (strpos($className, 'yesf\\') === 0) {
+			//框架类
+			$fileName = substr($className, 4) . '.php';
+			$fileName = YESF_ROOT . str_replace('\\', '/', $fileName);
+		} elseif ($this->getConfig()->has('application.class.' . $className)) {
+			$fileName = $this->getConfig()->get('application.dir') . static::$app->get('application.class.' . $className);
+		} else {
+			//可能是应用自身注册的namespace
+			foreach ($this->namespace as $k => $v) {
+				if (styrpos($className, $k) === 0) {
+					$fileName = $v . str_replace('\\', '/', substr($className, strlen($k))) . '.php';
+					break;
+				}
+			}
+		}
+		if (isset($fileName) && is_file($fileName)) {
+			require($fileName);
+		}
+	}
+	/**
+	 * 注册一个namespace，用于自动加载
+	 * 此namespace不需要完全匹配，即yesf\library\event\这样的namespace可以被yesf\library\匹配到
+	 * @param string $namespace
+	 * @param string $dir 从何目录下加载，默认为应用目录下的library
+	 */
+	public function registerNamespace($namespace, $dir = NULL) {
+		$this->namespace[$namespace] = $dir;
+	}
+	/**
 	 * 将部分变量对外暴露
 	 */
 	public function getConfig() {
@@ -91,9 +133,9 @@ class Yesf {
 		spl_autoload_register([$this, 'autoload'], TRUE, TRUE);
 	}
 	public function bootstrap() {
-		$bootstrap = $this->config->get('application.bootstrap');
+		$bootstrap = $this->getConfig()->get('application.bootstrap');
 		if (empty($bootstrap)) {
-			$bootstrap = $this->config->get('application.dir') . 'Bootstrap.php';
+			$bootstrap = $this->getConfig()->get('application.dir') . 'Bootstrap.php';
 		}
 		if (is_file($bootstrap)) {
 			require($bootstrap);
@@ -106,8 +148,8 @@ class Yesf {
 	public function run() {
 		//判断是否已经给HTTP请求绑定了事件
 		if (!$this->serverHttp) {
-			$config = $this->config->get('swoole.http.advanced');
-			$ssl = $this->config->get('swoole.http.ssl');
+			$config = $this->getConfig()->get('swoole.http.advanced');
+			$ssl = $this->getConfig()->get('swoole.http.ssl');
 			if ($ssl['enable']) {
 				$config['ssl_cert_file'] = $ssl['cert'];
 				$config['ssl_key_file'] = $ssl['key'];
