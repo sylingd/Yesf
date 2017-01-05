@@ -23,32 +23,27 @@ class Router {
 	 * 则最后参加路由的request_uri为"/foo/bar"
 	 */
 	public static function parseMap($uri) {
-		//去除开头的baseUri
-		$baseUri = Yesf::app()->getBaseUri();
-		$uri = ltrim($uri, $baseUri);
 		//解析
 		$uri = explode('/', $uri, 3);
 		if (count($uri) === 3) {
 			//解析到的结果包括了module
-			return [
+			$dispatch = [
 				'module' => $uri[0],
 				'controller' => $uri[1],
 				'action' => $uri[2]
 			];
 		} else {
-			return [
+			$dispatch = [
 				'controller' => $uri[0],
 				'action' => $uri[1]
 			];
 		}
+		return [[], $dispatch];
 	}
 	/**
 	 * 按照Rewrite方式解析路由
 	 */
 	public static function parseRewrite($uri) {
-		//去除开头的baseUri
-		$baseUri = Yesf::app()->getBaseUri();
-		$uri = ltrim($uri, $baseUri);
 		foreach (self::$rewrite as $rewrite) {
 			if (preg_match($rewrite['regexp'], $uri, $matches)) {
 				$param = [];
@@ -106,9 +101,6 @@ class Router {
 	 * 按照Regex方式解析路由
 	 */
 	public static function parseRegex($uri) {
-		//去除开头的baseUri
-		$baseUri = Yesf::app()->getBaseUri();
-		$uri = ltrim($uri, $baseUri);
 		foreach (self::$regex as $regex) {
 			if (preg_match($regex['regexp'], $uri, $matches)) {
 				$param = [];

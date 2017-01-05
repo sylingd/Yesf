@@ -4,16 +4,16 @@ use \yesf\library\http\Router;
 
 class RouterTest extends PHPUnit_Framework_TestCase {
 	public function testMap() {
-		$uri = '/ap/foo';
-		$result = ['controller' => 'ap', 'action' => 'foo'];
+		$uri = 'ap/foo';
+		$result = [[], ['controller' => 'ap', 'action' => 'foo']];
 		$this->assertEquals($result, Router::parseMap($uri));
-		$uri = '/ap/foo/bar';
-		$result = ['module' => 'ap', 'controller' => 'foo', 'action' => 'bar'];
+		$uri = 'ap/foo/bar';
+		$result = [[], ['module' => 'ap', 'controller' => 'foo', 'action' => 'bar']];
 		$this->assertEquals($result, Router::parseMap($uri));
 	}
 	public function testRewrite() {
 		$rule = 'controller/:paramA/:paramB/*';
-		$uri = '/controller/this-is-A/this-is-B/key-1/val-1/key-2/val-2';
+		$uri = 'controller/this-is-A/this-is-B/key-1/val-1/key-2/val-2';
 		$dispatch = ['controller' => 'SimpleController', 'action' => 'SimpleAction'];
 		$result = [
 			[
