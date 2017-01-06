@@ -28,7 +28,6 @@ class HttpServer {
 		if ('develop' === Yesf::app()->environment && function_exists('xdebug_start_trace')) {
 			xdebug_start_trace();
 		}
-		$yesfResponse = new Response($response);
 		//路由解析
 		$uri = $request->server['request_uri'];
 		if (strpos('?', $uri) !== FALSE) {
@@ -47,7 +46,6 @@ class HttpServer {
 				preg_match('/\.(\w+)$/', '', $uri, $matches);
 				$request->extension = $matches[1];
 				$uri = preg_replace('/\.(\w+)$/', '', $uri);
-				$yesfResponse->mimeType($matches[1]);
 			}
 			//进行解析
 			switch (Yesf::app()->getConfig()->get('application.router.type')) {
@@ -71,9 +69,17 @@ class HttpServer {
 		$request->param = $result[0];
 		//开始路由分发
 		$module = isset($result[1]['module']) ? $result[1]['module'] : Yesf::app()->getConfig()->get('application.module');
-		if (($code = Router::isValid($module, $result[1]['controller'], $result[1]['action'])) === Constant::ROUTER_VALID) {
-			$controllerName = Yesf::app()->getConfig('application.namespace') . '\\controller\\' . $result[1]['controller'];
+		$controller = $result[1]['controller'];
+		$action = $result[1]['action'];
+		$moduleDir = Yesf::app()->getConfig('application.dir') . 'modules/' . $module . '/';
+		$yesfResponse = new Response($response, $controller . '/' . $action, $moduleDir);
+		if (!empty($request->extension)) {
+			$yesfResponse->mimeType($request->extension);
+		}
+		if (($code = Router::isValid($module, $controller, $action)) === Constant::ROUTER_VALID) {
+			$controllerName = Yesf::app()->getConfig('application.namespace') . '\\controller\\' . $controller;
 			call_user_func([$controllerName, $action . 'Action'], $request, $yesfResponse);
+			unset($request, $yesfResponse, $result);
 		} else {
 			$yesfResponse->status(404);
 		}

@@ -23,13 +23,18 @@ class Response {
 	protected $_tpl_extension = 'phtml';
 	//Swoole的Response
 	protected $_sw_response = NULL;
+	//是否自动渲染
+	protected $_tpl_auto = TRUE;
+	//默认模板
+	protected $_tpl_default = '';
 	/**
 	 * 构建函数
 	 * @param object $response Swoole的Response
 	 * @param string $tpl_path 模板路径
 	 */
-	public function __construct($response, $tpl_path = NULL) {
+	public function __construct($response, $tpl_default = NULL ,$tpl_path = NULL) {
 		$this->_sw_response = $response;
+		$this->_tpl_default = $tpl_default;
 		if ($tpl_path === NULL) {
 			$tpl_path = Yesf::app()->getConfig('application.dir') . 'views/';
 		}
@@ -37,6 +42,19 @@ class Response {
 		if (Yesf::app()->getConfig->has('application.view')) {
 			$this->_tpl_extension = Yesf::app()->getConfig('application.view');
 		}
+	}
+	/**
+	 * 设置模板路径
+	 * @param string $tpl_path
+	 */
+	public function setTplPath($tpl_path) {
+		$this->_tpl_path = $tpl_path;
+	}
+	/**
+	 * 关闭模板自动渲染
+	 */
+	public function disableView() {
+		$this->_tpl_auto = FALSE;
 	}
 	/**
 	 * 将一个模板的渲染结果输出至浏览器
@@ -53,7 +71,9 @@ class Response {
 	public function render($tpl) {
 		extract($this->_tpl_vars, EXTR_SKIP);
 		ob_start();
-		include($tpl);
+		if (is_file($this->_tpl_path . $tpl . '.' . $this->_tpl_extension)) {
+			include($this->_tpl_path . $tpl . '.' . $this->_tpl_extension);
+		}
 		return ob_get_clean();
 	}
 	/**
@@ -133,11 +153,14 @@ class Response {
 	 */
 	public function __destruct() {
 		try {
+			if (!$this->_tpl_auto) {
+				$this->display($this->_tpl_default);
+			}
 			if ($this->_sw_response !== NULL) {
 				$this->_sw_response->end();
 				$this->_sw_response = NULL;
 			}
-			unset($this->_tpl_vars);
+			$this->_tpl_vars = NULL;
 		} catch (\Exception $e) {
 			//容错处理
 		}
