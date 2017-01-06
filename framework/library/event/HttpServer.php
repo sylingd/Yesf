@@ -42,13 +42,13 @@ class HttpServer {
 		if (!is_array($result)) {
 			//扩展名自动处理
 			$request->extension = NULL;
-			if (Yesf::app()->getConfig()->get('application.router.extension')) {
+			if (Yesf::app()->getConfig('application.router.extension')) {
 				preg_match('/\.(\w+)$/', '', $uri, $matches);
 				$request->extension = $matches[1];
 				$uri = preg_replace('/\.(\w+)$/', '', $uri);
 			}
 			//进行解析
-			switch (Yesf::app()->getConfig()->get('application.router.type')) {
+			switch (Yesf::app()->getConfig('application.router.type')) {
 				case 'map':
 					$result = Router::parseMap($uri);
 					break;

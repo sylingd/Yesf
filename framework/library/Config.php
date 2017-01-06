@@ -15,16 +15,19 @@
 
 namespace yesf\library;
 use \Yaconf;
+use \Yaf_Config_Ini;
 use \yesf\Constant;
 
 class Config {
 	protected $appName;
+	protected $environment;
 	protected $type;
 	protected $conf;
 	//替换掉已有的配置，最高优先级
 	protected $replaceConf = [];
 	public function __construct($conf, $appName = NULL) {
 		$this->appName = $appName;
+		$this->environment = Yesf::app()->environment;
 		if (is_array($conf)) {
 			$this->type = Constant::CONFIG_FILE;
 			$this->conf = $conf;
@@ -33,11 +36,65 @@ class Config {
 		} elseif ($conf === Constant::CONFIG_QCONF) {
 			$this->type = Constant::CONFIG_QCONF;
 		} elseif (is_file($conf)) {
-			$this->type = Constant::CONFIG_FILE;
-			$this->conf = parse_ini_file($conf, TRUE);
+			if (extension_loaded('Yaf')) {
+				$this->type = Constant::CONFIG_YAF;
+				$this->conf = new Yaf_Config_Ini($conf, $this->environment);
+			} else {
+				$this->type = Constant::CONFIG_FILE;
+				$this->conf = $this->parseIniConfig($conf);
+			}
 		} else {
 			//throw new SYException();
 		}
+	}
+	/**
+	 * 当不存在Yaf时，进行配置的解析
+	 * 支持配置继承，但不支持多级继承
+	 */
+	protected function parseIniConfig($conf) {
+		$conf = parse_ini_file($conf, TRUE);
+		$mresult = NULL;
+		$result = [];
+		//有继承的情况
+		if (!isset($conf[$this->environment])) {
+			$environments = array_keys($conf);
+			foreach ($environments as $one) {
+				if (strpos($one, ':') === FALSE) {
+					continue;
+				}
+				list($child, $parent) = explode(':', $one);
+				$child = trim($child);
+				if ($child === $this->environment) {
+					//找到合适的配置了
+					$parent = trim($parent);
+					$mresult = array_merge($conf[$parent], $conf[$one]);
+				}
+			}
+			if ($mresult === NULL) {
+				return [];
+			}
+		}
+		//将“.”作为分隔符，分割为多维数组
+		foreach ($mresult as $k => $v) {
+			if (strpos($k, '.') === FALSE) {
+				$result[$k] = $v;
+				continue;
+			}
+			$keys = explode('.', $k);
+			$total = count($keys) - 1;
+			$parent = &$result;
+			foreach ($keys as $kk => $vv) {
+				if ($total === $kk) {
+					$parent[$vv] = $v;
+				} else {
+					if (!isset($parent[$vv])) {
+						$parent[$vv] = [];
+					}
+					$parent = &$parent[$vv];
+				}
+			}
+		}
+		return $result;
 	}
 	/**
 	 * 获取配置
@@ -51,28 +108,32 @@ class Config {
 		switch ($this->type) {
 			case Constant::CONFIG_YACONF:
 				return $this->getByYaconf($key);
-				break;
 			case Constant::CONFIG_QCONF:
 				return $this->getByQconf($key);
-				break;
+			case Constant::CONFIG_YAF:
+				return $this->getByYaf($key);
 			case Constant::CONFIG_FILE:
 				return $this->getByConf($key);
-				break;
 		}
 		return NULL;
 	}
 	public function getByYaconf($key) {
+		$key = $this->environment . '.' . $key;
 		if (!empty($this->appName)) {
 			$key = $this->appName . '.' . $key;
 		}
 		return Yaconf::has($key) ? Yaconf::get($key) : NULL;
 	}
 	public function getByQconf($key) {
+		$key = '/' . $this->environment . '.' . $key;
 		$key = str_replace('.', '/', $key);
 		if (!empty($this->appName)) {
-			$key = '/' . $this->appName . '/' . $key;
+			$key = '/' . $this->appName . $key;
 		}
 		return getConf($key);
+	}
+	public function getByYaf($key) {
+		return isset($this->conf->key) ? $this->conf->key : NULL;
 	}
 	public function getByConf($key) {
 		$key = explode('.', $key);

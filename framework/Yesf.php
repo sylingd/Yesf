@@ -123,13 +123,13 @@ class Yesf {
 	public function run() {
 		//判断是否已经给HTTP请求绑定了事件
 		if (!$this->serverHttp) {
-			$config = $this->getConfig()->get('swoole.http.advanced');
-			$ssl = $this->getConfig()->get('swoole.http.ssl');
+			$config = $this->getConfig('swoole.http.advanced');
+			$ssl = $this->getConfig('swoole.http.ssl');
 			if ($ssl['enable']) {
 				$config['ssl_cert_file'] = $ssl['cert'];
 				$config['ssl_key_file'] = $ssl['key'];
 			}
-			if ($this->config->get('swoole.http.http2')) {
+			if ($this->getConfig('swoole.http.http2')) {
 				if (!isset($config['ssl_cert_file'])) {
 					throw new \yesf\library\exception\StartException('Certfile not found');
 				}
@@ -139,7 +139,7 @@ class Yesf {
 				$config['response_header'] = [];
 			}
 			if (!isset($config['response_header']['Content_Type'])) {
-				$config['response_header']['Content_Type'] = 'application/html; charset=' . $this->config->get('application.charset');
+				$config['response_header']['Content_Type'] = 'application/html; charset=' . $this->getConfig('application.charset');
 			}
 			$this->server->set($config);
 			$this->server->on('Request', ['\yesf\library\event\HttpServer', 'eventRequest']);
