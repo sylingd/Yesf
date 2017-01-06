@@ -108,9 +108,11 @@ class Yesf {
 		Loader::register();
 	}
 	public function bootstrap() {
-		$bootstrap = $this->getConfig()->get('application.bootstrap');
+		$bootstrap = $this->getConfig('application.bootstrap');
 		if (empty($bootstrap)) {
-			$bootstrap = $this->getConfig()->get('application.dir') . 'Bootstrap.php';
+			$bootstrap = APP_PATH . 'Bootstrap.php';
+		} else {
+			$bootstrap = APP_PATH . $bootstrap;
 		}
 		if (is_file($bootstrap)) {
 			require($bootstrap);

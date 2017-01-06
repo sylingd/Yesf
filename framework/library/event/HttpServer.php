@@ -51,12 +51,15 @@ class HttpServer {
 			} else {
 				//扩展名自动处理
 				if (Yesf::app()->getConfig('application.router.extension')) {
-					preg_match('/\.(\w+)$/', '', $uri, $matches);
-					$request->extension = $matches[1];
-					$uri = preg_replace('/\.(\w+)$/', '', $uri);
+					$hasPoint = strrpos($uri, '.');
+					if ($hasPoint !== FALSE) {
+						$request->extension = substr($uri, $hasPoint + 1);
+						$uri = substr($uri, 0, $hasPoint);
+					}
 				}
 				//进行解析
-				switch (Yesf::app()->getConfig('application.router.type')) {
+				$routerType = Yesf::app()->getConfig('application.router.type');
+				switch ($routerType) {
 					case 'map':
 						$result = Router::parseMap($uri);
 						break;
@@ -68,7 +71,7 @@ class HttpServer {
 						break;
 					default:
 						$result = Router::parseMap($uri);
-						return;
+						break;
 				}
 				if (!is_array($result)) {
 					$result = Router::parseMap($uri);
@@ -90,6 +93,7 @@ class HttpServer {
 			call_user_func([$controllerName, $action . 'Action'], $request, $yesfResponse);
 			unset($request, $yesfResponse, $result);
 		} else {
+			$yesfResponse->disableView();
 			$yesfResponse->status(404);
 		}
 	}
