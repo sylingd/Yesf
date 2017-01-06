@@ -16,6 +16,7 @@
 namespace yesf\library;
 use \Yaconf;
 use \Yaf_Config_Ini;
+use \yesf\Yesf;
 use \yesf\Constant;
 
 class Config {
@@ -73,6 +74,8 @@ class Config {
 			if ($mresult === NULL) {
 				return [];
 			}
+		} else {
+			$mresult = $conf[$this->environment];
 		}
 		//将“.”作为分隔符，分割为多维数组
 		foreach ($mresult as $k => $v) {
@@ -133,7 +136,7 @@ class Config {
 		return getConf($key);
 	}
 	public function getByYaf($key) {
-		return isset($this->conf->key) ? $this->conf->key : NULL;
+		return$this->conf->get($key);
 	}
 	public function getByConf($key) {
 		$key = explode('.', $key);

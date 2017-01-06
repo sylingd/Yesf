@@ -150,7 +150,7 @@ class Router {
 		//判断controller是否存在并加载
 		$controllerName = Yesf::app()->getConfig('application.namespace') . '\\controller\\' . $controller;
 		if (!class_exists($controllerName, FALSE)) {
-			$controllerPath = APP_PATH . 'modules/' . $module . '/controllers/' . $controller;
+			$controllerPath = APP_PATH . 'modules/' . $module . '/controllers/' . $controller. '.php';
 			if (!is_file($controllerPath)) {
 				return Constant::ROUTER_ERR_CONTROLLER;
 			}

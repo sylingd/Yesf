@@ -53,6 +53,7 @@ class Yesf {
 		if (!extension_loaded('swoole') && !defined('YESF_UNIT')) {
 			throw new \yesf\library\exception\ExtensionNotFoundException('Extension "Swoole" is required', '10027');
 		}
+		self::$_instance = $this;
 		//配置
 		if ((is_string($config) && is_file($config)) || is_array($config)) {
 			$config = new \yesf\library\Config($config);
@@ -76,7 +77,6 @@ class Yesf {
 		}
 		//完成初始化
 		$this->config = $config;
-		self::$_instance = $this;
 	}
 	/**
 	 * 将部分变量对外暴露

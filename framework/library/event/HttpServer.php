@@ -40,30 +40,39 @@ class HttpServer {
 		$result = Plugin::trigger('routerStartup', [$uri]);
 		//如果plugin返回了解析结果，则终止默认的路由解析
 		if (!is_array($result)) {
-			//扩展名自动处理
 			$request->extension = NULL;
-			if (Yesf::app()->getConfig('application.router.extension')) {
-				preg_match('/\.(\w+)$/', '', $uri, $matches);
-				$request->extension = $matches[1];
-				$uri = preg_replace('/\.(\w+)$/', '', $uri);
-			}
-			//进行解析
-			switch (Yesf::app()->getConfig('application.router.type')) {
-				case 'map':
+			//为空则读取默认设置
+			if (empty($uri)) {
+				$result = [[], [
+					'module' => Yesf::app()->getConfig('application.module'),
+					'controller' => 'index',
+					'action' => 'index'
+				]];
+			} else {
+				//扩展名自动处理
+				if (Yesf::app()->getConfig('application.router.extension')) {
+					preg_match('/\.(\w+)$/', '', $uri, $matches);
+					$request->extension = $matches[1];
+					$uri = preg_replace('/\.(\w+)$/', '', $uri);
+				}
+				//进行解析
+				switch (Yesf::app()->getConfig('application.router.type')) {
+					case 'map':
+						$result = Router::parseMap($uri);
+						break;
+					case 'regex':
+						$result = Router::parseRegex($uri);
+						break;
+					case 'rewrite':
+						$result = Router::parseRewrite($uri);
+						break;
+					default:
+						$result = Router::parseMap($uri);
+						return;
+				}
+				if (!is_array($result)) {
 					$result = Router::parseMap($uri);
-					break;
-				case 'regex':
-					$result = Router::parseRegex($uri);
-					break;
-				case 'rewrite':
-					$result = Router::parseRewrite($uri);
-					break;
-				default:
-					$result = Router::parseMap($uri);
-					return;
-			}
-			if (!is_array($result)) {
-				$result = Router::parseMap($uri);
+				}
 			}
 		}
 		$request->param = $result[0];
@@ -71,8 +80,8 @@ class HttpServer {
 		$module = isset($result[1]['module']) ? $result[1]['module'] : Yesf::app()->getConfig()->get('application.module');
 		$controller = $result[1]['controller'];
 		$action = $result[1]['action'];
-		$moduleDir = Yesf::app()->getConfig('application.dir') . 'modules/' . $module . '/';
-		$yesfResponse = new Response($response, $controller . '/' . $action, $moduleDir);
+		$viewDir = Yesf::app()->getConfig('application.dir') . 'modules/' . $module . '/views/';
+		$yesfResponse = new Response($response, $controller . '/' . $action, $viewDir);
 		if (!empty($request->extension)) {
 			$yesfResponse->mimeType($request->extension);
 		}
