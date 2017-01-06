@@ -30,7 +30,7 @@ class Loader {
 			$fileName = substr($className, 4) . '.php';
 			$fileName = YESF_ROOT . str_replace('\\', '/', $fileName);
 		} elseif (Yesf::app()->getConfig()->has('application.class.' . $className)) {
-			$fileName = Yesf::app()->getConfig()->get('application.dir') . Yesf::app()->getConfig()->get('application.class.' . $className);
+			$fileName = Yesf::app()->getConfig('application.dir') . Yesf::app()->getConfig('application.class.' . $className);
 		} else {
 			//可能是应用自身注册的namespace
 			foreach (self::$namespace as $k => $v) {

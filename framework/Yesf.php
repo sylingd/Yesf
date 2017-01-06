@@ -60,12 +60,7 @@ class Yesf {
 			throw new \yesf\library\exception\StartException('Config can not be recognised');
 		}
 		$config->replace('application.dir', APP_PATH);
-		if ($config->has('application.namespace')) {
-			$appNamespace = $config->get('application.namespace');
-			Loader::registerNamespace($appNamespace . '\\controller', APP_PATH . 'controller/');
-			Loader::registerNamespace($appNamespace . '\\model', APP_PATH . 'model/');
-			Loader::registerNamespace($appNamespace . '\\module', APP_PATH . 'module/');
-		}
+		Loader::registerNamespace($config->get('application.namespace') . '\\model', APP_PATH . 'model/');
 		//编码相关
 		if (function_exists('mb_internal_encoding')) {
 			mb_internal_encoding($config->get('application.charset'));
@@ -86,8 +81,12 @@ class Yesf {
 	/**
 	 * 将部分变量对外暴露
 	 */
-	public function getConfig() {
-		return $this->config;
+	public function getConfig($key = NULL) {
+		if ($key === NULL) {
+			return $this->config;
+		} else {
+			return $this->config->get($key);
+		}
 	}
 	public function setEnvironment($env) {
 		$this->environment = $env;

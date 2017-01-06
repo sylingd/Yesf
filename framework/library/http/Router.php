@@ -12,10 +12,12 @@
 
 namespace yesf\library\http;
 use \yesf\Yesf;
+use \yesf\Constant;
 
 class Router {
 	protected static $rewrite = [];
 	protected static $regex = [];
+	protected static $modules = NULL;
 	/**
 	 * 按照Map方式解析路由
 	 * 对于请求request_uri为"/ap/foo/bar"
@@ -130,5 +132,33 @@ class Router {
 			'param' => $param,
 			'dispatch' => $dispatch
 		];
+	}
+	/**
+	 * 判断路由是否合法
+	 * @param string $module
+	 * @param string $controller
+	 * @param string $action
+	 * @return int
+	 */
+	public static function isValid($module, $controller, $action) {
+		if (self::$modules === NULL) {
+			self::$modules = explode(',', Yesf::app()->getConfig('application.module'));
+		}
+		if (!in_array($module, self::$modules, TRUE)) {
+			return Constant::ROUTER_ERR_MODULE;
+		}
+		//判断controller是否存在并加载
+		$controllerName = Yesf::app()->getConfig('application.namespace') . '\\controller\\' . $controller;
+		if (!class_exists($controllerName, FALSE)) {
+			$controllerPath = APP_PATH . 'modules/' . $module . '/controllers/' . $controller;
+			if (!is_file($controllerPath)) {
+				return Constant::ROUTER_ERR_CONTROLLER;
+			}
+			require($controllerPath);
+		}
+		if (!method_exists($controllerName, $action . 'Action')) {
+			return Constant::ROUTER_ERR_ACTION;
+		}
+		return Constant::ROUTER_VALID;
 	}
 }
