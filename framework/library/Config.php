@@ -15,11 +15,9 @@
 
 namespace yesf\library;
 use \Yaconf;
+use \yesf\Constant;
 
-final class Config {
-	const YACONF = 1;
-	const QCONF = 2;
-	const FILE = 3;
+class Config {
 	protected $appName;
 	protected $type;
 	protected $conf;
@@ -28,14 +26,14 @@ final class Config {
 	public function __construct($conf, $appName = NULL) {
 		$this->appName = $appName;
 		if (is_array($conf)) {
-			$this->type = self::FILE;
+			$this->type = Constant::CONFIG_FILE;
 			$this->conf = $conf;
-		} elseif ($conf === self::YACONF) {
-			$this->type = self::YACONF;
-		} elseif ($conf === self::QCONF) {
-			$this->type = self::QCONF;
+		} elseif ($conf === Constant::CONFIG_YACONF) {
+			$this->type = Constant::CONFIG_YACONF;
+		} elseif ($conf === Constant::CONFIG_QCONF) {
+			$this->type = Constant::CONFIG_QCONF;
 		} elseif (is_file($conf)) {
-			$this->type = self::FILE;
+			$this->type = Constant::CONFIG_FILE;
 			$this->conf = parse_ini_file($conf, TRUE);
 		} else {
 			//throw new SYException();
@@ -51,13 +49,13 @@ final class Config {
 			return $this->replaceConf[$key];
 		}
 		switch ($this->type) {
-			case self::YACONF:
+			case Constant::CONFIG_YACONF:
 				return $this->getByYaconf($key);
 				break;
-			case self::QCONF:
+			case Constant::CONFIG_QCONF:
 				return $this->getByQconf($key);
 				break;
-			case self::FILE:
+			case Constant::CONFIG_FILE:
 				return $this->getByConf($key);
 				break;
 		}

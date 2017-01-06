@@ -17,4 +17,7 @@ class Constant {
 	const ROUTER_ERR_MODULE = 1;
 	const ROUTER_ERR_CONTROLLER = 2;
 	const ROUTER_ERR_ACTION = 3;
+	const CONFIG_YACONF = 1;
+	const CONFIG_QCONF = 2;
+	const CONFIG_FILE = 3;
 }
