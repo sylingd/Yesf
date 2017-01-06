@@ -1,5 +1,5 @@
 <?php
-//应用所在牡蛎
+//应用所在目录
 define("APP_PATH",  __DIR__ . '/application/');
 require('framework/Yesf.php');
 //初始化
