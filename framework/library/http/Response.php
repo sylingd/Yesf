@@ -39,7 +39,7 @@ class Response {
 			$tpl_path = Yesf::app()->getConfig('application.dir') . 'views/';
 		}
 		$this->_tpl_path = $tpl_path;
-		if (Yesf::app()->getConfig->has('application.view')) {
+		if (Yesf::app()->getConfig()->has('application.view')) {
 			$this->_tpl_extension = Yesf::app()->getConfig('application.view');
 		}
 	}
@@ -153,7 +153,7 @@ class Response {
 	 */
 	public function __destruct() {
 		try {
-			if (!$this->_tpl_auto) {
+			if ($this->_tpl_auto) {
 				$this->display($this->_tpl_default);
 			}
 			if ($this->_sw_response !== NULL) {
