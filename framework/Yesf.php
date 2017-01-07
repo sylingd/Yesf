@@ -108,15 +108,13 @@ class Yesf {
 		Loader::register();
 	}
 	public function bootstrap() {
-		$bootstrap = $this->getConfig('application.bootstrap');
-		if (empty($bootstrap)) {
-			$bootstrap = APP_PATH . 'Bootstrap.php';
-		} else {
-			$bootstrap = APP_PATH . $bootstrap;
+		$bootstrapClass = $this->getConfig('application.bootstrap');
+		if (empty($bootstrapClass)) {
+			$bootstrapClass = 'Bootstrap';
 		}
+		$bootstrap = APP_PATH . $bootstrapClass . '.php';
 		if (is_file($bootstrap)) {
 			require($bootstrap);
-			$bootstrapClass ='Bootstrap';
 			$bootstrapClass = new $bootstrapClass;
 			call_user_func([$bootstrapClass, 'run']);
 		}

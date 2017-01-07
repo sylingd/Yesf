@@ -136,7 +136,7 @@ class Config {
 		return getConf($key);
 	}
 	public function getByYaf($key) {
-		return$this->conf->get($key);
+		return $this->conf->get($key);
 	}
 	public function getByConf($key) {
 		$key = explode('.', $key);
