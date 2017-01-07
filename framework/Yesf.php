@@ -61,7 +61,7 @@ class Yesf {
 			throw new \yesf\library\exception\StartException('Config can not be recognised');
 		}
 		$config->replace('application.dir', APP_PATH);
-		Loader::registerNamespace($config->get('application.namespace') . '\\model', APP_PATH . 'model/');
+		Loader::registerNamespace($config->get('application.namespace') . '\\model', APP_PATH . 'models/');
 		//编码相关
 		if (function_exists('mb_internal_encoding')) {
 			mb_internal_encoding($config->get('application.charset'));

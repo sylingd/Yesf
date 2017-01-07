@@ -81,8 +81,8 @@ class HttpServer {
 		$request->param = $result[0];
 		//开始路由分发
 		$module = isset($result[1]['module']) ? $result[1]['module'] : Yesf::app()->getConfig()->get('application.module');
-		$controller = $result[1]['controller'];
-		$action = $result[1]['action'];
+		$controller = empty($result[1]['controller']) ? 'index' : $result[1]['controller'];
+		$action = empty($result[1]['action']) ? 'index' : $result[1]['action'];
 		$viewDir = Yesf::app()->getConfig('application.dir') . 'modules/' . $module . '/views/';
 		$yesfResponse = new Response($response, $controller . '/' . $action, $viewDir);
 		if (!empty($request->extension)) {
