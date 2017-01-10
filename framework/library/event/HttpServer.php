@@ -1,10 +1,6 @@
 <?php
-
 /**
- * 主操作类
- * 涉及到Swoole的主要操作均通过此类进行
- * Swoole版本需求：1.8.6+
- * 仅当运行于HttpServer模式时支持
+ * HTTP事件回调
  * 
  * @author ShuangYa
  * @package Yesf
