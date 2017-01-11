@@ -13,27 +13,9 @@
 namespace yesf\library\event;
 use \yesf\Yesf;
 use \yesf\Constant;
+use \yesf\library\Plugin;
 
 class Server {
-	public static $eventHandle = [];
-	/**
-	 * 添加事件响应函数
-	 * @access public
-	 * @param string $event
-	 * @param int $port 当事件为WorkerStart时传入0
-	 * @param callable $callback
-	 */
-	public static function addEventHandle(string $event, int $port, callable $callback) {
-		if (!isset(self::$eventHandle[$port])) {
-			self::$eventHandle[$port] = [];
-		}
-		self::$eventHandle[$port][$event] = $callback;
-	}
-	public static function triggerEventHandle(string $event, int $port, array $param) {
-		if (isset(self::$eventHandle[$port][$event]) && is_callable(self::$eventHandle[$port][$event])) {
-			call_user_func_array(Server::$eventHandle[$port][$event], $param);
-		}
-	}
 	/**
 	 * 普通事件：启动Master进程
 	 * @access public
@@ -67,7 +49,7 @@ class Server {
 			swoole_set_process_name(Yesf::app()->getConfig('application.name') . ' worker ' . $worker_id . ' (Yesf)');
 		}
 		//回调
-		self::triggerEventHandle('WorkerStart', 0, [$serv->taskworker, $worker_id]);
+		Plugin::trigger('WorkerStart', [$serv->taskworker, $worker_id]);
 	}
 	/**
 	 * 普通事件：进程出错
