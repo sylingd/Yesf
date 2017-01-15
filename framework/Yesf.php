@@ -12,7 +12,8 @@
 
 namespace yesf;
 
-use yesf\library\Loader;
+use \yesf\library\Loader;
+use \yesf\library\http\Response;
 
 if (!defined('YESF_ROOT')) {
 	define('YESF_ROOT', __DIR__ . '/');
@@ -62,6 +63,8 @@ class Yesf {
 		}
 		$config->replace('application.dir', APP_PATH);
 		Loader::registerNamespace($config->get('application.namespace') . '\\model', APP_PATH . 'models/');
+		Response::$_tpl_auto_config = ($config->get('application.view.auto') == 1) ? TRUE : FALSE;
+		Response::$_tpl_extension = ($config->has('application.view.extension') ? $config->get('application.view.extension') : 'phtml');
 		//编码相关
 		if (function_exists('mb_internal_encoding')) {
 			mb_internal_encoding($config->get('application.charset'));

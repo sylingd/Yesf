@@ -15,16 +15,17 @@ use \yesf\Yesf;
 use \yesf\library\http\Vars as HttpVars;
 
 class Response {
+	public static $_tpl_auto_config = TRUE;
+	//模板文件扩展名
+	public static $_tpl_extension = 'phtml';
 	//模板变量
 	protected $_tpl_vars = [];
 	//模板目录
 	protected $_tpl_path;
-	//模板文件扩展名
-	protected $_tpl_extension = 'phtml';
 	//Swoole的Response
 	protected $_sw_response = NULL;
 	//是否自动渲染
-	protected $_tpl_auto = TRUE;
+	protected $_tpl_auto = NULL;
 	//默认模板
 	protected $_tpl_default = '';
 	/**
@@ -39,9 +40,6 @@ class Response {
 			$tpl_path = Yesf::app()->getConfig('application.dir') . 'views/';
 		}
 		$this->_tpl_path = $tpl_path;
-		if (Yesf::app()->getConfig()->has('application.view')) {
-			$this->_tpl_extension = Yesf::app()->getConfig('application.view');
-		}
 	}
 	/**
 	 * 设置模板路径
@@ -71,8 +69,8 @@ class Response {
 	public function render($tpl) {
 		extract($this->_tpl_vars, EXTR_SKIP);
 		ob_start();
-		if (is_file($this->_tpl_path . $tpl . '.' . $this->_tpl_extension)) {
-			include($this->_tpl_path . $tpl . '.' . $this->_tpl_extension);
+		if (is_file($this->_tpl_path . $tpl . '.' . self::$_tpl_extension)) {
+			include($this->_tpl_path . $tpl . '.' . self::$_tpl_extension);
 		}
 		return ob_get_clean();
 	}
@@ -153,7 +151,7 @@ class Response {
 	 */
 	public function __destruct() {
 		try {
-			if ($this->_tpl_auto) {
+			if (($this->_tpl_auto === NULL && self::$_tpl_auto_config) || $this->_tpl_auto) {
 				$this->display($this->_tpl_default);
 			}
 			if ($this->_sw_response !== NULL) {
