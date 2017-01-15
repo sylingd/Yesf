@@ -14,8 +14,7 @@ namespace yesf\library\event;
 use \yesf\Yesf;
 use \yesf\Constant;
 use \yesf\library\Plugin;
-use \yesf\library\http\Router;
-use \yesf\library\http\Response;
+use \yesf\library\Router;
 
 class HttpServer {
 	//HTTP事件：收到请求
@@ -76,21 +75,7 @@ class HttpServer {
 		}
 		$request->param = $result[0];
 		//开始路由分发
-		$module = isset($result[1]['module']) ? $result[1]['module'] : Yesf::app()->getConfig()->get('application.module');
-		$controller = empty($result[1]['controller']) ? 'index' : $result[1]['controller'];
-		$action = empty($result[1]['action']) ? 'index' : $result[1]['action'];
-		$viewDir = Yesf::app()->getConfig('application.dir') . 'modules/' . $module . '/views/';
-		$yesfResponse = new Response($response, $controller . '/' . $action, $viewDir);
-		if (!empty($request->extension)) {
-			$yesfResponse->mimeType($request->extension);
-		}
-		if (($code = Router::isValid($module, $controller, $action)) === Constant::ROUTER_VALID) {
-			$controllerName = Yesf::app()->getConfig('application.namespace') . '\\controller\\' . $controller;
-			call_user_func([$controllerName, $action . 'Action'], $request, $yesfResponse);
-			unset($request, $yesfResponse, $result);
-		} else {
-			$yesfResponse->disableView();
-			$yesfResponse->status(404);
-		}
+		Router::route($result[1], $request, $response);
+		unset($request, $yesfResponse, $result);
 	}
 }

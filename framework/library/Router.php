@@ -10,9 +10,10 @@
  * @license https://yesf.sylibs.com/license
  */
 
-namespace yesf\library\http;
+namespace yesf\library;
 use \yesf\Yesf;
 use \yesf\Constant;
+use \yesf\library\http\Response;
 
 class Router {
 	protected static $rewrite = [];
@@ -160,5 +161,25 @@ class Router {
 			return Constant::ROUTER_ERR_ACTION;
 		}
 		return Constant::ROUTER_VALID;
+	}
+	public static function route($routeInfo, $request, $response) {
+		$result = NULL;
+		$module = isset($routeInfo['module']) ? $routeInfo['module'] : Yesf::app()->getConfig('application.module');
+		$controller = empty($routeInfo['controller']) ? 'index' : $routeInfo['controller'];
+		$action = empty($routeInfo['action']) ? 'index' : $routeInfo['action'];
+		$viewDir = Yesf::app()->getConfig('application.dir') . 'modules/' . $module . '/views/';
+		$yesfResponse = new Response($response, $controller . '/' . $action, $viewDir);
+		if (!empty($request->extension)) {
+			$yesfResponse->mimeType($request->extension);
+		}
+		if (($code = self::isValid($module, $controller, $action)) === Constant::ROUTER_VALID) {
+			$controllerName = Yesf::app()->getConfig('application.namespace') . '\\controller\\' . $controller;
+			$result = call_user_func([$controllerName, $action . 'Action'], $request, $yesfResponse);
+			unset($request, $yesfResponse);
+		} else {
+			$yesfResponse->disableView();
+			$yesfResponse->status(404);
+		}
+		return $result;
 	}
 }
