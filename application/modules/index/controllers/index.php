@@ -1,6 +1,7 @@
 <?php
 namespace yesfApp\controller;
-class index {
+use \yesf\library\ControllerAbstract;
+class index extends ControllerAbstract {
 	public static function indexAction($request, $response) {
 		$response->assign('server', $request->server);
 		$response->assign('header', $request->header);
