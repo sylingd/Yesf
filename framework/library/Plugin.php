@@ -19,11 +19,22 @@ class Plugin {
 	 * @param string $event 事件名称
 	 * @param callable $callback 回调函数
 	 */
-	public static function registerPlugin(string $event, callable $callback) {
+	public static function register(string $event, callable $callback) {
 		if (!isset(self::$plugins[$event])) {
 			self::$plugins[$event] = [];
 		}
 		self::$plugins[$event][] = $callback;
+	}
+	/**
+	 * 清除已注册的插件
+	 * @param string $event 事件名称
+	 */
+	public static function clear(string $event = '') {
+		if (empty($event)) {
+			self::$plugins[$event] = [];
+		} else {
+			self::$plugins = [];
+		}
 	}
 	/**
 	 * 触发一个事件
