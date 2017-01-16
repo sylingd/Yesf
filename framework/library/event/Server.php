@@ -94,23 +94,14 @@ class Server {
 			call_user_func(self::$_listener[$port], 'close', $fd, $from_id);
 		}
 	}
+	/**
+	 * 通用事件
+	 */
 	public static function eventReceive($server, int $fd, int $from_id, string $data) {
-		$info = $server->connection_info($fd);
+		$info = $server->connection_info($fd, $from_id);
 		$port = $info['server_port'];
 		if (isset(self::$_listener[$port])) {
 			call_user_func(self::$_listener[$port], 'receive', $data, $fd, $from_id);
-		}
-	}
-	/**
-	 * UDP事件
-	 * 计算$fd和$from_id的方法为：（$fd是对应客户端的IP）
-	 * $fd = unpack('L', pack('N', ip2long($client_info['address'])))[1];
-	 * $from_id = ($client_info['server_socket'] << 16) + $client_info['port'];
-	 */
-	public static function eventPacket($server, string $data, array $client_info) {
-		$port = $client_info['port'];
-		if (isset(self::$_listener[$port])) {
-			call_user_func(self::$_listener[$port], 'packet', $data, $client_info);
 		}
 	}
 }
