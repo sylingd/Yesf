@@ -23,11 +23,36 @@ class Bootstrap {
 			]
 		];
 		Swoole::addListener(Constant::LISTEN_TCP, $config, [$this, 'tcpCallback']);
+		//测试UDP监听
+		$config = [
+			'ip' => '0.0.0.0',
+			'port' => '9503', //监听端口
+			'advanced' => [ //关于Swoole的高级选项
+				'open_length_check' => 1,
+				'package_length_type' => 'N',
+				'package_length_offset' => 0,
+				'package_body_offset' => 4,
+				'package_max_length' => 2097152, // 1024 * 1024 * 2,
+				'buffer_output_size' => 3145728, //1024 * 1024 * 3,
+				'pipe_buffer_size' => 33554432, // 1024 * 1024 * 32,
+				'backlog' => 3000,
+			]
+		];
+		Swoole::addListener(Constant::LISTEN_UDP, $config, [$this, 'udpCallback']);
 	}
 	public function tcpCallback($type, $data, $fd, $from_id) {
 		if ($type === 'receive') {
 			$data = substr($data, 4); //前四位是包长度
-			echo 'Receive data: ', $data, '(', strlen($data), ')', "\n";
+			echo 'Receive tcp data: ', $data, '(', strlen($data), ')', "\n";
+			$sendStr = 'success';
+			$sendStr = pack('N', strlen($sendStr)) . $sendStr;
+			Swoole::send($sendStr, $fd, $from_id);
+		}
+	}
+	public function udpCallback($type, $data, $fd, $from_id) {
+		if ($type === 'receive') {
+			$data = substr($data, 4); //前四位是包长度
+			echo 'Receive udp data: ', $data, '(', strlen($data), ')', "\n";
 			$sendStr = 'success';
 			$sendStr = pack('N', strlen($sendStr)) . $sendStr;
 			Swoole::send($sendStr, $fd, $from_id);
