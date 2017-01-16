@@ -84,21 +84,21 @@ class Server {
 		$info = $server->connection_info($fd);
 		$port = $info['server_port'];
 		if (isset(self::$_listener[$port])) {
-			call_user_func_array(self::$_listener[$port], 'connect', [$fd, $from_id]);
+			call_user_func(self::$_listener[$port], 'connect', $fd, $from_id);
 		}
 	}
 	public static function eventClose($server, int $fd, int $from_id) {
 		$info = $server->connection_info($fd);
 		$port = $info['server_port'];
 		if (isset(self::$_listener[$port])) {
-			call_user_func_array(self::$_listener[$port], 'close', [$fd, $from_id]);
+			call_user_func(self::$_listener[$port], 'close', $fd, $from_id);
 		}
 	}
 	public static function eventReceive($server, int $fd, int $from_id, string $data) {
 		$info = $server->connection_info($fd);
 		$port = $info['server_port'];
 		if (isset(self::$_listener[$port])) {
-			call_user_func_array(self::$_listener[$port], 'receive', [$data, $fd, $from_id]);
+			call_user_func(self::$_listener[$port], 'receive', $data, $fd, $from_id);
 		}
 	}
 	/**
@@ -110,7 +110,7 @@ class Server {
 	public static function eventPacket($server, string $data, array $client_info) {
 		$port = $client_info['port'];
 		if (isset(self::$_listener[$port])) {
-			call_user_func_array(self::$_listener[$port], 'packet', [$data, $client_info]);
+			call_user_func(self::$_listener[$port], 'packet', $data, $client_info);
 		}
 	}
 }

@@ -17,20 +17,27 @@ use \yesf\library\event\Server;
 
 class Swoole {
 	//Swoole实例类
-	protected $server = NULL;
+	protected static $server = NULL;
 	/**
 	 * 初始化
 	 */
 	public static function init() {
-		self::$server = new \swoole_http_server($config->get('swoole.ip'), $config->get('swoole.port')); 
+		self::$server = new \swoole_http_server(Yesf::app()->getConfig('swoole.ip'), Yesf::app()->getConfig('swoole.port')); 
 		//基本配置
-		$config = Yesf::app()->getConfig('swoole.http.advanced');
-		$ssl = Yesf::app()->getConfig('swoole.http.ssl');
+		$config = Yesf::app()->getConfig('swoole.advanced');
+		if (is_object($config)) {
+			if (method_exists($config, 'toArray')) {
+				$config = $config->toArray();
+			} else {
+				$config = (array)$config;
+			}
+		}
+		$ssl = Yesf::app()->getConfig('swoole.ssl');
 		if ($ssl['enable']) {
 			$config['ssl_cert_file'] = $ssl['cert'];
 			$config['ssl_key_file'] = $ssl['key'];
 		}
-		if (Yesf::app()->getConfig('swoole.http.http2')) {
+		if (Yesf::app()->getConfig('swoole.http2')) {
 			if (!isset($config['ssl_cert_file'])) {
 				throw new \yesf\library\exception\StartException('Certfile not found');
 			}
@@ -60,16 +67,23 @@ class Swoole {
 	public static function addListener(int $type, $config, callable $callback) {
 		if (is_string($config)) {
 			$config = Yesf::app()->getConfig($config);
+			if (is_object($config)) {
+				if (method_exists($config, 'toArray')) {
+					$config = $config->toArray();
+				} else {
+					$config = (array)$config;
+				}
+			}
 		}
 		if (!isset($config['port'])) {
-			return FALSE
+			return FALSE;
 		}
 		if (isset(Server::$_listener[$port])) {
 			return FALSE;
 		}
-		Server::$_listener[$port] = $callback;
 		$ip = isset($config['ip']) ? $config['ip'] : Yesf::app()->getConfig('swoole.ip');
 		$port = $config['port'];
+		Server::$_listener[$port] = $callback;
 		if ($type === Constant::LISTEN_TCP) {
 			$service = self::$server->listen($ip, $port, \SWOOLE_TCP);
 			if (isset($config['advanced'])) {
@@ -87,5 +101,14 @@ class Swoole {
 			$service->on('Packet', ['\yesf\library\event\Server', 'eventPacket']);
 		}
 		return TRUE;
+	}
+	/**
+	 * 向客户端发送消息
+	 * @param string $data
+	 * @param int $fd
+	 * @param int $from_id
+	 */
+	public static function send(string $data, int $fd, int $from_id = 0) {
+		self::$server->send($fd, $data, $from_id);
 	}
 }

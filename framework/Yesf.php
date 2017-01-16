@@ -59,6 +59,7 @@ class Yesf {
 			throw new \yesf\library\exception\StartException('Config can not be recognised');
 		}
 		$config->replace('application.dir', APP_PATH);
+		$this->config = $config;
 		Loader::registerNamespace($config->get('application.namespace') . '\\model', APP_PATH . 'models/');
 		Response::$_tpl_auto_config = ($config->get('application.view.auto') == 1) ? TRUE : FALSE;
 		Response::$_tpl_extension = ($config->has('application.view.extension') ? $config->get('application.view.extension') : 'phtml');
@@ -69,8 +70,6 @@ class Yesf {
 		if (extension_loaded('swoole')) {
 			Swoole::init();
 		}
-		//完成初始化
-		$this->config = $config;
 	}
 	/**
 	 * 将部分变量对外暴露
