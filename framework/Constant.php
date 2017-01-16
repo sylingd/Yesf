@@ -21,4 +21,7 @@ class Constant {
 	const CONFIG_QCONF = 2;
 	const CONFIG_YAF = 3;
 	const CONFIG_FILE = 4;
+	const LISTEN_TCP = 1;
+	const LISTEN_UDP = 2;
+	const LISTEN_UNIX = 3;
 }

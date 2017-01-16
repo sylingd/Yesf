@@ -175,11 +175,11 @@ class Router {
 		if (($code = self::isValid($module, $controller, $action)) === Constant::ROUTER_VALID) {
 			$controllerName = Yesf::app()->getConfig('application.namespace') . '\\controller\\' . $controller;
 			$result = call_user_func([$controllerName, $action . 'Action'], $request, $yesfResponse);
-			unset($request, $yesfResponse);
 		} else {
 			$yesfResponse->disableView();
 			$yesfResponse->status(404);
 		}
+		unset($request, $response, $yesfResponse);
 		return $result;
 	}
 }

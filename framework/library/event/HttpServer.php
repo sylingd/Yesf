@@ -34,8 +34,8 @@ class HttpServer {
 		//触发路由解析事件，转发至相应plugin
 		$result = Plugin::trigger('routerStartup', [$uri]);
 		//如果plugin返回了解析结果，则终止默认的路由解析
+		$request->extension = NULL;
 		if (!is_array($result)) {
-			$request->extension = NULL;
 			//为空则读取默认设置
 			if (empty($uri)) {
 				$result = [[], [
@@ -72,10 +72,14 @@ class HttpServer {
 					$result = Router::parseMap($uri);
 				}
 			}
+		} else {
+			if (isset($result[3])) {
+				$request->extension = $result[3];
+			}
 		}
 		$request->param = $result[0];
 		//开始路由分发
 		Router::route($result[1], $request, $response);
-		unset($request, $yesfResponse, $result);
+		unset($request, $response, $yesfResponse, $result);
 	}
 }

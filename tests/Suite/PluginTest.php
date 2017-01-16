@@ -5,7 +5,7 @@ use \yesf\library\Plugin;
 class PluginTest extends PHPUnit_Framework_TestCase {
 	public static $isTrigger = 0;
 	public static function callback1($data) {
-		self::$isTrigger = 	1;
+		self::$isTrigger = 1;
 		return NULL;
 	}
 	public static function callback2($data) {

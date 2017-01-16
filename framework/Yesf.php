@@ -13,6 +13,7 @@
 namespace yesf;
 
 use \yesf\library\Loader;
+use \yesf\library\Swoole;
 use \yesf\library\http\Response;
 
 if (!defined('YESF_ROOT')) {
@@ -33,10 +34,6 @@ class Yesf {
 	protected $baseUri = '/';
 	//路由参数名称
 	protected $routeParam = 'r';
-	//Swoole实例类
-	protected $server = NULL;
-	//是否已经给HTTP请求绑定了处理方法
-	protected $serverHttp = FALSE;
 	//单例化
 	protected static $_instance = NULL;
 	/**
@@ -70,13 +67,7 @@ class Yesf {
 			mb_internal_encoding($config->get('application.charset'));
 		}
 		if (extension_loaded('swoole')) {
-			$this->server = new \swoole_http_server($config->get('swoole.ip'), $config->get('swoole.port')); 
-			//基本事件
-			$this->server->on('Start', ['\yesf\library\event\Server', 'eventStart']);
-			$this->server->on('ManagerStart', ['\yesf\library\event\Server', 'eventManagerStart']);
-			$this->server->on('WorkerStart', ['\yesf\library\event\Server', 'eventWorkerStart']);
-			$this->server->on('WorkerError', ['\yesf\library\event\Server', 'eventWorkerError']);
-			$this->server->on('Finish', ['\yesf\library\event\Server', 'eventFinish']);
+			Swoole::init();
 		}
 		//完成初始化
 		$this->config = $config;
@@ -124,31 +115,6 @@ class Yesf {
 		return $this;
 	}
 	public function run() {
-		//判断是否已经给HTTP请求绑定了事件
-		if (!$this->serverHttp) {
-			$config = $this->getConfig('swoole.http.advanced');
-			$ssl = $this->getConfig('swoole.http.ssl');
-			if ($ssl['enable']) {
-				$config['ssl_cert_file'] = $ssl['cert'];
-				$config['ssl_key_file'] = $ssl['key'];
-			}
-			if ($this->getConfig('swoole.http.http2')) {
-				if (!isset($config['ssl_cert_file'])) {
-					throw new \yesf\library\exception\StartException('Certfile not found');
-				}
-				$config['open_http2_protocol'] = TRUE;
-			}
-			if (!is_array($config['response_header'])) {
-				$config['response_header'] = [];
-			}
-			if (!isset($config['response_header']['Content_Type'])) {
-				$config['response_header']['Content_Type'] = 'application/html; charset=' . $this->getConfig('application.charset');
-			}
-			$this->server->set($config);
-			$this->server->on('Request', ['\yesf\library\event\HttpServer', 'eventRequest']);
-			$this->server->on('Task', ['\yesf\library\event\Server', 'eventTask']);
-			$this->serverHttp = TRUE;
-		}
-		$this->server->start();
+		Swoole::start();
 	}
 }

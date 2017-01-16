@@ -16,6 +16,7 @@ use \yesf\Constant;
 use \yesf\library\Plugin;
 
 class Server {
+	public static $_listener = [];
 	/**
 	 * 普通事件：启动Master进程
 	 * @access public
@@ -49,7 +50,7 @@ class Server {
 			swoole_set_process_name(Yesf::app()->getConfig('application.name') . ' worker ' . $worker_id . ' (Yesf)');
 		}
 		//回调
-		Plugin::trigger('WorkerStart', [$serv->taskworker, $worker_id]);
+		Plugin::trigger('workerStart', [$serv->taskworker, $worker_id]);
 	}
 	/**
 	 * 普通事件：进程出错
@@ -73,6 +74,43 @@ class Server {
 		//TODO
 	}
 	public static function eventFinish($serv, int $task_id, string $data) {
-		
+		//TODO
+	}
+	/**
+	 * TCP事件
+	 * 注意：dispatch_mode=1/3时，底层会屏蔽onConnect/onClose事件
+	 */
+	public static function eventConnect($server, int $fd, int $from_id) {
+		$info = $server->connection_info($fd);
+		$port = $info['server_port'];
+		if (isset(self::$_listener[$port])) {
+			call_user_func_array(self::$_listener[$port], 'connect', [$fd, $from_id]);
+		}
+	}
+	public static function eventClose($server, int $fd, int $from_id) {
+		$info = $server->connection_info($fd);
+		$port = $info['server_port'];
+		if (isset(self::$_listener[$port])) {
+			call_user_func_array(self::$_listener[$port], 'close', [$fd, $from_id]);
+		}
+	}
+	public static function eventReceive($server, int $fd, int $from_id, string $data) {
+		$info = $server->connection_info($fd);
+		$port = $info['server_port'];
+		if (isset(self::$_listener[$port])) {
+			call_user_func_array(self::$_listener[$port], 'receive', [$data, $fd, $from_id]);
+		}
+	}
+	/**
+	 * UDP事件
+	 * 计算$fd和$from_id的方法为：（$fd是对应客户端的IP）
+	 * $fd = unpack('L', pack('N', ip2long($client_info['address'])))[1];
+	 * $from_id = ($client_info['server_socket'] << 16) + $client_info['port'];
+	 */
+	public static function eventPacket($server, string $data, array $client_info) {
+		$port = $client_info['port'];
+		if (isset(self::$_listener[$port])) {
+			call_user_func_array(self::$_listener[$port], 'packet', [$data, $client_info]);
+		}
 	}
 }
