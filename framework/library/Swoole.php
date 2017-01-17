@@ -76,7 +76,7 @@ class Swoole {
 				'backlog' => 100,
 			]
 		];
-		self::addListener(Constant::LISTEN_TCP, $config, '\\yesf\\library\\event\\Console::trigger');
+		self::addListener(Constant::LISTEN_TCP, $config, '\\yesf\\library\\event\\Console::receive');
 	}
 	/**
 	 * 获取统计数据
