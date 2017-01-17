@@ -40,7 +40,7 @@ class Bootstrap {
 		];
 		Swoole::addListener(Constant::LISTEN_UDP, $config, [$this, 'udpCallback']);
 	}
-	public function tcpCallback($type, $data, $fd, $from_id) {
+	public function tcpCallback($type, $fd, $from_id, $data = NULL) {
 		if ($type === 'receive') {
 			$data = substr($data, 4); //前四位是包长度
 			echo 'Receive tcp data: ', $data, '(', strlen($data), ')', "\n";
@@ -49,7 +49,7 @@ class Bootstrap {
 			Swoole::send($sendStr, $fd, $from_id);
 		}
 	}
-	public function udpCallback($type, $data, $fd, $from_id) {
+	public function udpCallback($type, $fd, $from_id, $data = NULL) {
 		if ($type === 'receive') {
 			$data = substr($data, 4); //前四位是包长度
 			echo 'Receive udp data: ', $data, '(', strlen($data), ')', "\n";

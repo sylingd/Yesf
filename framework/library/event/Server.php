@@ -101,7 +101,7 @@ class Server {
 		$info = $server->connection_info($fd, $from_id);
 		$port = $info['server_port'];
 		if (isset(self::$_listener[$port])) {
-			call_user_func(self::$_listener[$port], 'receive', $data, $fd, $from_id);
+			call_user_func(self::$_listener[$port], 'receive', $fd, $from_id, $data);
 		}
 	}
 }
