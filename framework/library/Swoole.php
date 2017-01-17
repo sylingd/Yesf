@@ -4,7 +4,7 @@
  * 
  * @author ShuangYa
  * @package Yesf
- * @category Base
+ * @category Swoole
  * @link https://www.sylingd.com/
  * @copyright Copyright (c) 2017 ShuangYa
  * @license https://yesf.sylibs.com/license
@@ -57,6 +57,41 @@ class Swoole {
 	public static function start() {
 		self::$server->start();
 	}
+	public static function initConsile() {
+		$ip =  Yesf::app()->getConfig('swoole.console.ip');
+		$port =  Yesf::app()->getConfig('swoole.console.port');
+		if (empty($ip) || empty($port)) {
+			return;
+		}
+		$config = [
+			'ip' => $ip,
+			'port' => $port, //监听端口
+			'advanced' => [ //关于Swoole的高级选项
+				'open_length_check' => 1,
+				'package_length_type' => 'N',
+				'package_length_offset' => 0,
+				'package_body_offset' => 4,
+				'package_max_length' => 1048576, // 1024 * 1024,
+				'open_tcp_nodelay' => 1,
+				'backlog' => 100,
+			]
+		];
+		self::addListener(Constant::LISTEN_TCP, $config, '\\yesf\\library\\event\\Console::trigger');
+	}
+	/**
+	 * 获取统计数据
+	 * @return array
+	 */
+	public static function getStat() {
+		return self::$server->stats();
+	}
+	/**
+	 * 重载
+	 *@param boolean $task
+	 */
+	public static function reload($task = FALSE) {
+		self::$server->reload($task);
+	}
 	/**
 	 * 添加监听
 	 * @param int $type 监听类型
@@ -85,7 +120,7 @@ class Swoole {
 		$port = $config['port'];
 		Server::$_listener[$port] = $callback;
 		if ($type === Constant::LISTEN_TCP) {
-			$service = self::$server->listen($ip, $port, \SWOOLE_TCP);
+			$service = self::$server->addListener($ip, $port, \SWOOLE_TCP);
 			if (isset($config['advanced'])) {
 				$service->set($config['advanced']);
 			}
@@ -93,7 +128,7 @@ class Swoole {
 			$service->on('Connect', ['\yesf\library\event\Server', 'eventConnect']);
 			$service->on('Close', ['\yesf\library\event\Server', 'eventClose']);
 		} elseif ($type === Constant::LISTEN_UDP) {
-			$service = self::$server->listen($ip, $port, \SWOOLE_UDP);
+			$service = self::$server->addListener($ip, $port, \SWOOLE_UDP);
 			if (isset($config['advanced'])) {
 				$service->set($config['advanced']);
 			}

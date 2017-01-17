@@ -69,6 +69,7 @@ class Yesf {
 		}
 		if (extension_loaded('swoole')) {
 			Swoole::init();
+			Swoole::initConsole();
 		}
 	}
 	/**
