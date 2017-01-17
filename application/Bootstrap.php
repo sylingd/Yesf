@@ -17,7 +17,6 @@ class Bootstrap {
 				'package_body_offset' => 4,
 				'package_max_length' => 2097152, // 1024 * 1024 * 2,
 				'buffer_output_size' => 3145728, //1024 * 1024 * 3,
-				'pipe_buffer_size' => 33554432, // 1024 * 1024 * 32,
 				'open_tcp_nodelay' => 1,
 				'backlog' => 3000,
 			]
@@ -32,10 +31,7 @@ class Bootstrap {
 				'package_length_type' => 'N',
 				'package_length_offset' => 0,
 				'package_body_offset' => 4,
-				'package_max_length' => 2097152, // 1024 * 1024 * 2,
-				'buffer_output_size' => 3145728, //1024 * 1024 * 3,
-				'pipe_buffer_size' => 33554432, // 1024 * 1024 * 32,
-				'backlog' => 3000,
+				'package_max_length' => 2097152, // 1024 * 1024 * 2
 			]
 		];
 		Swoole::addListener(Constant::LISTEN_UDP, $config, [$this, 'udpCallback']);

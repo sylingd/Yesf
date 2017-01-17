@@ -32,7 +32,7 @@ class HttpServer {
 		$baseUri = Yesf::app()->getBaseUri();
 		$uri = ltrim($uri, $baseUri);
 		//触发路由解析事件，转发至相应plugin
-		$result = Plugin::trigger('routerStartup', [$uri]);
+		$result = Plugin::trigger('routerStart', [$uri]);
 		//如果plugin返回了解析结果，则终止默认的路由解析
 		$request->extension = NULL;
 		if (!is_array($result)) {
