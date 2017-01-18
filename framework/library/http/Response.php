@@ -117,7 +117,7 @@ class Response {
 	 * @param boolean $param[httponly] 是否为httponly
 	 */
 	public function cookie($param) {
-		$name = Yesf::app()->getConfig('cookie.prefix') . $param['name'];
+		$name = $param['name'];
 		//处理过期时间
 		if (!isset($param['expire'])) {
 			$expire = time() +Yesf::app()->getConfig('cookie.expire');
