@@ -12,10 +12,11 @@
 
 class Action {
 	public static $server = [];
-	const HELLO_TEXT = "/************************************************** ****/\n/*                              Yesf Console                              */\n/******************************************************/";
-	const INPUT_TEXT = "What do you want to do?(Enter the serial number):";
+	const HELLO_TEXT = "/******************************************************/\n/*                    Yesf Console                    */\n/******************************************************/";
+	const INPUT_TEXT = "What do you want to do?(Enter the serial number): ";
+	const BACK_TEXT = "Enter \"back\" to return to the main menu\n";
 	public static function getMainText() {
-		return self::HELLO_TEXT . "1. Show connected servers\n2. Connect to a new server\n3. Reload servers\n4. Get server statistics\n" . self::INPUT_TEXT;
+		return self::HELLO_TEXT . "\n1. Show connected servers\n2. Connect to a new server\n3. Reload servers\n4. Get server statistics\n" . self::INPUT_TEXT;
 	}
 	public static function getMainAction() {
 		return [
@@ -25,14 +26,17 @@ class Action {
 			4 => 'statServerAction'
 		];
 	}
+	protected static function printServerList() {
+		foreach (self::$server as $k => $v) {
+			echo $k, '. ', $v->ip, ':', $v->port, "\n";
+		}
+	}
 	public static function showServerAction() {
 		echo "\n\nHere is the server list:\n";
-		foreach ($server as $k => $v) {
-			$sockinfo = $v->getsockname();
-			echo $k, '. ', $sockinfo['host'], ':', $sockinfo['port'], "\n";
-		}
+		self::printServerList();
 		echo "\n\n";
-		echo "Enter \"back\" to return to the main menu\n Enter one or more serial numbers to disconnect (Such as 1,2,3)\nEnter:";
+		echo self::BACK_TEXT;
+		echo "Enter one or more serial numbers to disconnect (Such as 1,2,3)\nEnter: ";
 		$action = trim(fgets(STDIN));
 		if ($action === 'back') {
 			return;
@@ -40,12 +44,9 @@ class Action {
 		$disconnect = explode(',', $action);
 		foreach ($disconnect as $k) {
 			$k = intval($k);
-			if (!isset(self::$server[$k])) {
-				continue;
-			}
-			self::$server[$k]->close();
 			unset(self::$server[$k]);
 		}
+		sleep(1);
 	}
 	public static function connectServerAction() {
 		echo "Please enter the server ip address: ";
@@ -57,19 +58,19 @@ class Action {
 			$newConnect = new Client($ip, $port);
 		} catch (Exception $e) {
 			echo "Connection failed!";
+			sleep(1);
 			return;
 		}
 		self::$server[] = $newConnect;
 		echo "Connection succeeded!";
+		sleep(1);
 	}
 	public static function reloadServerAction() {
 		echo "\n\nHere is the server list:\n";
-		foreach ($server as $k => $v) {
-			$sockinfo = $v->getsockname();
-			echo $k, '. ', $sockinfo['host'], ':', $sockinfo['port'], "\n";
-		}
+		self::printServerList();
 		echo "\n\n";
-		echo "Enter \"back\" to return to the main menu\n Enter one or more serial numbers to reload them (Such as 1,2,3)\nEnter:";
+		echo self::BACK_TEXT;
+		echo "Enter one or more serial numbers to reload them (Such as 1,2,3)\nEnter:";
 		$action = trim(fgets(STDIN));
 		if ($action === 'back') {
 			return;
@@ -85,12 +86,10 @@ class Action {
 	}
 	public static function statServerAction() {
 		echo "\n\nHere is the server list:\n";
-		foreach ($server as $k => $v) {
-			$sockinfo = $v->getsockname();
-			echo $k, '. ', $sockinfo['host'], ':', $sockinfo['port'], "\n";
-		}
+		self::printServerList();
 		echo "\n\n";
-		echo "Enter \"back\" to return to the main menu\n Enter a serial number to see the server statistics\nEnter:";
+		echo self::BACK_TEXT;
+		echo "Enter a serial number to see the server statistics\nEnter: ";
 		$action = trim(fgets(STDIN));
 		if ($action === 'back') {
 			return;
@@ -99,7 +98,13 @@ class Action {
 		if (!isset(self::$server[$action])) {
 			return;
 		}
-		self::$server[$action]->send('getStat');
-		print_r(self::$server[$action]->recv());
+		$rs = self::$server[$action]->send('getStat');
+		echo "Start at: ", date('Y-m-d H:i:s', $rs['start_time']), "\n";
+		echo "Connections: ", $rs['connection_num'], "\n";
+		echo "Accepted: ", $rs['accept_count'], "\n";
+		echo "Closed: ", $rs['close_count'], "\n";
+		echo "Tasks queuing: ", $rs['tasking_num'], "\n";
+		echo "Request received: ", $rs['request_count'], "\n";
+		sleep(1);
 	}
 }

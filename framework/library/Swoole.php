@@ -57,7 +57,7 @@ class Swoole {
 	public static function start() {
 		self::$server->start();
 	}
-	public static function initConsile() {
+	public static function initConsole() {
 		$ip =  Yesf::app()->getConfig('swoole.console.ip');
 		$port =  Yesf::app()->getConfig('swoole.console.port');
 		if (empty($ip) || empty($port)) {

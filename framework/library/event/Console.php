@@ -22,7 +22,7 @@ class Console {
 		}
 		$data = json_decode(substr($data, 4), 1); //为了降低环境需求，这里使用JSON
 		$action = $data['action'] . 'Action';
-		if (method_exists(self, $action)) {
+		if (is_callable([self, $action])) {
 			call_user_func([self, $action], $fd, $from_id, $data);
 		}
 	}

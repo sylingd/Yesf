@@ -11,8 +11,16 @@
  */
 
 class Client {
-	public $client;
+	public $client = NULL;
+	public $ip;
+	public $port;
 	public function __construct($ip, $port) {
+		$this->ip = $ip;
+		$this->port = $port;
+		$this->connect();
+		$this->close();
+	}
+	protected function connect() {
 		$this->client = new swoole_client(SWOOLE_TCP);
 		$this->client->set([
 			'open_length_check' => 1,
@@ -22,21 +30,29 @@ class Client {
 			'package_max_length' => 2000000,
 			'open_tcp_nodelay' => 1
 		]);
-		if ($this->client->connect($ip, $port, 1)) {
+		if (!$this->client->connect($this->ip, $this->port, 1)) {
 			throw new \Exception('Can not connect to server');
 		}
 	}
 	public function close() {
 		$this->client->close();
+		$this->client = NULL;
 	}
 	public function send($action, $data = []) {
+		$this->connect();
 		$data['action'] = $action;
 		$sendStr = json_encode($data);
 		$sendData = pack('N', strlen($sendStr)) . $sendStr;
-		return $this->client->send($sendData);
-	}
-	public function recv() {
+		$this->client->send($sendData);
 		$data = $this->client->recv();
-		return json_decode(substr($data, 4), 1);
+		if ($data === FALSE) {
+			$rs = FALSE;
+		}
+		$rs = json_decode(substr($data, 4), 1);
+		$this->close();
+		return $rs;
+	}
+	public function getError() {
+		return $this->client->errCode;
 	}
 }
