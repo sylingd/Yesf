@@ -66,15 +66,27 @@ class Server {
 	 * 普通事件：接收到task
 	 * @access public
 	 * @param object $serv
+	 * @param int $task_id
 	 * @param int $worker_id
-	 * @param int $worker_pid
-	 * @param int $exit_code
+	 * @param mixed $data
 	 */
-	public static function eventTask($serv, $task_id, $from_id, $task) {
-		//TODO
+	public static function eventTask($serv, $task_id, $worker_id, $data) {
+		$rs = Plugin::trigger('taskStart', [$task_id, $worker_id, $data]);
+		if (is_string($rs)) {
+			return $rs;
+		}
 	}
 	public static function eventFinish($serv, int $task_id, string $data) {
-		//TODO
+		Plugin::trigger('taskEnd', [$task_id, $data]);
+	}
+	/**
+	 * 进程之间的消息推送
+	 * @param object $serv
+	 * @param int $from
+	 * @param string $message
+	 */
+	public static function eventPipeMessage($serv, $from, $message) {
+		Plugin::trigger('pipeMessage', [$from, $message]);
 	}
 	/**
 	 * TCP事件

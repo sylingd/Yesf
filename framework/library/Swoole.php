@@ -50,6 +50,7 @@ class Swoole {
 		self::$server->on('WorkerStart', ['\yesf\library\event\Server', 'eventWorkerStart']);
 		self::$server->on('WorkerError', ['\yesf\library\event\Server', 'eventWorkerError']);
 		self::$server->on('Finish', ['\yesf\library\event\Server', 'eventFinish']);
+		self::$server->on('PipeMessage', ['\yesf\library\event\Server', 'eventPipeMessage']);
 		//HTTP事件
 		self::$server->on('Request', ['\yesf\library\event\HttpServer', 'eventRequest']);
 		self::$server->on('Task', ['\yesf\library\event\Server', 'eventTask']);
@@ -144,5 +145,26 @@ class Swoole {
 	 */
 	public static function send(string $data, int $fd, int $from_id = 0) {
 		self::$server->send($fd, $data, $from_id);
+	}
+	/**
+	 * 投递Task
+	 * @param mixed $data 传递数据
+	 * @param int $worker_id 投递到的task进程ID
+	 * @param callable $callback 回调函数
+	 */
+	public static function task($data, $worker_id = -1, $callback = NULL) {
+		if ($callback === NULL) {
+			self::$server->task($data, $worker_id);
+		} else {
+			self::$server->task($data, $worker_id, $callback);
+		}
+	}
+	/**
+	 * 发送消息到某个worker进程（支持task_worker）
+	 * @param string $message
+	 * @param int $worker_id
+	 */
+	public static function sendToWorker($message, $worker_id) {
+		self::$server->sendMessage($message, $worker_id);
 	}
 }
