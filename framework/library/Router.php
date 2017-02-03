@@ -149,7 +149,7 @@ class Router {
 			return Constant::ROUTER_ERR_MODULE;
 		}
 		//判断controller是否存在并加载
-		$controllerName = Yesf::app()->getConfig('application.namespace') . '\\controller\\' . $controller;
+		$controllerName = Yesf::app()->getConfig('application.namespace') . '\\controller\\' . $module . '\\' . $controller;
 		if (!class_exists($controllerName, FALSE)) {
 			$controllerPath = APP_PATH . 'modules/' . $module . '/controllers/' . $controller. '.php';
 			if (!is_file($controllerPath)) {
@@ -173,7 +173,7 @@ class Router {
 			$yesfResponse->mimeType($request->extension);
 		}
 		if (($code = self::isValid($module, $controller, $action)) === Constant::ROUTER_VALID) {
-			$controllerName = Yesf::app()->getConfig('application.namespace') . '\\controller\\' . $controller;
+			$controllerName = Yesf::app()->getConfig('application.namespace') . '\\controller\\' . $module . '\\' . $controller;
 			$result = call_user_func([$controllerName, $action . 'Action'], $request, $yesfResponse);
 		} else {
 			$yesfResponse->disableView();
