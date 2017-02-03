@@ -142,15 +142,15 @@ class Router {
 	 * @return int
 	 */
 	public static function isValid($module, $controller, $action) {
-		if (self::$modules === NULL) {
-			self::$modules = explode(',', Yesf::app()->getConfig('application.module'));
-		}
-		if (!in_array($module, self::$modules, TRUE)) {
-			return Constant::ROUTER_ERR_MODULE;
-		}
-		//判断controller是否存在并加载
 		$controllerName = Yesf::app()->getConfig('application.namespace') . '\\controller\\' . $module . '\\' . $controller;
 		if (!class_exists($controllerName, FALSE)) {
+			if (self::$modules === NULL) {
+				self::$modules = explode(',', Yesf::app()->getConfig('application.module'));
+			}
+			if (!in_array($module, self::$modules, TRUE)) {
+				return Constant::ROUTER_ERR_MODULE;
+			}
+			//判断controller是否存在并加载
 			$controllerPath = APP_PATH . 'modules/' . $module . '/controllers/' . $controller. '.php';
 			if (!is_file($controllerPath)) {
 				return Constant::ROUTER_ERR_CONTROLLER;
