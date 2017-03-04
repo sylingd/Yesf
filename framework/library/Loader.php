@@ -34,7 +34,7 @@ class Loader {
 		} else {
 			//可能是应用自身注册的namespace
 			foreach (self::$namespace as $k => $v) {
-				if (styrpos($className, $k) === 0) {
+				if (strpos($className, $k) === 0) {
 					$fileName = $v . str_replace('\\', '/', substr($className, strlen($k))) . '.php';
 					break;
 				}
