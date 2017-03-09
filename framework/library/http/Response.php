@@ -83,7 +83,7 @@ class Response {
 	}
 	/**
 	 * 注册一个模板变量
-	 * @param string $k 变量名称
+	 * @param string $k 名称
 	 * @param mixed $v 值
 	 */
 	public function assign($k, $v) {
@@ -91,10 +91,10 @@ class Response {
 	}
 	/**
 	 * 向浏览器发送一个header信息
-	 * @param string $content
+	 * @param string $k 名称
+	 * @param mixed $v 值
 	 */
-	public function header($content) {
-		list($k, $v) = explode(': ', $content, 2);
+	public function header($k, $v) {
 		$this->_sw_response->header($k, $v);
 	}
 	/**
