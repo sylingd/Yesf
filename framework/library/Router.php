@@ -142,10 +142,10 @@ class Router {
 	 * @return int
 	 */
 	public static function isValid($module, $controller, $action) {
-		$controllerName = Yesf::app()->getConfig('application.namespace') . '\\controller\\' . $module . '\\' . $controller;
+		$controllerName = Yesf::app()->getConfig('application.namespace') . '\\controller\\' . $module . '\\' . ucfirst($controller);
 		if (!class_exists($controllerName, FALSE)) {
 			if (self::$modules === NULL) {
-				self::$modules = explode(',', Yesf::app()->getConfig('application.module'));
+				self::$modules = explode(',', Yesf::app()->getConfig('application.modules'));
 			}
 			if (!in_array($module, self::$modules, TRUE)) {
 				return Constant::ROUTER_ERR_MODULE;
@@ -172,8 +172,9 @@ class Router {
 		if (!empty($request->extension)) {
 			$yesfResponse->mimeType($request->extension);
 		}
+		var_dump(self::isValid($module, $controller, $action));
 		if (($code = self::isValid($module, $controller, $action)) === Constant::ROUTER_VALID) {
-			$controllerName = Yesf::app()->getConfig('application.namespace') . '\\controller\\' . $module . '\\' . $controller;
+			$controllerName = Yesf::app()->getConfig('application.namespace') . '\\controller\\' . $module . '\\' . ucfirst($controller);
 			$result = call_user_func([$controllerName, $action . 'Action'], $request, $yesfResponse);
 		} else {
 			$yesfResponse->disableView();
