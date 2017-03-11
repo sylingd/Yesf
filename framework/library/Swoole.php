@@ -114,11 +114,11 @@ class Swoole {
 		if (!isset($config['port'])) {
 			return FALSE;
 		}
+		$port = $config['port'];
 		if (isset(Server::$_listener[$port])) {
 			return FALSE;
 		}
 		$ip = isset($config['ip']) ? $config['ip'] : Yesf::app()->getConfig('swoole.ip');
-		$port = $config['port'];
 		Server::$_listener[$port] = $callback;
 		if ($type === Constant::LISTEN_TCP) {
 			$service = self::$server->addListener($ip, $port, \SWOOLE_TCP);
