@@ -172,10 +172,13 @@ class Router {
 		if (!empty($request->extension)) {
 			$yesfResponse->mimeType($request->extension);
 		}
-		var_dump(self::isValid($module, $controller, $action));
 		if (($code = self::isValid($module, $controller, $action)) === Constant::ROUTER_VALID) {
 			$controllerName = Yesf::app()->getConfig('application.namespace') . '\\controller\\' . $module . '\\' . ucfirst($controller);
-			$result = call_user_func([$controllerName, $action . 'Action'], $request, $yesfResponse);
+			if (version_compare(PHP_VERSION, '7.0.0', '<') && version_compare(SWOOLE_VERSION, '2.0.0', '>=')) {
+				$result = \Swoole\Coroutine::call_user_func([$controllerName, $action . 'Action'], $request, $yesfResponse);
+			} else {
+				$result = call_user_func([$controllerName, $action . 'Action'], $request, $yesfResponse);
+			}
 		} else {
 			$yesfResponse->disableView();
 			$yesfResponse->status(404);
