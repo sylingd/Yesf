@@ -144,7 +144,7 @@ class Response {
 	 * @param string $extension 扩展名，例如JSON
 	 */
 	public function mimeType($extension) {
-		$this->header(HttpVars::mimeType($extension));
+		$this->header('Content-Type', HttpVars::mimeType($extension));
 	}
 	/**
 	 * 析构函数
