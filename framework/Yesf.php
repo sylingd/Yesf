@@ -110,7 +110,9 @@ class Yesf {
 		if (is_file($bootstrap)) {
 			require($bootstrap);
 			$bootstrapClass = new $bootstrapClass;
-			call_user_func([$bootstrapClass, 'run']);
+			if (method_exists($bootstrapClass, 'run')) {
+				$bootstrapClass->run();
+			}
 		}
 		return $this;
 	}
