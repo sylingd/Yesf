@@ -31,7 +31,7 @@ class Yesf {
 	 * 在进行路由解析时会忽略此前缀。默认为/，即根目录
 	 * 一般不会有此需要，仅当程序处于网站二级目录时会用到
 	 */
-	protected $baseUri = '/';
+	protected static $baseUri = '/';
 	//路由参数名称
 	protected $routeParam = 'r';
 	//单例化
@@ -85,11 +85,11 @@ class Yesf {
 	public function setEnvironment($env) {
 		$this->environment = $env;
 	}
-	public function setBaseUri($uri) {
-		$this->baseUri = $uri;
+	public static function setBaseUri($uri) {
+		self::$baseUri = $uri;
 	}
-	public function getBaseUri() {
-		return $this->baseUri;
+	public static function getBaseUri() {
+		return self::$baseUri;
 	}
 	/**
 	 * 以下是各个过程的事件

@@ -29,8 +29,7 @@ class HttpServer {
 			$uri = substr($uri, 0, strpos($uri, '?'));
 		}
 		//去除开头的baseUri
-		$baseUri = Yesf::app()->getBaseUri();
-		$uri = ltrim($uri, $baseUri);
+		$uri = ltrim($uri, Yesf::getBaseUri());
 		//触发路由解析事件，转发至相应plugin
 		$result = Plugin::trigger('routerStart', [$uri]);
 		//如果plugin返回了解析结果，则终止默认的路由解析
