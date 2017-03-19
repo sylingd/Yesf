@@ -183,6 +183,7 @@ class Router {
 		} else {
 			$yesfResponse->disableView();
 			$yesfResponse->status(404);
+			$yesfResponse->write('Not Found');
 		}
 		unset($request, $response, $yesfResponse);
 		return $result;

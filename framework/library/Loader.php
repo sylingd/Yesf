@@ -27,7 +27,7 @@ class Loader {
 		//解析namespace名
 		if (strpos($className, 'yesf\\') === 0) {
 			//框架类
-			$fileName = substr($className, 4) . '.php';
+			$fileName = substr($className, 5) . '.php';
 			$fileName = YESF_ROOT . str_replace('\\', '/', $fileName);
 		} elseif (Yesf::app()->getConfig()->has('application.class.' . $className)) {
 			$fileName = Yesf::app()->getConfig('application.dir') . Yesf::app()->getConfig('application.class.' . $className);
