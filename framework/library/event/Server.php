@@ -96,24 +96,36 @@ class Server {
 		$info = $server->connection_info($fd);
 		$port = $info['server_port'];
 		if (isset(self::$_listener[$port])) {
-			call_user_func(self::$_listener[$port], 'connect', $fd, $from_id);
+			self::callback(self::$_listener[$port], 'connect', $fd, $from_id);
 		}
 	}
 	public static function eventClose($server, int $fd, int $from_id) {
 		$info = $server->connection_info($fd);
 		$port = $info['server_port'];
 		if (isset(self::$_listener[$port])) {
-			call_user_func(self::$_listener[$port], 'close', $fd, $from_id);
+			self::callback(self::$_listener[$port], 'close', $fd, $from_id);
 		}
 	}
-	/**
-	 * 通用事件
-	 */
 	public static function eventReceive($server, int $fd, int $from_id, string $data) {
 		$info = $server->connection_info($fd, $from_id);
 		$port = $info['server_port'];
 		if (isset(self::$_listener[$port])) {
-			call_user_func(self::$_listener[$port], 'receive', $fd, $from_id, $data);
+			self::callback(self::$_listener[$port], 'receive', $fd, $from_id, $data);
+		}
+	}
+	/**
+	 * 模拟call_user_func
+	 */
+	protected static function callback($call, $event, $fd, $from_id, $data = NULL) {
+		if (is_array($call)) {
+			list($class, $method) = $call;
+			if (is_object($class)) {
+				return $class->$method($event, $fd, $from_id, $data);
+			} else {
+				return $class::$method($event, $fd, $from_id, $data);
+			}
+		} else {
+			return $call($event, $fd, $from_id, $data);
 		}
 	}
 }
