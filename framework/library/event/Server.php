@@ -114,6 +114,17 @@ class Server {
 		}
 	}
 	/**
+	 * UDP事件
+	 */
+	public static function eventPacket($server, string $data, array $client_info) {
+		$fd = unpack('L', pack('N', ip2long($client_info['address'])))[1];
+		$from_id = ($client_info['server_socket'] << 16) + $client_info['port'];
+		$port = $client_info['server_port'];
+		if (isset(self::$_listener[$port])) {
+			self::callback(self::$_listener[$port], 'receive', $fd, $from_id, $data);
+		}
+	}
+	/**
 	 * 模拟call_user_func
 	 */
 	protected static function callback($call, $event, $fd, $from_id, $data = NULL) {

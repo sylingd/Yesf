@@ -133,7 +133,7 @@ class Swoole {
 			if (isset($config['advanced'])) {
 				$service->set($config['advanced']);
 			}
-			$service->on('Receive', ['\yesf\library\event\Server', 'eventReceive']);
+			$service->on('Packet', ['\yesf\library\event\Server', 'eventPacket']);
 		}
 		return TRUE;
 	}
