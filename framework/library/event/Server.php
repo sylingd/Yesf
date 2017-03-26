@@ -92,36 +92,34 @@ class Server {
 	 * TCP事件
 	 * 注意：dispatch_mode=1/3时，底层会屏蔽onConnect/onClose事件
 	 */
-	public static function eventConnect($server, int $fd, int $from_id) {
-		$info = $server->connection_info($fd);
-		$port = $info['server_port'];
-		if (isset(self::$_listener[$port])) {
-			self::callback(self::$_listener[$port], 'connect', $fd, $from_id);
+	public static function eventConnect($callback_key, $fd, $from_id) {
+		if (isset(self::$_listener[$callback_key])) {
+			self::callback(self::$_listener[$callback_key], 'connect', $fd, $from_id);
 		}
 	}
-	public static function eventClose($server, int $fd, int $from_id) {
-		$info = $server->connection_info($fd);
-		$port = $info['server_port'];
-		if (isset(self::$_listener[$port])) {
-			self::callback(self::$_listener[$port], 'close', $fd, $from_id);
+	public static function eventClose($callback_key, $fd, $from_id) {
+		if (isset(self::$_listener[$callback_key])) {
+			self::callback(self::$_listener[$callback_key], 'close', $fd, $from_id);
 		}
 	}
-	public static function eventReceive($server, int $fd, int $from_id, string $data) {
-		$info = $server->connection_info($fd, $from_id);
-		$port = $info['server_port'];
-		if (isset(self::$_listener[$port])) {
-			self::callback(self::$_listener[$port], 'receive', $fd, $from_id, $data);
+	public static function eventReceive($callback_key, $fd, $from_id, string $data) {
+		if (isset(self::$_listener[$callback_key])) {
+			self::callback(self::$_listener[$callback_key], 'receive', $fd, $from_id, $data);
 		}
 	}
 	/**
 	 * UDP事件
 	 */
-	public static function eventPacket($server, string $data, array $client_info) {
-		$fd = unpack('L', pack('N', ip2long($client_info['address'])))[1];
-		$from_id = ($client_info['server_socket'] << 16) + $client_info['port'];
-		$port = $client_info['server_port'];
-		if (isset(self::$_listener[$port])) {
-			self::callback(self::$_listener[$port], 'receive', $fd, $from_id, $data);
+	public static function eventPacket($callback_key, string $data, array $client_info) {
+		if (is_numeric($callback_key)) {
+			$fd = unpack('L', pack('N', ip2long($client_info['address'])))[1];
+			$from_id = ($client_info['server_socket'] << 16) + $client_info['port'];
+		} else {
+			$fd = $client_info['address'];
+			$from_id = $callback_key;
+		}
+		if (isset(self::$_listener[$callback_key])) {
+			self::callback(self::$_listener[$callback_key], 'receive', $fd, $from_id, $data);
 		}
 	}
 	/**

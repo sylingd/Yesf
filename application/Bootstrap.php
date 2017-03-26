@@ -35,6 +35,29 @@ class Bootstrap {
 			]
 		];
 		Swoole::addListener(Constant::LISTEN_UDP, $config, [$this, 'udpCallback']);
+		//测试UNIX监听
+		$config = [
+			'sock' => '/data/Yesf/unix.sock',
+			'advanced' => [ //关于Swoole的高级选项
+				'open_length_check' => 1,
+				'package_length_type' => 'N',
+				'package_length_offset' => 0,
+				'package_body_offset' => 4,
+				'package_max_length' => 2097152, // 1024 * 1024 * 2
+			]
+		];
+		Swoole::addListener(Constant::LISTEN_UNIX, $config, [$this, 'unixCallback']);
+		$config = [
+			'sock' => '/data/Yesf/unix_dgram.sock',
+			'advanced' => [ //关于Swoole的高级选项
+				'open_length_check' => 1,
+				'package_length_type' => 'N',
+				'package_length_offset' => 0,
+				'package_body_offset' => 4,
+				'package_max_length' => 2097152, // 1024 * 1024 * 2
+			]
+		];
+		Swoole::addListener(Constant::LISTEN_UNIX_DGRAM, $config, [$this, 'unixDgramCallback']);
 	}
 	public function tcpCallback($type, $fd, $from_id, $data = NULL) {
 		if ($type === 'receive') {
@@ -52,6 +75,24 @@ class Bootstrap {
 			$sendStr = 'success';
 			$sendStr = pack('N', strlen($sendStr)) . $sendStr;
 			Swoole::send($sendStr, $fd, $from_id);
+		}
+	}
+	public function unixCallback($type, $fd, $from_id, $data = NULL) {
+		if ($type === 'receive') {
+			$data = substr($data, 4); //前四位是包长度
+			echo 'Receive unix data: ', $data, '(', strlen($data), ')', "\n";
+			$sendStr = 'success';
+			$sendStr = pack('N', strlen($sendStr)) . $sendStr;
+			Swoole::send($sendStr, $fd, $from_id);
+		}
+	}
+	public function unixDgramCallback($type, $fd, $from_id, $data = NULL) {
+		if ($type === 'receive') {
+			$data = substr($data, 4); //前四位是包长度
+			echo 'Receive unix dgram data: ', $data, '(', strlen($data), ')', "\n";
+			$sendStr = 'success';
+			$sendStr = pack('N', strlen($sendStr)) . $sendStr;
+			Swoole::sendToUDP($sendStr, $fd, 0, $from_id);
 		}
 	}
 }

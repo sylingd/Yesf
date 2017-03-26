@@ -111,40 +111,54 @@ class Swoole {
 				}
 			}
 		}
-		if (!isset($config['port'])) {
-			return FALSE;
+		//If type is unix, do not need port
+		if ($type === Constant::LISTEN_UNIX || $type === Constant::LISTEN_UNIX_DGRAM) {
+			$addr = $config['sock'];
+			$port = 0;
+			if (empty($addr)) {
+				return FALSE;
+			}
+			if (isset(Server::$_listener[$addr])) {
+				return FALSE;
+			}
+			Server::$_listener[$addr] = $callback;
+		} else {
+			$addr = isset($config['ip']) ? $config['ip'] : Yesf::app()->getConfig('swoole.ip');
+			if (!isset($config['port'])) {
+				return FALSE;
+			}
+			$port = $config['port'];
+			if (isset(Server::$_listener[$port])) {
+				return FALSE;
+			}
+			Server::$_listener[$port] = $callback;
 		}
-		$port = $config['port'];
-		if (isset(Server::$_listener[$port])) {
-			return FALSE;
-		}
-		$ip = isset($config['ip']) ? $config['ip'] : Yesf::app()->getConfig('swoole.ip');
-		Server::$_listener[$port] = $callback;
-		if ($type === Constant::LISTEN_TCP) {
-			$service = self::$server->addListener($ip, $port, \SWOOLE_TCP);
+		if ($type === Constant::LISTEN_TCP || $type === Constant::LISTEN_TCP6 || $type === Constant::LISTEN_UNIX) {
+			$service = self::$server->addListener($addr, $port, $type);
 			if (isset($config['advanced'])) {
 				$service->set($config['advanced']);
 			}
-			$service->on('Receive', ['\yesf\library\event\Server', 'eventReceive']);
-			$service->on('Connect', ['\yesf\library\event\Server', 'eventConnect']);
-			$service->on('Close', ['\yesf\library\event\Server', 'eventClose']);
-		} elseif ($type === Constant::LISTEN_UDP) {
-			$service = self::$server->addListener($ip, $port, \SWOOLE_UDP);
+			$callback_key = ($type === Constant::LISTEN_UNIX ? $addr : $port);
+			$service->on('Receive', function($server, $fd, $from_id, $data) use ($callback_key) {
+				Server::eventReceive($callback_key, $fd, $from_id, $data);
+			});
+			$service->on('Connect', function($server, $fd, $from_id) use ($callback_key) {
+				Server::eventConnect($callback_key, $fd, $from_id);
+			});
+			$service->on('Close', function($server, $fd, $from_id) use ($callback_key) {
+				Server::eventClose($callback_key, $fd, $from_id);
+			});
+		} elseif ($type === Constant::LISTEN_UDP || $type === Constant::LISTEN_UDP6 || $type === Constant::LISTEN_UNIX_DGRAM) {
+			$service = self::$server->addListener($addr, $port, $type);
 			if (isset($config['advanced'])) {
 				$service->set($config['advanced']);
 			}
-			$service->on('Packet', ['\yesf\library\event\Server', 'eventPacket']);
+			$callback_key = ($type === Constant::LISTEN_UNIX_DGRAM ? $addr : $port);
+			$service->on('Packet', function($server, string $data, array $client_info) use ($callback_key) {
+				Server::eventPacket($callback_key, $data, $client_info);
+			});
 		}
 		return TRUE;
-	}
-	/**
-	 * 向客户端发送消息
-	 * @param string $data
-	 * @param int $fd
-	 * @param int $from_id
-	 */
-	public static function send(string $data, int $fd, int $from_id = 0) {
-		self::$server->send($fd, $data, $from_id);
 	}
 	/**
 	 * 投递Task
@@ -158,6 +172,24 @@ class Swoole {
 		} else {
 			self::$server->task($data, $worker_id, $callback);
 		}
+	}
+	/**
+	 * 向客户端发送消息
+	 * @param string $data
+	 * @param int $fd
+	 * @param int $from_id
+	 */
+	public static function send(string $data, $fd, $from_id = 0) {
+		self::$server->send($fd, $data, $from_id);
+	}
+	/**
+	 * 向UDP客户端发送消息
+	 * @param string $data
+	 * @param mixed $addr
+	 * @param int $port
+	 */
+	public static function sendToUDP(string $data, $addr, $port = 0, $from = -1) {
+		self::$server->sendto($addr, $port, $data);
 	}
 	/**
 	 * 发送消息到某个worker进程（支持task_worker）

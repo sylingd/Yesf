@@ -21,7 +21,10 @@ class Constant {
 	const CONFIG_QCONF = 2;
 	const CONFIG_YAF = 3;
 	const CONFIG_FILE = 4;
-	const LISTEN_TCP = 1;
-	const LISTEN_UDP = 2;
-	const LISTEN_UNIX = 3;
+	const LISTEN_TCP = SWOOLE_TCP;
+	const LISTEN_UDP = SWOOLE_UDP;
+	const LISTEN_UNIX = SWOOLE_UNIX_STREAM;
+	const LISTEN_UNIX_DGRAM = SWOOLE_UNIX_DGRAM;
+	const LISTEN_TCP6 = SWOOLE_TCP6;
+	const LISTEN_UDP6 = SWOOLE_UDP6;
 }
