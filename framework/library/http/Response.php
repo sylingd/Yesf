@@ -120,7 +120,7 @@ class Response {
 		$name = $param['name'];
 		//处理过期时间
 		if (!isset($param['expire'])) {
-			$expire = time() +Yesf::app()->getConfig('cookie.expire');
+			$expire = time() + Yesf::app()->getConfig('cookie.expire');
 		} elseif ($param['expire'] === -1) {
 			$expire = time() - 3600;
 		} elseif ($param['expire'] === 0) {
