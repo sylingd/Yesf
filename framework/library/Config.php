@@ -16,6 +16,7 @@
 namespace yesf\library;
 use \Yaconf;
 use \Yaf_Config_Ini;
+use \Yaf\Config\Ini;
 use \yesf\Yesf;
 use \yesf\Constant;
 
@@ -39,7 +40,11 @@ class Config {
 		} elseif (is_file($conf)) {
 			if (extension_loaded('Yaf')) {
 				$this->type = Constant::CONFIG_YAF;
-				$this->conf = new Yaf_Config_Ini($conf, $this->environment);
+				if (class_exists('\\Yaf_Config_Ini', FALSE)) {
+					$this->conf = new Yaf_Config_Ini($conf, $this->environment);
+				} else {
+					$this->conf = new Ini($conf, $this->environment);
+				}
 			} else {
 				$this->type = Constant::CONFIG_FILE;
 				$this->conf = $this->parseIniConfig($conf);

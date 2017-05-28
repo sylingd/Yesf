@@ -34,6 +34,8 @@ class Yesf {
 	protected static $baseUri = '/';
 	//路由参数名称
 	protected $routeParam = 'r';
+	//配置
+	protected $config = NULL;
 	//单例化
 	protected static $_instance = NULL;
 	/**
