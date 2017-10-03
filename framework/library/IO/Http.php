@@ -11,7 +11,6 @@
  */
 
 namespace yesf\library\IO;
-use \Swoole\Async;
 
 class Http {
 	public static $cache_timeout = 3600; //IP缓存时长
@@ -50,7 +49,7 @@ class Http {
 				$callback(self::$cached_ip[$domain]);
 			}
 		}
-		Async::dnsLookup($domain, function ($domainName, $ip) {
+		swoole_async_dns_lookup($domain, function ($domainName, $ip) {
 			self::$cached_ip[$domain] = $ip;
 			self::$cached_ip_at[$domain] = time();
 			$callback($ip);
