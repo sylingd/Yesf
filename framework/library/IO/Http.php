@@ -49,9 +49,9 @@ class Http {
 				$callback(self::$cached_ip[$domain]);
 			}
 		}
-		swoole_async_dns_lookup($domain, function ($domainName, $ip) {
-			self::$cached_ip[$domain] = $ip;
-			self::$cached_ip_at[$domain] = time();
+		swoole_async_dns_lookup($domain, function ($domainName, $ip) use ($callback) {
+			self::$cached_ip[$domainName] = $ip;
+			self::$cached_ip_at[$domainName] = time();
 			$callback($ip);
 		});
 	}
