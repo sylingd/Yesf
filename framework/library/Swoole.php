@@ -199,4 +199,11 @@ class Swoole {
 	public static function sendToWorker($message, $worker_id) {
 		self::$server->sendMessage($message, $worker_id);
 	}
+	/**
+	 * 获取Swoole示例，用于实现更多高级操作
+	 * @return swoole_server
+	 */
+	public static function getSwoole() {
+		return self::$server;
+	}
 }
