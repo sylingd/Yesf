@@ -169,7 +169,7 @@ class Loader {
 	 */
     public static function addComposer($vendor_dir) {
         if (is_file($vendor_dir . 'composer/autoload_namespaces.php')) {
-            $map = require($dir . 'composer/autoload_namespaces.php');
+            $map = require($vendor_dir . 'composer/autoload_namespaces.php');
             foreach ($map as $namespace => $path) {
                 self::addPsr0($namespace, $path);
             }

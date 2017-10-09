@@ -12,7 +12,4 @@ class LoaderTest extends PHPUnit_Framework_TestCase {
 		Loader::addPsr4('Psr4\\Foo\\Bar\\', [YESF_TEST_DATA . 'Loader/Psr4']);
 		$this->assertEquals(true, class_exists('Psr4\\Foo\\Bar\\Foo\\Bar\\Demo'));
 	}
-	public function testComposer() {
-		Loader::addComposer();
-	}
 }
