@@ -34,7 +34,7 @@ class HttpServer {
 			$uri = substr($uri, 0, strpos($uri, '?'));
 		}
 		//去除开头的baseUri
-		if (strpos($baseUri, $uri) === 0) {
+		if (strpos($uri, $baseUri) === 0) {
 			$uri = substr($uri, $baseUriLen);
 		}
 		//触发路由解析事件，转发至相应plugin
