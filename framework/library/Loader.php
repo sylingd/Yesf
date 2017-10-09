@@ -167,32 +167,32 @@ class Loader {
 	 * 注册composer支持
 	 * @param string $dir composer根目录
 	 */
-    public static function addComposer($vendor_dir) {
-        if (is_file($vendor_dir . 'composer/autoload_namespaces.php')) {
-            $map = require($vendor_dir . 'composer/autoload_namespaces.php');
-            foreach ($map as $namespace => $path) {
-                self::addPsr0($namespace, $path);
-            }
-        }
-        if (is_file($vendor_dir . 'composer/autoload_psr4.php')) {
-            $map = require($vendor_dir . 'composer/autoload_psr4.php');
-            foreach ($map as $namespace => $path) {
-                self::addPsr4($namespace, $path);
-            }
-        }
-        if (is_file($vendor_dir . 'composer/autoload_classmap.php')) {
-            $classMap = require($vendor_dir . 'composer/autoload_classmap.php');
-            if ($classMap) {
-                self::addClassMap($classMap);
-            }
-        }
-        if (is_file($vendor_dir . 'composer/autoload_files.php')) {
-            $includeFiles = require($vendor_dir . 'composer/autoload_files.php');
-            foreach ($includeFiles as $fileIdentifier => $file) {
+	public static function addComposer($vendor_dir) {
+		if (is_file($vendor_dir . 'composer/autoload_namespaces.php')) {
+			$map = require($vendor_dir . 'composer/autoload_namespaces.php');
+			foreach ($map as $namespace => $path) {
+				self::addPsr0($namespace, $path);
+			}
+		}
+		if (is_file($vendor_dir . 'composer/autoload_psr4.php')) {
+			$map = require($vendor_dir . 'composer/autoload_psr4.php');
+			foreach ($map as $namespace => $path) {
+				self::addPsr4($namespace, $path);
+			}
+		}
+		if (is_file($vendor_dir . 'composer/autoload_classmap.php')) {
+			$classMap = require($vendor_dir . 'composer/autoload_classmap.php');
+			if ($classMap) {
+				self::addClassMap($classMap);
+			}
+		}
+		if (is_file($vendor_dir . 'composer/autoload_files.php')) {
+			$includeFiles = require($vendor_dir . 'composer/autoload_files.php');
+			foreach ($includeFiles as $fileIdentifier => $file) {
 				__include_file($file);
-            }
-        }
-    }
+			}
+		}
+	}
 	/**
 	 * 注册自动加载
 	 */
