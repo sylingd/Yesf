@@ -62,7 +62,7 @@ class Yesf {
 		}
 		$config->replace('application.dir', APP_PATH);
 		$this->config = $config;
-		Loader::registerNamespace($config->get('application.namespace') . '\\model', APP_PATH . 'models/');
+		Loader::addPsr4($config->get('application.namespace') . '\\model\\', APP_PATH . 'models');
 		Response::$_tpl_auto_config = ($config->get('application.view.auto') == 1) ? TRUE : FALSE;
 		Response::$_tpl_extension = ($config->has('application.view.extension') ? $config->get('application.view.extension') : 'phtml');
 		//编码相关
