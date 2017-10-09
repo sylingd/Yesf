@@ -12,4 +12,12 @@ class LoaderTest extends PHPUnit_Framework_TestCase {
 		Loader::addPsr4('Psr4\\Foo\\Bar\\', [YESF_TEST_DATA . 'Loader/Psr4']);
 		$this->assertEquals(true, class_exists('Psr4\\Foo\\Bar\\Foo\\Bar\\Demo'));
 	}
+	public function testClassMap() {
+		Loader::addClassMap([
+			'Test1' => YESF_TEST_DATA . 'Loader/ClassMap/Test1.php',
+			'Test2' => YESF_TEST_DATA . 'Loader/ClassMap/Test2.php'
+		]);
+		$this->assertEquals(true, class_exists('Test1'));
+		$this->assertEquals(true, class_exists('Test2'));
+	}
 }
