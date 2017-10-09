@@ -19,7 +19,12 @@ use \yesf\library\Router;
 class HttpServer {
 	//HTTP事件：收到请求
 	public static function eventRequest($request, $response) {
-		//根据设置，分配重写规则
+		static $baseUri = NULL;
+		static $baseUriLen = NULL;
+		if ($baseUri === NULL) {
+			$baseUri = Yesf::getBaseUri();
+			$baseUriLen = strlen($baseUri);
+		}
 		if ('develop' === Yesf::app()->environment && function_exists('xdebug_start_trace')) {
 			xdebug_start_trace();
 		}
@@ -29,7 +34,9 @@ class HttpServer {
 			$uri = substr($uri, 0, strpos($uri, '?'));
 		}
 		//去除开头的baseUri
-		$uri = ltrim($uri, Yesf::getBaseUri());
+		if (strpos($baseUri, $uri) === 0) {
+			$uri = substr($uri, $baseUriLen);
+		}
 		//触发路由解析事件，转发至相应plugin
 		$result = Plugin::trigger('routerStart', [$uri]);
 		//如果plugin返回了解析结果，则终止默认的路由解析
