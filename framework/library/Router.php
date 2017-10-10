@@ -136,6 +136,7 @@ class Router {
 	}
 	/**
 	 * 判断路由是否合法
+	 * @codeCoverageIgnore
 	 * @param string $module
 	 * @param string $controller
 	 * @param string $action
@@ -162,6 +163,10 @@ class Router {
 		}
 		return Constant::ROUTER_VALID;
 	}
+	/**
+	 * 进行路由分发
+	 * @codeCoverageIgnore
+	 */
 	public static function route($routeInfo, $request, $response) {
 		$result = NULL;
 		$module = isset($routeInfo['module']) ? $routeInfo['module'] : Yesf::app()->getConfig('application.module');

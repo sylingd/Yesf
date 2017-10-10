@@ -29,4 +29,15 @@ class PluginTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('_t__test_data_', Plugin::trigger('test', ['_test_data_']));
 		$this->assertEquals(1, self::$isTrigger);
 	}
+	public function testClear() {
+		Plugin::register('test', 'PluginTest::callback2');
+		Plugin::register('test', 'PluginTest::callback1');
+		$this->assertEquals('_t__test_data_', Plugin::trigger('test', ['_test_data_']));
+		Plugin::clear();
+		$this->assertEquals(NULL, Plugin::trigger('test', ['_test_data_']));
+		Plugin::register('test', 'PluginTest::callback2');
+		$this->assertEquals('_t__test_data_', Plugin::trigger('test', ['_test_data_']));
+		Plugin::clear('test');
+		$this->assertEquals(NULL, Plugin::trigger('test', ['_test_data_']));
+	}
 }

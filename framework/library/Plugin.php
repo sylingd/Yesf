@@ -31,9 +31,9 @@ class Plugin {
 	 */
 	public static function clear(string $event = '') {
 		if (empty($event)) {
-			self::$plugins[$event] = [];
-		} else {
 			self::$plugins = [];
+		} else {
+			self::$plugins[$event] = [];
 		}
 	}
 	/**

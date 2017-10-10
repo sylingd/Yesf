@@ -16,7 +16,10 @@
     </testsuites>
     <filter>
         <whitelist>
-            <directory suffix=".php">application/</directory>
+            <directory suffix=".php">framework/</directory>
         </whitelist>
     </filter>
+	<logging>
+		<log type="coverage-html" target="./temp/report" lowUpperBound="35" highLowerBound="70"/>
+	</logging>
 </phpunit>

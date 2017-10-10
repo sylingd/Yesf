@@ -195,6 +195,7 @@ class Loader {
 	}
 	/**
 	 * 注册自动加载
+	 * @codeCoverageIgnore
 	 */
 	public static function register() {
 		self::addPsr4('yesf\\', substr(YESF_ROOT, 0, strlen(YESF_ROOT) - 1));
