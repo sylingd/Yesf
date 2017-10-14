@@ -45,9 +45,9 @@ class Server {
 	public static function eventWorkerStart($serv, $worker_id) {
 		//根据类型，设置不同的进程名
 		if ($serv->taskworker) {
-			swoole_set_process_name(Yesf::app()->getConfig('application.name') . ' task ' . $worker_id . ' (Yesf)');
+			swoole_set_process_name(Yesf::app()->getConfig('application.name') . ' task ' . $worker_id);
 		} else {
-			swoole_set_process_name(Yesf::app()->getConfig('application.name') . ' worker ' . $worker_id . ' (Yesf)');
+			swoole_set_process_name(Yesf::app()->getConfig('application.name') . ' worker ' . $worker_id);
 		}
 		//回调
 		Plugin::trigger('workerStart', [$serv->taskworker, $worker_id]);
