@@ -47,9 +47,10 @@ class Http {
 		if (!$refresh) {
 			if (isset(self::$cached_ip[$domain]) && self::$cached_ip_at[$domain] - time() <= self::$cache_timeout) {
 				$callback(self::$cached_ip[$domain]);
+				return;
 			}
 		}
-		swoole_async_dns_lookup($domain, function ($domainName, $ip) use ($callback) {
+		swoole_async_dns_lookup($domain, function ($domainName, $ip) use (&$callback) {
 			self::$cached_ip[$domainName] = $ip;
 			self::$cached_ip_at[$domainName] = time();
 			$callback($ip);
