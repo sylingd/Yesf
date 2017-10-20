@@ -14,6 +14,7 @@ namespace yesf;
 
 use \yesf\library\Loader;
 use \yesf\library\Swoole;
+use \yesf\library\Dispatcher;
 use \yesf\library\http\Response;
 
 if (!defined('YESF_ROOT')) {
@@ -36,6 +37,8 @@ class Yesf {
 	protected $routeParam = 'r';
 	//配置
 	protected $config = NULL;
+	//缓存namespace
+	protected static $app_namespace = NULL;
 	//单例化
 	protected static $_instance = NULL;
 	/**
@@ -62,7 +65,9 @@ class Yesf {
 		}
 		$config->replace('application.dir', APP_PATH);
 		$this->config = $config;
+		self::$app_namespace = $config->get('application.namespace');
 		Loader::addPsr4($config->get('application.namespace') . '\\model\\', APP_PATH . 'models');
+		Dispatcher::setDefaultModule($config->get('application.module'));
 		Response::$_tpl_auto_config = ($config->get('application.view.auto') == 1) ? TRUE : FALSE;
 		Response::$_tpl_extension = ($config->has('application.view.extension') ? $config->get('application.view.extension') : 'phtml');
 		//编码相关
@@ -92,6 +97,9 @@ class Yesf {
 	}
 	public static function getBaseUri() {
 		return self::$baseUri;
+	}
+	public static function getAppNamespace() {
+		return self::$app_namespace;
 	}
 	/**
 	 * 以下是各个过程的事件

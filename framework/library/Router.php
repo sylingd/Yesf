@@ -18,7 +18,6 @@ use \yesf\library\http\Response;
 class Router {
 	protected static $rewrite = [];
 	protected static $regex = [];
-	protected static $modules = NULL;
 	/**
 	 * 按照Map方式解析路由
 	 * 对于请求request_uri为"/ap/foo/bar"
@@ -133,64 +132,5 @@ class Router {
 			'param' => $param,
 			'dispatch' => $dispatch
 		];
-	}
-	/**
-	 * 判断路由是否合法
-	 * @codeCoverageIgnore
-	 * @param string $module
-	 * @param string $controller
-	 * @param string $action
-	 * @return int
-	 */
-	public static function isValid($module, $controller, $action) {
-		$controllerName = Yesf::app()->getConfig('application.namespace') . '\\controller\\' . $module . '\\' . ucfirst($controller);
-		if (!class_exists($controllerName, FALSE)) {
-			if (self::$modules === NULL) {
-				self::$modules = explode(',', Yesf::app()->getConfig('application.modules'));
-			}
-			if (!in_array($module, self::$modules, TRUE)) {
-				return Constant::ROUTER_ERR_MODULE;
-			}
-			//判断controller是否存在并加载
-			$controllerPath = APP_PATH . 'modules/' . $module . '/controllers/' . $controller. '.php';
-			if (!is_file($controllerPath)) {
-				return Constant::ROUTER_ERR_CONTROLLER;
-			}
-			require($controllerPath);
-		}
-		if (!method_exists($controllerName, $action . 'Action')) {
-			return Constant::ROUTER_ERR_ACTION;
-		}
-		return Constant::ROUTER_VALID;
-	}
-	/**
-	 * 进行路由分发
-	 * @codeCoverageIgnore
-	 */
-	public static function route($routeInfo, $request, $response) {
-		$result = NULL;
-		$module = isset($routeInfo['module']) ? $routeInfo['module'] : Yesf::app()->getConfig('application.module');
-		$controller = empty($routeInfo['controller']) ? 'index' : $routeInfo['controller'];
-		$action = empty($routeInfo['action']) ? 'index' : $routeInfo['action'];
-		$viewDir = Yesf::app()->getConfig('application.dir') . 'modules/' . $module . '/views/';
-		$yesfResponse = new Response($response, $controller . '/' . $action, $viewDir);
-		if (!empty($request->extension)) {
-			$yesfResponse->mimeType($request->extension);
-		}
-		if (($code = self::isValid($module, $controller, $action)) === Constant::ROUTER_VALID) {
-			$controllerName = Yesf::app()->getConfig('application.namespace') . '\\controller\\' . $module . '\\' . ucfirst($controller);
-			$actionName = $action . 'Action';
-			if (version_compare(PHP_VERSION, '7.0.0', '<') && version_compare(SWOOLE_VERSION, '2.0.0', '>=')) {
-				$result = \Swoole\Coroutine::call_user_func([$controllerName, $actionName], $request, $yesfResponse);
-			} else {
-				$result = $controllerName::$actionName($request, $yesfResponse);
-			}
-		} else {
-			$yesfResponse->disableView();
-			$yesfResponse->status(404);
-			$yesfResponse->write('Not Found');
-		}
-		unset($request, $response, $yesfResponse);
-		return $result;
 	}
 }

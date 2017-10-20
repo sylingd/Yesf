@@ -15,6 +15,7 @@ use \yesf\Yesf;
 use \yesf\Constant;
 use \yesf\library\Plugin;
 use \yesf\library\Router;
+use \yesf\library\Dispatcher;
 
 class HttpServer {
 	//HTTP事件：收到请求
@@ -85,7 +86,7 @@ class HttpServer {
 		}
 		$request->param = $result[0];
 		//开始路由分发
-		Router::route($result[1], $request, $response);
+		Dispatcher::dispatch($result[1], $request, $response);
 		unset($request, $response, $yesfResponse, $result);
 	}
 }
