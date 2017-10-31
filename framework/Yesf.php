@@ -38,7 +38,7 @@ class Yesf {
 	//配置
 	protected $config = NULL;
 	//缓存namespace
-	protected static $app_namespace = NULL;
+	protected static $_app_namespace = NULL;
 	//单例化
 	protected static $_instance = NULL;
 	/**
@@ -65,7 +65,7 @@ class Yesf {
 		}
 		$config->replace('application.dir', APP_PATH);
 		$this->config = $config;
-		self::$app_namespace = $config->get('application.namespace');
+		self::$_app_namespace = $config->get('application.namespace');
 		Loader::addPsr4($config->get('application.namespace') . '\\model\\', APP_PATH . 'models');
 		Dispatcher::setDefaultModule($config->get('application.module'));
 		Response::$_tpl_auto_config = ($config->get('application.view.auto') == 1) ? TRUE : FALSE;
@@ -99,7 +99,7 @@ class Yesf {
 		return self::$baseUri;
 	}
 	public static function getAppNamespace() {
-		return self::$app_namespace;
+		return self::$_app_namespace;
 	}
 	/**
 	 * 以下是各个过程的事件
