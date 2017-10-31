@@ -24,7 +24,6 @@ class Loader {
 	private static $prefixesPsr0 = [];
 	private static $fallbackDirsPsr0 = [];
 
-	private static $useIncludePath = false;
 	private static $classMap = [];
 	/**
 	 * Autoload
