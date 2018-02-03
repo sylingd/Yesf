@@ -57,7 +57,7 @@ class Plugin {
 		if (is_callable('\Swoole\Coroutine::call_user_func_array')) {
 			return \Swoole\Coroutine::call_user_func_array($func, $data);
 		} else {
-			call_user_func_array($func, $data);
+			return call_user_func_array($func, $data);
 		}
 	}
 }
