@@ -25,6 +25,7 @@ class RouterTest extends PHPUnit_Framework_TestCase {
 		];
 		Router::addRewrite($rule, $dispatch);
 		$this->assertEquals($result, Router::parseRewrite($uri));
+		$this->assertNull(Router::parseRewrite('invalid_url/test/demo'));
 	}
 	public function testRegex() {
 		$rule = '/^thread-view-([0-9]+)-([0-9]+)\\.html$/';
@@ -42,5 +43,6 @@ class RouterTest extends PHPUnit_Framework_TestCase {
 		];
 		Router::addRegex($rule, $dispatch, $param);
 		$this->assertEquals($result, Router::parseRegex($uri));
+		$this->assertNull(Router::parseRegex('thread-list-1-3.html'));
 	}
 }

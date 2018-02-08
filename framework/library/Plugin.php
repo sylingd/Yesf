@@ -55,7 +55,7 @@ class Plugin {
 	}
 	public static function callUserFuncArray($func, $data) {
 		if (is_callable('\Swoole\Coroutine::call_user_func_array')) {
-			return \Swoole\Coroutine::call_user_func_array($func, $data);
+			return \Swoole\Coroutine::call_user_func_array($func, $data); // @codeCoverageIgnore
 		} else {
 			return call_user_func_array($func, $data);
 		}

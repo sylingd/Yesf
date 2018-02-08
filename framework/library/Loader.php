@@ -40,6 +40,13 @@ class Loader {
 		self::$classMap = array_merge(self::$classMap, $classMap);
 	}
 	/**
+	 * Clear all psr-0 rules
+	 * @param boolean $include_fallback
+	 */
+	public static function clearClassMap() {
+		self::$classMap = [];
+	}
+	/**
 	 * Registers a set of PSR-0 directories for a given prefix, either
 	 * appending or prepending to the ones previously set for this prefix.
 	 *
@@ -65,6 +72,16 @@ class Loader {
 			self::$prefixesPsr0[$first][$prefix] = array_merge((array)$paths, self::$prefixesPsr0[$first][$prefix]);
 		} else {
 			self::$prefixesPsr0[$first][$prefix] = array_merge(self::$prefixesPsr0[$first][$prefix], (array)$paths);
+		}
+	}
+	/**
+	 * Clear all psr-0 rules
+	 * @param boolean $include_fallback
+	 */
+	public static function clearPsr0($include_fallback = TRUE) {
+		self::$prefixesPsr0 = [];
+		if ($include_fallback) {
+			self::$fallbackDirsPsr0 = [];
 		}
 	}
 	/**
@@ -98,6 +115,18 @@ class Loader {
 			// Append directories for an already registered namespace.
 			self::$prefixDirsPsr4[$prefix] = array_merge(self::$prefixDirsPsr4[$prefix], (array)$paths);
 		}
+	}
+	/**
+	 * Clear all psr-4 rules
+	 * @param boolean $include_fallback
+	 */
+	public static function clearPsr4($include_fallback = TRUE) {
+		self::$prefixDirsPsr4 = [];
+		self::$prefixLengthsPsr4 = [];
+		if ($include_fallback) {
+			self::$fallbackDirsPsr4 = [];
+		}
+		self::addPsr4('yesf\\', substr(YESF_ROOT, 0, strlen(YESF_ROOT) - 1));
 	}
 	/**
 	 * 查找文件

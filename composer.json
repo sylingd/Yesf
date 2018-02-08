@@ -1,0 +1,12 @@
+{
+    "require-dev": {
+        "phpunit/phpunit": "~4.6",
+        "mikey179/vfsStream": "~1"
+    },
+	"repositories": {
+		"packagist": {
+			"type": "composer",
+			"url": "https://packagist.phpcomposer.com"
+		}
+	}
+}

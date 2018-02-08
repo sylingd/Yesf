@@ -17,6 +17,9 @@
     <filter>
         <whitelist>
             <directory suffix=".php">framework/</directory>
+            <exclude>
+                <directory suffix=".php">framework/data/</directory>
+            </exclude>
         </whitelist>
     </filter>
 	<logging>
