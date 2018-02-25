@@ -2,7 +2,7 @@
 	"name": "sylingd/yesf-framework",
 	"description": "Yesf framework",
 	"keywords": ["framework"],
-	"license": "AL",
+	"license": "Apache-2.0",
 	"type": "project",
 	"require": {
 		"php": ">=7.0.0",
