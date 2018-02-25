@@ -12,7 +12,8 @@
 
 namespace yesf;
 
-use \yesf\library\Loader;
+use \Composer\Autoload\ClassLoader;
+
 use \yesf\library\Swoole;
 use \yesf\library\Dispatcher;
 use \yesf\library\http\Response;
@@ -66,7 +67,7 @@ class Yesf {
 		$config->replace('application.dir', APP_PATH);
 		$this->config = $config;
 		self::$_app_namespace = $config->get('application.namespace');
-		Loader::addPsr4($config->get('application.namespace') . '\\model\\', APP_PATH . 'models');
+		ClassLoader::addPsr4($config->get('application.namespace') . '\\model\\', APP_PATH . 'models');
 		Dispatcher::setDefaultModule($config->get('application.module'));
 		Response::$_tpl_auto_config = ($config->get('application.view.auto') == 1) ? TRUE : FALSE;
 		Response::$_tpl_extension = ($config->has('application.view.extension') ? $config->get('application.view.extension') : 'phtml');
@@ -105,11 +106,6 @@ class Yesf {
 	 * 以下是各个过程的事件
 	 */
 	protected function init() {
-		//注册自动加载
-		if (!class_exists('yesf\\library\\Loader', FALSE)) {
-			require(YESF_ROOT . 'library/Loader.php');
-		}
-		Loader::register();
 	}
 	public function bootstrap() {
 		$bootstrapClass = $this->getConfig('application.bootstrap');
