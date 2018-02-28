@@ -6,7 +6,7 @@
  * @package pkgist
  * @category Library
  * @link https://www.sylingd.com/
- * @copyright Copyright (c) 2018 ShuangYa
+ * @copyright Copyright (c) 2017-2018 ShuangYa
  */
 
 namespace yesf\library\database;

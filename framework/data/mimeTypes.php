@@ -4,11 +4,11 @@
  * mimeTypes
  * 
  * @author ShuangYa
- * @package SYFramework
+ * @package Yesf
  * @category Data
  * @link http://www.sylingd.com/
- * @copyright Copyright (c) 2015 ShuangYa
- * @license http://lab.sylingd.com/go.php?name=framework&type=license
+ * @copyright Copyright (c) 2017-2018 ShuangYa
+ * @license https://yesf.sylibs.com/license
  */
 
 return [
