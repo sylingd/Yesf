@@ -25,8 +25,12 @@ class Server {
 	public static function eventStart($serv) {
 		swoole_set_process_name(Yesf::app()->getConfig('application.name') . ' master');
 		$pidPath = Yesf::app()->getConfig('swoole.pid')  . '/';
-		file_put_contents($pidPath . Yesf::app()->getConfig('application.name') . '_master.pid', $serv->master_pid);
-		file_put_contents($pidPath . Yesf::app()->getConfig('application.name') . '_manager.pid', $serv->manager_pid);
+		try {
+			file_put_contents($pidPath . Yesf::app()->getConfig('application.name') . '_master.pid', $serv->master_pid);
+			file_put_contents($pidPath . Yesf::app()->getConfig('application.name') . '_manager.pid', $serv->manager_pid);
+		} catch (\Exception $e) {
+			//忽略写入错误
+		}
 	}
 	/**
 	 * 普通事件：启动Manager进程
@@ -49,6 +53,8 @@ class Server {
 		} else {
 			swoole_set_process_name(Yesf::app()->getConfig('application.name') . ' worker ' . $worker_id);
 		}
+		//标记一下
+		Swoole::$isTaskWorker = $serv->taskworker;
 		//回调
 		Plugin::trigger('workerStart', [$serv->taskworker, $worker_id]);
 	}

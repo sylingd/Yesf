@@ -16,6 +16,8 @@ use \yesf\Constant;
 use \yesf\library\event\Server;
 
 class Swoole {
+	//当前是否为task进程，在workerStart后才有效
+	public static $isTaskWorker = FALSE;
 	//Swoole实例类
 	protected static $server = NULL;
 	/**
