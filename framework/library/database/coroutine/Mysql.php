@@ -94,7 +94,6 @@ SQL_TRY_AGAIN:
 			return $this->query($sql, $data, FALSE);
 		} else {
 			throw new DBException($this->connection->error, $this->connection->errno);
-			return FALSE;
 		}
 	}
 	/**
@@ -109,7 +108,32 @@ SQL_TRY_AGAIN:
 			$sql .= ' LIMIT 0,1';
 		}
 		$r = $this->query($sql, $data);
-		return $r === FALSE ? FALSE : current($r);
+		return count($r) > 0 ? current($r) : NULL;
+	}
+	/**
+	 * 执行查询并返回一条结果中的一列
+	 * 可以只传入前两个参数，而不传入$column，此时$data将会当做$column处理
+	 * 
+	 * @access public
+	 * @param string $sql SQL语句
+	 * @param array $data 参数预绑定
+	 * @param string $column 列名
+	 * @return array
+	 */
+	public function getColumn(string $sql, $data = NULL, $column = NULL) {
+		if ($column === NULL) {
+			if ($data === NULL) {
+				throw new DBException('$column can not be empty');
+			} else {
+				$column = $data;
+			}
+		}
+		$result = $this->get($sql, $data);
+		if ($result === NULL || !isset($result[$column])) {
+			throw new DBException("Column $column not exists");
+		} else {
+			return $result[$column];
+		}
 	}
 	/**
 	 * 获取最后一个插入的ID
