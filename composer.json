@@ -6,8 +6,8 @@
 	"type": "library",
 	"require": {
 		"php": ">=7.0.0",
-		"ext-mbstring": "*",
-		"ext-swoole": "*"
+		"ext-swoole": "*",
+		"ext-mbstring": "*"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "~4.6",

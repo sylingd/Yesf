@@ -7,4 +7,4 @@ define('YESF_UNIT', 1);
 define('YESF_TEST', __DIR__ . '/');
 define('YESF_TEST_DATA', __DIR__ . '/TestData/');
 require(PROJECT_PATH . '/vendor/autoload.php');
-$app  = new Yesf(APP_PATH . "/config.ini");
+$app  = new Yesf(__DIR__ . "/Config.ini");
