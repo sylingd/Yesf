@@ -2,7 +2,7 @@
 use \PHPUnit\Framework\TestCase;
 use \yesf\library\Router;
 
-class RouterTest extends PHPUnit_Framework_TestCase {
+class RouterTest extends TestCase {
 	public function testMap() {
 		$uri = 'ap/foo';
 		$result = [[], ['controller' => 'ap', 'action' => 'foo']];

@@ -15,6 +15,7 @@ use \yesf\Yesf;
 use \yesf\Constant;
 use \yesf\library\Swoole;
 use \yesf\library\exception\Exception;
+use \yesf\library\database\builder\QueryFactory;
 
 class Database {
 	private static $db = [];
@@ -66,5 +67,21 @@ class Database {
 		if (isset(self::$db[$type])) {
 			unset(self::$db[$type]);
 		}
+	}
+	/**
+	 * 获取Builder实例类
+	 * @access public
+	 * @param string $type
+	 * @return object(QueryFactory)
+	 */
+	public static function getBuilder($type = NULL) {
+		static $builders = [];
+		if ($type === NULL) {
+			$type = Yesf::app()->getConfig('database.type');
+		}
+		if (!isset($builders[$type])) {
+			$builders[$type] = new QueryFactory($type);
+		}
+		return $builders[$type];
 	}
 }

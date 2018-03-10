@@ -2,7 +2,7 @@
 use \PHPUnit\Framework\TestCase;
 use \yesf\library\Config;
 
-class ConfigTest extends PHPUnit_Framework_TestCase {
+class ConfigTest extends TestCase {
 	const AppName = 'MyApplication';
 	const YafDir = '/web/yaconf';
 	public function testAll() {

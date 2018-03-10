@@ -2,7 +2,7 @@
 use \PHPUnit\Framework\TestCase;
 use \yesf\library\Plugin;
 
-class PluginTest extends PHPUnit_Framework_TestCase {
+class PluginTest extends TestCase {
 	public static $isTrigger = 0;
 	public static function callback1($data) {
 		self::$isTrigger = 1;

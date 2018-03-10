@@ -19,7 +19,7 @@ use \yesf\library\database\DababaseAbstract;
 use \yesf\library\database\DababaseInterface;
 use \Swoole\Coroutine as co;
 
-class Database extends DababaseAbstract implements DababaseInterface {
+class Mysql extends DababaseAbstract implements DababaseInterface {
 	/**
 	 * 断开当前连接
 	 * 由于Swoole没有直接提供close，因此简单的通过置空，使其自动释放
