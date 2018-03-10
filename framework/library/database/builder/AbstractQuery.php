@@ -287,7 +287,7 @@ abstract class AbstractQuery
         }
 
         $cond = $this->quoter->quoteNamesIn($cond);
-		$this->bind_values = array_merge($this->bind_values, $bind);
+        $cond = $this->rebuildCondAndBindValues($cond, $bind);
 
         $clause =& $this->$clause;
         if ($clause) {
@@ -350,6 +350,44 @@ abstract class AbstractQuery
 
     /**
      *
+     * Rebuilds a condition string, replacing sequential placeholders with
+     * named placeholders, and binding the sequential values to the named
+     * placeholders.
+     *
+     * @param string $cond The condition with sequential placeholders.
+     *
+     * @param array $bind_values The values to bind to the sequential
+     * placeholders under their named versions.
+     *
+     * @return string The rebuilt condition string.
+     *
+     */
+    protected function rebuildCondAndBindValues($cond, array $bind_values)
+    {
+        $selects = [];
+
+        foreach ($bind_values as $key => $val) {
+            if ($val instanceof SelectInterface) {
+                $selects[":{$key}"] = $val;
+            } else {
+                $this->bindValue($key, $val);
+            }
+        }
+
+        foreach ($selects as $key => $select) {
+            $selects[$key] = $select->getStatement();
+            $this->bind_values = array_merge(
+                $this->bind_values,
+                $select->getBindValues()
+            );
+        }
+
+        $cond = strtr($cond, $selects);
+        return $cond;
+    }
+
+    /**
+     *
      * Adds a column order to the query.
      *
      * @param array $spec The columns and direction to order by.
@@ -363,5 +401,25 @@ abstract class AbstractQuery
             $this->order_by[] = $this->quoter->quoteNamesIn($col);
         }
         return $this;
+    }
+
+    /**
+     * Get sql and bind values
+     * 
+     * @access public
+     * @param boolean $isNumber if is true, will replace ":key" placeholder with "?"
+     * @return array
+     */
+    public function getStatementAndValues($isNumber = FALSE) {
+        $statement = $this->getStatement();
+        $bind_values = $this->getBindValues();
+        if ($isNumber) {
+            $values = [];
+            $statement = preg_replace_callback("/:(\w+)/", function($key) use (&$values, &$bind_values) {
+                $values[] = $bind_values[$key[1]];
+                return '?';
+            }, $statement);
+        }
+        return [$statement, isset($values) ? $values : $bind_values];
     }
 }

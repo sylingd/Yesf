@@ -14,6 +14,7 @@ namespace yesf\library;
 
 use \yesf\library\exception\Exception;
 use \yesf\library\database\Database;
+use yesf\library\exception\DBException;
 
 abstract class ModelAbstract {
 	protected $table_name = '';
@@ -51,7 +52,7 @@ abstract class ModelAbstract {
 		return $this->builder()->newInsert()->from($this->table_name);
 	}
 	public function update() {
-		return $this->builder()->newUpdate()->from($this->table_name);
+		return $this->builder()->newUpdate()->table($this->table_name);
 	}
 	public function delete() {
 		return $this->builder()->newDelete()->from($this->table_name);
@@ -73,7 +74,8 @@ abstract class ModelAbstract {
 	 * @return array
 	 */
 	public function execBuilder($builder) {
-		return $this->exec($query->getStatement(), $query->getBindValues());
+		list($st, $vals) = $query->getStatementAndValues(TRUE);
+		return $this->exec($st, $vals);
 	}
 	/**
 	 * 查询一条数据
@@ -88,8 +90,57 @@ abstract class ModelAbstract {
 			$key = key($filter);
 			$value = current($filter);
 		}
-		$sql = $this->select()->where($key . ' = ?', [$value])->limit(1);
-		$result = $this->execBuilder($sql);
+		$query = $this->select()->where($key . ' = :' . $key, [$key => $value])->limit(1);
+		$result = $this->execBuilder($query);
 		return $result === FALSE ? FALSE : current($result);
+	}
+	/**
+	 * 查询多条数据
+	 * @access public
+	 * @param array $filter
+	 * @param int $num
+	 * @param int $offset
+	 * @return array
+	 */
+	public function list($filter, $num = 30, $offset = 0) {
+		$query = $this->select();
+		foreach ($filter as $k => $v) {
+			$query->where($k . ' = :' . $k, [$k => $v]);
+		}
+		$query->limit($num)->offset($offset);
+		return $this->execBuilder($query);
+	}
+	/**
+	 * 修改一条或多条数据
+	 * @access public
+	 * @param array $set
+	 * @param array $filter
+	 */
+	public function set($set, $filter) {
+		$query = $this->update();
+		$query->cols($set);
+		foreach ($filter as $k => $v) {
+			$query->where($k . ' = :' . $k, [$k => $v]);
+		}
+		return $this->execBuilder($query);
+	}
+	/**
+	 * 删除数据
+	 * 注意：$filter不能为空，如果要清除所有数据，请设置$filter为TRUE
+	 * 
+	 * @access public
+	 * @param array $filter
+	 */
+	public function del($filter) {
+		$query = $this->delete();
+		if ($filter !== TRUE) {
+			if (!is_array($filter) || count($filter) === 0) {
+				throw new DBException("Filter can not be empty");
+			}
+			foreach ($filter as $k => $v) {
+				$query->where($k . ' = :' . $k, [$k => $v]);
+			}
+		}
+		return $this->execBuilder($query);
 	}
 }

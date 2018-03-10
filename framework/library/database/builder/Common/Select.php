@@ -527,7 +527,7 @@ CHECK_COLS_IF_EMPTY:
         }
 
         $cond = $this->quoter->quoteNamesIn($cond);
-		$this->bind_values = array_merge($this->bind_values, $bind);
+        $cond = $this->rebuildCondAndBindValues($cond, $bind);
 
         if (strtoupper(substr(ltrim($cond), 0, 3)) == 'ON ') {
             return $cond;
