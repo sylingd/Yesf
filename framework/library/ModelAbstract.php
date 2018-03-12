@@ -49,7 +49,7 @@ abstract class ModelAbstract {
 		return $this->builder()->newSelect()->from($this->table_name);
 	}
 	public function insert() {
-		return $this->builder()->newInsert()->from($this->table_name);
+		return $this->builder()->newInsert()->into($this->table_name);
 	}
 	public function update() {
 		return $this->builder()->newUpdate()->table($this->table_name);
@@ -142,5 +142,23 @@ abstract class ModelAbstract {
 			}
 		}
 		return $this->execBuilder($query);
+	}
+	/**
+	 * 添加数据
+	 * 如果指定了$primary_key，则会返回最后一次生成的ID
+	 * 否则返回NULL
+	 * 
+	 * @access public
+	 * @param array $data
+	 * @return int/null
+	 */
+	public function add(array $data) {
+		$query = $this->insert()->cols($data);
+		$this->execBuilder($query);
+		if (!empty($this->primary_key)) {
+			return intval(Database::get()->getLastId());
+		} else {
+			return NULL;
+		}
 	}
 }
