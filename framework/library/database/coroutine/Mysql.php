@@ -56,12 +56,16 @@ class Mysql extends DatabaseAbstract implements DatabaseInterface {
 	 * @return array
 	 */
 	public function query(string $sql, $data = NULL, $tryAgain = TRUE) {
-		if (is_array($data) && count($data) >0) {
+		if (is_array($data) && count($data) > 0) {
 			$st = $this->connection->prepare($sql);
 			if ($st === FALSE) {
 				goto SQL_TRY_AGAIN;
 			}
-			$r = $st->execute($data);
+			if (is_object($st)) {
+				$r = $st->execute($data);
+			} else {
+				$r = $this->connection->execute($data);
+			}
 			if ($r === FALSE) {
 				goto SQL_TRY_AGAIN;
 			}

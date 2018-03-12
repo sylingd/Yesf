@@ -92,7 +92,7 @@ abstract class ModelAbstract {
 		}
 		$query = $this->select()->where($key . ' = :' . $key, [$key => $value])->limit(1);
 		$result = $this->execBuilder($query);
-		return $result === FALSE ? FALSE : current($result);
+		return count($result) > 0 ? current($result) : NULL;
 	}
 	/**
 	 * 查询多条数据
