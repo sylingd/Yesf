@@ -12,7 +12,7 @@
 
 namespace yesf\library\database;
 
-interface DababaseInterface {
+interface DatabaseInterface {
 	/**
 	 * 实例化
 	 * @access public
@@ -30,11 +30,6 @@ interface DababaseInterface {
 	 * @param array $config
 	 */
 	public function set(array $config);
-	/**
-	 * 根据配置连接到数据库
-	 * @access public
-	 */
-	public function connect();
 	/**
 	 * 执行查询并返回结果
 	 * @access public

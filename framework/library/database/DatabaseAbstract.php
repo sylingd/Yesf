@@ -12,10 +12,10 @@
 
 namespace yesf\library\database;
 
-abstract class DababaseAbstract {
+abstract class DatabaseAbstract {
 	protected $config = NULL;
 	protected $connection = NULL;
-	public function __construct($config) {
+	public function __construct(array $config) {
 		$this->set($config);
 	}
 	/**
@@ -30,7 +30,7 @@ abstract class DababaseAbstract {
 	 * @access public
 	 * @param array $config
 	 */
-	public function set($config) {
+	public function set(array $config) {
 		$this->close();
 		$this->config = $config;
 		$this->connect();
@@ -48,7 +48,7 @@ abstract class DababaseAbstract {
 	 * @param boolean $tryAgain 发生“MySQL has gone away”错误时是否重试
 	 * @return array
 	 */
-	abstract public function query($sql, $data = NULL, $tryAgain = TRUE);
+	abstract public function query(string $sql, $data = NULL, $tryAgain = TRUE);
 	/**
 	 * 执行查询并返回一条结果
 	 * @access public
@@ -56,7 +56,7 @@ abstract class DababaseAbstract {
 	 * @param array $data 参数预绑定
 	 * @return array
 	 */
-	public function get($sql, $data = NULL) {
+	public function get(string $sql, $data = NULL) {
 		$r = $this->query($sql, $data);
 		return count($r) > 0 ? current($r) : NULL;
 	}

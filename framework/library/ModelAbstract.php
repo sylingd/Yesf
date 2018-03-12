@@ -74,7 +74,7 @@ abstract class ModelAbstract {
 	 * @return array
 	 */
 	public function execBuilder($builder) {
-		list($st, $vals) = $query->getStatementAndValues(TRUE);
+		list($st, $vals) = $builder->getStatementAndValues(TRUE);
 		return $this->exec($st, $vals);
 	}
 	/**
@@ -102,7 +102,7 @@ abstract class ModelAbstract {
 	 * @param int $offset
 	 * @return array
 	 */
-	public function list($filter, $num = 30, $offset = 0) {
+	public function list($filter = [], $num = 30, $offset = 0) {
 		$query = $this->select();
 		foreach ($filter as $k => $v) {
 			$query->where($k . ' = :' . $k, [$k => $v]);

@@ -15,11 +15,11 @@ namespace yesf\library\database\coroutine;
 
 use \yesf\Yesf;
 use \yesf\library\exception\DBException;
-use \yesf\library\database\DababaseAbstract;
-use \yesf\library\database\DababaseInterface;
+use \yesf\library\database\DatabaseAbstract;
+use \yesf\library\database\DatabaseInterface;
 use \Swoole\Coroutine as co;
 
-class Mysql extends DababaseAbstract implements DababaseInterface {
+class Mysql extends DatabaseAbstract implements DatabaseInterface {
 	/**
 	 * 断开当前连接
 	 * 由于Swoole没有直接提供close，因此简单的通过置空，使其自动释放
@@ -55,7 +55,7 @@ class Mysql extends DababaseAbstract implements DababaseInterface {
 	 * @param boolean $tryAgain 发生“MySQL has gone away”错误时是否重试
 	 * @return array
 	 */
-	public function query($sql, $data = NULL, $tryAgain = TRUE) {
+	public function query(string $sql, $data = NULL, $tryAgain = TRUE) {
 		if (is_array($data) && count($data) >0) {
 			$st = $this->connection->prepare($sql);
 			if ($st === FALSE) {
@@ -88,7 +88,7 @@ SQL_TRY_AGAIN:
 	 * @param array $data 参数预绑定
 	 * @return array
 	 */
-	public function get($sql, $data = NULL) {
+	public function get(string $sql, $data = NULL) {
 		if (!preg_match('/limit ([0-9,]+)$/i', $sql)) {
 			$sql .= ' LIMIT 0,1';
 		}

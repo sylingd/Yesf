@@ -13,6 +13,7 @@
 namespace yesf\library\event;
 use \yesf\Yesf;
 use \yesf\Constant;
+use \yesf\library\Swoole;
 use \yesf\library\Plugin;
 
 class Server {
