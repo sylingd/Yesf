@@ -17,8 +17,8 @@ use \yesf\library\database\Database;
 use yesf\library\exception\DBException;
 
 abstract class ModelAbstract {
-	protected $table_name = '';
-	protected $primary_key = 'id';
+	protected static $_table_name = '';
+	protected static $_primary_key = 'id';
 	private static $_instance = NULL;
 	/**
 	 * 单例化
@@ -33,7 +33,7 @@ abstract class ModelAbstract {
 	}
 	public function __construct() {
 		//检查table_name是否为空
-		if (empty($this->table_name)) {
+		if (empty(static::$_table_name)) {
 			throw new Exception('Table name can not be empty');
 		}
 	}
@@ -42,20 +42,20 @@ abstract class ModelAbstract {
 	 * @access public
 	 * @return object
 	 */
-	public function builder() {
+	public static function builder() {
 		return Database::getBuilder();
 	}
-	public function select() {
-		return $this->builder()->newSelect()->from($this->table_name);
+	public static function select() {
+		return static::builder()->newSelect()->from($this->table_name);
 	}
-	public function insert() {
-		return $this->builder()->newInsert()->into($this->table_name);
+	public static function insert() {
+		return static::builder()->newInsert()->into($this->table_name);
 	}
-	public function update() {
-		return $this->builder()->newUpdate()->table($this->table_name);
+	public static function update() {
+		return static::builder()->newUpdate()->table($this->table_name);
 	}
-	public function delete() {
-		return $this->builder()->newDelete()->from($this->table_name);
+	public static function delete() {
+		return static::builder()->newDelete()->from($this->table_name);
 	}
 	/**
 	 * 执行一条SQL语句
@@ -64,7 +64,7 @@ abstract class ModelAbstract {
 	 * @param array $data
 	 * @return array
 	 */
-	public function exec($sql, $data = []) {
+	public static function execute($sql, $data = []) {
 		return Database::get()->query($sql, $data);
 	}
 	/**
@@ -73,25 +73,25 @@ abstract class ModelAbstract {
 	 * @param object $builder
 	 * @return array
 	 */
-	public function execBuilder($builder) {
+	public static function executeBuilder($builder) {
 		list($st, $vals) = $builder->getStatementAndValues(TRUE);
-		return $this->exec($st, $vals);
+		return static::execute($st, $vals);
 	}
 	/**
 	 * 查询一条数据
 	 * @access public
 	 * @param mixed $filter 当$filter为array时，则为多条条件，否则为主键
 	 */
-	public function get($filter) {
+	public static function get($filter) {
 		if (!is_array($filter)) {
-			$key = $this->primary_key;
+			$key = static::$_primary_key;
 			$value = $filter;
 		} else {
 			$key = key($filter);
 			$value = current($filter);
 		}
-		$query = $this->select()->where($key . ' = :' . $key, [$key => $value])->limit(1);
-		$result = $this->execBuilder($query);
+		$query = static::select()->where($key . ' = :' . $key, [$key => $value])->limit(1);
+		$result = static::executeBuilder($query);
 		return count($result) > 0 ? current($result) : NULL;
 	}
 	/**
@@ -102,13 +102,13 @@ abstract class ModelAbstract {
 	 * @param int $offset
 	 * @return array
 	 */
-	public function list($filter = [], $num = 30, $offset = 0) {
-		$query = $this->select();
+	public static function list($filter = [], $num = 30, $offset = 0) {
+		$query = static::select();
 		foreach ($filter as $k => $v) {
 			$query->where($k . ' = :' . $k, [$k => $v]);
 		}
 		$query->limit($num)->offset($offset);
-		return $this->execBuilder($query);
+		return static::executeBuilder($query);
 	}
 	/**
 	 * 修改一条或多条数据
@@ -116,32 +116,37 @@ abstract class ModelAbstract {
 	 * @param array $set
 	 * @param array $filter
 	 */
-	public function set($set, $filter) {
-		$query = $this->update();
+	public static function set($set, $filter) {
+		$query = static::update();
 		$query->cols($set);
 		foreach ($filter as $k => $v) {
 			$query->where($k . ' = :' . $k, [$k => $v]);
 		}
-		return $this->execBuilder($query);
+		return static::executeBuilder($query);
 	}
 	/**
 	 * 删除数据
 	 * 注意：$filter不能为空，如果要清除所有数据，请设置$filter为TRUE
 	 * 
 	 * @access public
-	 * @param array $filter
+	 * @param array|string|int|boolean $filter
 	 */
-	public function del($filter) {
-		$query = $this->delete();
+	public static function del($filter) {
+		$query = static::delete();
 		if ($filter !== TRUE) {
-			if (!is_array($filter) || count($filter) === 0) {
+			if (is_string($filter) || is_numeric($filter)) {
+				$query->where(static::$_primary_key . ' = :' . static::$_primary_key, [
+					static::$_primary_key => $filter
+				]);
+			} elseif (!is_array($filter) || count($filter) === 0) {
 				throw new DBException("Filter can not be empty");
-			}
-			foreach ($filter as $k => $v) {
-				$query->where($k . ' = :' . $k, [$k => $v]);
+			} else {
+				foreach ($filter as $k => $v) {
+					$query->where($k . ' = :' . $k, [$k => $v]);
+				}
 			}
 		}
-		return $this->execBuilder($query);
+		return static::executeBuilder($query);
 	}
 	/**
 	 * 添加数据
@@ -152,10 +157,10 @@ abstract class ModelAbstract {
 	 * @param array $data
 	 * @return int/null
 	 */
-	public function add(array $data) {
-		$query = $this->insert()->cols($data);
-		$this->execBuilder($query);
-		if (!empty($this->primary_key)) {
+	public static function add(array $data) {
+		$query = static::insert()->cols($data);
+		static::executeBuilder($query);
+		if (!empty(static::$_primary_key)) {
 			return intval(Database::get()->getLastId());
 		} else {
 			return NULL;
