@@ -112,6 +112,8 @@ abstract class ModelAbstract {
 	}
 	/**
 	 * 修改一条或多条数据
+	 * 注意：$filter不能为空，如果要更新所有数据，请设置$filter为TRUE
+	 * 
 	 * @access public
 	 * @param array $set
 	 * @param array $filter
@@ -119,8 +121,18 @@ abstract class ModelAbstract {
 	public static function set($set, $filter) {
 		$query = static::update();
 		$query->cols($set);
-		foreach ($filter as $k => $v) {
-			$query->where($k . ' = :' . $k, [$k => $v]);
+		if ($filter !== TRUE) {
+			if (is_string($filter) || is_numeric($filter)) {
+				$query->where(static::$_primary_key . ' = :' . static::$_primary_key, [
+					static::$_primary_key => $filter
+				]);
+			} elseif (!is_array($filter) || count($filter) === 0) {
+				throw new DBException("Filter can not be empty");
+			} else {
+				foreach ($filter as $k => $v) {
+					$query->where($k . ' = :' . $k, [$k => $v]);
+				}
+			}
 		}
 		return static::executeBuilder($query);
 	}

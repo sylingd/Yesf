@@ -133,7 +133,7 @@ class Server {
 	 * 模拟call_user_func
 	 */
 	protected static function callback($call, $event, $fd, $from_id, $data = NULL) {
-		if (is_callable('\Swoole\Coroutine::call_user_func')) {
+		if (is_callable('\\Swoole\\Coroutine::call_user_func')) {
 			return \Swoole\Coroutine::call_user_func($call, $event, $fd, $from_id, $data);
 		}
 		if (is_array($call)) {
