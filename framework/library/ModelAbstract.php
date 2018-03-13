@@ -14,7 +14,7 @@ namespace yesf\library;
 
 use \yesf\library\exception\Exception;
 use \yesf\library\database\Database;
-use yesf\library\exception\DBException;
+use \yesf\library\exception\DBException;
 
 abstract class ModelAbstract {
 	protected static $_table_name = '';
@@ -81,8 +81,9 @@ abstract class ModelAbstract {
 	 * 查询一条数据
 	 * @access public
 	 * @param mixed $filter 当$filter为array时，则为多条条件，否则为主键
+	 * @param array $cols 需要查询出的列
 	 */
-	public static function get($filter) {
+	public static function get($filter, $cols = NULL) {
 		if (!is_array($filter)) {
 			$key = static::$_primary_key;
 			$value = $filter;
@@ -90,7 +91,11 @@ abstract class ModelAbstract {
 			$key = key($filter);
 			$value = current($filter);
 		}
-		$query = static::select()->where($key . ' = :' . $key, [$key => $value])->limit(1);
+		$query = static::select();
+		if (is_array($cols)) {
+			$query->cols($cols);
+		}
+		$query->where($key . ' = :' . $key, [$key => $value])->limit(1);
 		$result = static::executeBuilder($query);
 		return count($result) > 0 ? current($result) : NULL;
 	}
@@ -100,10 +105,14 @@ abstract class ModelAbstract {
 	 * @param array $filter
 	 * @param int $num
 	 * @param int $offset
+	 * @param array $cols 需要查询出的列
 	 * @return array
 	 */
-	public static function list($filter = [], $num = 30, $offset = 0) {
+	public static function list($filter = [], $num = 30, $offset = 0, $cols = NULL) {
 		$query = static::select();
+		if (is_array($cols)) {
+			$query->cols($cols);
+		}
 		foreach ($filter as $k => $v) {
 			$query->where($k . ' = :' . $k, [$k => $v]);
 		}
