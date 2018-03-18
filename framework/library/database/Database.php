@@ -19,6 +19,7 @@ use \yesf\library\database\builder\QueryFactory;
 
 class Database {
 	private static $db = [];
+	private static $custom_driver = [];
 	/**
 	 * 通过读取配置，获取数据库操作类
 	 * 也可以自行实例化相应的操作类
@@ -39,11 +40,21 @@ class Database {
 			return self::$db[$type];
 		}
 		$config = Yesf::app()->getConfig();
-		$driver = 'yesf\\library\\database\\' .
-			($type === Constant::TYPE_CORO ? 'coroutine' : 'sync') .
-			'\\' . ucfirst($config->get('database.type'));
-		if (!class_exists($driver)) {
-			throw new Exception('Driver ' . ($type === Constant::TYPE_CORO ? 'coroutine' : 'sync') . '/' . ucfirst($config->get('database.type')) . ' not found');
+		$driverType = $config->get('database.type');
+		if (isset(self::$custom_driver[$driverType])) {
+			//用户自定义driver
+			if ($type === Constant::TYPE_CORO && self::$custom_driver[$driverType][1] !== NULL) {
+				$driver = self::$custom_driver[$driverType][1];
+			} else {
+				$driver = self::$custom_driver[$driverType][0];
+			}
+		} else {
+			$driver = 'yesf\\library\\database\\' .
+				($type === Constant::TYPE_CORO ? 'coroutine' : 'sync') .
+				'\\' . ucfirst($driverType);
+			if (!class_exists($driver)) {
+				throw new Exception('Driver ' . ($type === Constant::TYPE_CORO ? 'coroutine' : 'sync') . '/' . ucfirst($config->get('database.type')) . ' not found');
+			}
 		}
 		$config = [
 			'host' => $config->get('database.host'),
@@ -83,5 +94,21 @@ class Database {
 			$builders[$type] = new QueryFactory($type);
 		}
 		return $builders[$type];
+	}
+	/**
+	 * 注册自定义driver
+	 * @access public
+	 * @param string $type
+	 * @param string $sync_class 同步类名
+	 * @param string $coro_class 协程类名
+	 */
+	public static function registerDriver(string $type, $sync_class, $coro_class = NULL) {
+		if (!class_exists($sync_class)) {
+			throw new Exception('Sync driver ' . $type . ' not found');
+		}
+		if ($coro_class !== NULL && !class_exists($coro_class)) {
+			throw new Exception('Coroutine driver ' . $type . ' not found');
+		}
+		self::$custom_driver[$type] = [$sync_class, $coro_class];
 	}
 }
