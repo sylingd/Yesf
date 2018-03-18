@@ -32,9 +32,9 @@ class Database {
 	 * @param int $type 类型
 	 * @return object(DatabaseInterface)
 	 */
-	public static function get(int $type = Constant::TYPE_AUTO) {
-		if ($type === Constant::TYPE_AUTO) {
-			$type = Swoole::$isTaskWorker ? Constant::TYPE_SYNC : Constant::TYPE_CORO;
+	public static function get(int $type = Constant::CONNECT_AUTO) {
+		if ($type === Constant::CONNECT_AUTO) {
+			$type = Swoole::$isTaskWorker ? Constant::CONNECT_SYNC : Constant::CONNECT_CORO;
 		}
 		if (isset(self::$db[$type])) {
 			return self::$db[$type];
@@ -43,17 +43,17 @@ class Database {
 		$driverType = $config->get('database.type');
 		if (isset(self::$custom_driver[$driverType])) {
 			//用户自定义driver
-			if ($type === Constant::TYPE_CORO && self::$custom_driver[$driverType][1] !== NULL) {
+			if ($type === Constant::CONNECT_CORO && self::$custom_driver[$driverType][1] !== NULL) {
 				$driver = self::$custom_driver[$driverType][1];
 			} else {
 				$driver = self::$custom_driver[$driverType][0];
 			}
 		} else {
 			$driver = 'yesf\\library\\database\\' .
-				($type === Constant::TYPE_CORO ? 'coroutine' : 'sync') .
+				($type === Constant::CONNECT_CORO ? 'coroutine' : 'sync') .
 				'\\' . ucfirst($driverType);
 			if (!class_exists($driver)) {
-				throw new Exception('Driver ' . ($type === Constant::TYPE_CORO ? 'coroutine' : 'sync') . '/' . ucfirst($config->get('database.type')) . ' not found');
+				throw new Exception('Driver ' . ($type === Constant::CONNECT_CORO ? 'coroutine' : 'sync') . '/' . ucfirst($config->get('database.type')) . ' not found');
 			}
 		}
 		$config = [
@@ -71,9 +71,9 @@ class Database {
 	 * @access public
 	 * @param int $type 类型
 	 */
-	public static function clear(int $type = Constant::TYPE_AUTO) {
-		if ($type === Constant::TYPE_AUTO) {
-			$type = Swoole::$isTaskWorker ? Constant::TYPE_SYNC : Constant::TYPE_CORO;
+	public static function clear(int $type = Constant::CONNECT_AUTO) {
+		if ($type === Constant::CONNECT_AUTO) {
+			$type = Swoole::$isTaskWorker ? Constant::CONNECT_SYNC : Constant::CONNECT_CORO;
 		}
 		if (isset(self::$db[$type])) {
 			unset(self::$db[$type]);
