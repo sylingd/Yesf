@@ -94,7 +94,11 @@ abstract class ModelAbstract {
 		} else {
 			foreach ($filter as $k => $v) {
 				if (is_int($k)) {
-					$query->where($v);
+					if (is_array($v)) {
+						$query->where($v[0], $v[1]);
+					} else {
+						$query->where($v);
+					}
 				} else {
 					$query->where($k . ' = :' . $k, [$k => $v]);
 				}
@@ -120,7 +124,11 @@ abstract class ModelAbstract {
 		}
 		foreach ($filter as $k => $v) {
 			if (is_int($k)) {
-				$query->where($v);
+				if (is_array($v)) {
+					$query->where($v[0], $v[1]);
+				} else {
+					$query->where($v);
+				}
 			} else {
 				$query->where($k . ' = :' . $k, [$k => $v]);
 			}
@@ -149,7 +157,11 @@ abstract class ModelAbstract {
 			} else {
 				foreach ($filter as $k => $v) {
 					if (is_int($k)) {
-						$query->where($v);
+						if (is_array($v)) {
+							$query->where($v[0], $v[1]);
+						} else {
+							$query->where($v);
+						}
 					} else {
 						$query->where($k . ' = :' . $k, [$k => $v]);
 					}
@@ -177,7 +189,11 @@ abstract class ModelAbstract {
 			} else {
 				foreach ($filter as $k => $v) {
 					if (is_int($k)) {
-						$query->where($v);
+						if (is_array($v)) {
+							$query->where($v[0], $v[1]);
+						} else {
+							$query->where($v);
+						}
 					} else {
 						$query->where($k . ' = :' . $k, [$k => $v]);
 					}
