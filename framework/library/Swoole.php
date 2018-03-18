@@ -15,6 +15,7 @@ use \Swoole\Http\Server as SwServer;
 use \yesf\Yesf;
 use \yesf\Constant;
 use \yesf\library\event\Server;
+use \yesf\library\exception\StartException;
 
 class Swoole {
 	//当前是否为task进程，在workerStart后才有效
@@ -42,21 +43,21 @@ class Swoole {
 		}
 		if (Yesf::app()->getConfig('swoole.http2')) {
 			if (!isset($config['ssl_cert_file'])) {
-				throw new \yesf\library\exception\StartException('Certfile not found');
+				throw new StartException('Certfile not found');
 			}
 			$config['open_http2_protocol'] = TRUE;
 		}
 		self::$server->set($config);
 		//基本事件
-		self::$server->on('Start', ['\yesf\library\event\Server', 'eventStart']);
-		self::$server->on('ManagerStart', ['\yesf\library\event\Server', 'eventManagerStart']);
-		self::$server->on('WorkerStart', ['\yesf\library\event\Server', 'eventWorkerStart']);
-		self::$server->on('WorkerError', ['\yesf\library\event\Server', 'eventWorkerError']);
-		self::$server->on('Finish', ['\yesf\library\event\Server', 'eventFinish']);
-		self::$server->on('PipeMessage', ['\yesf\library\event\Server', 'eventPipeMessage']);
+		self::$server->on('Start', __NAMESPACE__ . '\\Server::eventStart');
+		self::$server->on('ManagerStart', __NAMESPACE__ . '\\Server::eventManagerStart');
+		self::$server->on('WorkerStart', __NAMESPACE__ . '\\Server::eventWorkerStart');
+		self::$server->on('WorkerError', __NAMESPACE__ . '\\Server::eventWorkerError');
+		self::$server->on('Finish', __NAMESPACE__ . '\\Server::eventFinish');
+		self::$server->on('PipeMessage', __NAMESPACE__ . '\\Server::eventPipeMessage');
 		//HTTP事件
-		self::$server->on('Request', ['\yesf\library\event\HttpServer', 'eventRequest']);
-		self::$server->on('Task', ['\yesf\library\event\Server', 'eventTask']);
+		self::$server->on('Request', __NAMESPACE__ . '\\Server::eventRequest');
+		self::$server->on('Task', __NAMESPACE__ . '\\Server::eventTask');
 	}
 	public static function start() {
 		self::$server->start();

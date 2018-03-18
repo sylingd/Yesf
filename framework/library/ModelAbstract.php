@@ -12,8 +12,8 @@
 
 namespace yesf\library;
 
-use \yesf\library\exception\Exception;
 use \yesf\library\database\Database;
+use \yesf\library\exception\Exception;
 use \yesf\library\exception\DBException;
 
 abstract class ModelAbstract {

@@ -11,11 +11,11 @@
  */
 
 namespace yesf;
-
 use \yesf\library\Swoole;
+use \yesf\library\Config;
 use \yesf\library\Dispatcher;
 use \yesf\library\http\Response;
-use yesf\library\exception\StartException;
+use \yesf\library\exception\StartException;
 
 if (!defined('YESF_ROOT')) {
 	define('YESF_ROOT', __DIR__ . '/');
@@ -46,7 +46,7 @@ class Yesf {
 	 */
 	public static function app() {
 		if (self::$_instance === NULL) {
-			throw new \yesf\library\exception\StartException('Yesf have not been construct yet');
+			throw new StartException('Yesf have not been construct yet');
 		}
 		return self::$_instance;
 	}
@@ -54,14 +54,14 @@ class Yesf {
 		$this->init();
 		//swoole检查
 		if (!extension_loaded('swoole') && !defined('YESF_UNIT')) {
-			throw new \yesf\library\exception\ExtensionNotFoundException('Extension "Swoole" is required', '10027');
+			throw new StartException('Extension "Swoole" is required');
 		}
 		self::$_instance = $this;
 		//配置
 		if ((is_string($config) && is_file($config)) || is_array($config)) {
-			$config = new \yesf\library\Config($config);
+			$config = new Config($config);
 		} else {
-			throw new \yesf\library\exception\StartException('Config can not be recognised');
+			throw new StartException('Config can not be recognised');
 		}
 		$config->replace('application.dir', APP_PATH);
 		$this->config = $config;
