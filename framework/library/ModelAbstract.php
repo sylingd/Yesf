@@ -46,16 +46,16 @@ abstract class ModelAbstract {
 		return Database::getBuilder();
 	}
 	public static function select() {
-		return static::builder()->newSelect()->from($this->table_name);
+		return static::builder()->newSelect()->from(static::$_table_name);
 	}
 	public static function insert() {
-		return static::builder()->newInsert()->into($this->table_name);
+		return static::builder()->newInsert()->into(static::$_table_name);
 	}
 	public static function update() {
-		return static::builder()->newUpdate()->table($this->table_name);
+		return static::builder()->newUpdate()->table(static::$_table_name);
 	}
 	public static function delete() {
-		return static::builder()->newDelete()->from($this->table_name);
+		return static::builder()->newDelete()->from(static::$_table_name);
 	}
 	/**
 	 * 执行一条SQL语句
