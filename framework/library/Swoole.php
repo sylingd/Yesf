@@ -208,4 +208,20 @@ class Swoole {
 	public static function getSwoole() {
 		return self::$server;
 	}
+	/**
+	 * 兼容性补丁
+	 * 用于兼容call_user_func和call_user_func_array
+	 * 在某些情况下可能导致协程无法恢复上下文
+	 * 导致请求卡住
+	 */
+	public static function call_user_func($func, ...$args) {
+		return self::call_user_func_array($func, $args);
+	}
+	public static function call_user_func_array($func, $args) {
+		if (is_callable('\Swoole\Coroutine::call_user_func_array')) {
+			return \Swoole\Coroutine::call_user_func_array($func, $args); // @codeCoverageIgnore
+		} else {
+			return $func(...$args);
+		}
+	}
 }

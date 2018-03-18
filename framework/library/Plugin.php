@@ -45,19 +45,12 @@ class Plugin {
 		$result = NULL;
 		if (isset(self::$plugins[$event])) {
 			foreach (self::$plugins[$event] as $callback) {
-				$result = self::callUserFuncArray($callback, $data);
+				$result = Swoole::call_user_func_array($callback, $data);
 				if ($result !== NULL) {
 					break;
 				}
 			}
 		}
 		return $result;
-	}
-	public static function callUserFuncArray($func, $data) {
-		if (is_callable('\Swoole\Coroutine::call_user_func_array')) {
-			return \Swoole\Coroutine::call_user_func_array($func, $data); // @codeCoverageIgnore
-		} else {
-			return call_user_func_array($func, $data);
-		}
 	}
 }
