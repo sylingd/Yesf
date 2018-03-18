@@ -84,18 +84,23 @@ abstract class ModelAbstract {
 	 * @param array $cols 需要查询出的列
 	 */
 	public static function get($filter, $cols = NULL) {
-		if (!is_array($filter)) {
-			$key = static::$_primary_key;
-			$value = $filter;
-		} else {
-			$key = key($filter);
-			$value = current($filter);
-		}
 		$query = static::select();
 		if (is_array($cols)) {
 			$query->cols($cols);
 		}
-		$query->where($key . ' = :' . $key, [$key => $value])->limit(1);
+		if (!is_array($filter)) {
+			$key = static::$_primary_key;
+			$query->where($key . ' = :' . $key, [$key => $filter]);
+		} else {
+			foreach ($filter as $k => $v) {
+				if (is_int($k)) {
+					$query->where($v);
+				} else {
+					$query->where($k . ' = :' . $k, [$k => $v]);
+				}
+			}
+		}
+		$query->limit(1);
 		$result = static::executeBuilder($query);
 		return count($result) > 0 ? current($result) : NULL;
 	}
@@ -114,7 +119,11 @@ abstract class ModelAbstract {
 			$query->cols($cols);
 		}
 		foreach ($filter as $k => $v) {
-			$query->where($k . ' = :' . $k, [$k => $v]);
+			if (is_int($k)) {
+				$query->where($v);
+			} else {
+				$query->where($k . ' = :' . $k, [$k => $v]);
+			}
 		}
 		$query->limit($num)->offset($offset);
 		return static::executeBuilder($query);
@@ -139,7 +148,11 @@ abstract class ModelAbstract {
 				throw new DBException("Filter can not be empty");
 			} else {
 				foreach ($filter as $k => $v) {
-					$query->where($k . ' = :' . $k, [$k => $v]);
+					if (is_int($k)) {
+						$query->where($v);
+					} else {
+						$query->where($k . ' = :' . $k, [$k => $v]);
+					}
 				}
 			}
 		}
@@ -163,7 +176,11 @@ abstract class ModelAbstract {
 				throw new DBException("Filter can not be empty");
 			} else {
 				foreach ($filter as $k => $v) {
-					$query->where($k . ' = :' . $k, [$k => $v]);
+					if (is_int($k)) {
+						$query->where($v);
+					} else {
+						$query->where($k . ' = :' . $k, [$k => $v]);
+					}
 				}
 			}
 		}
