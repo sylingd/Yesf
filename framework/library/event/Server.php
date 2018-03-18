@@ -18,13 +18,20 @@ use \yesf\library\Plugin;
 
 class Server {
 	public static $_listener = [];
+	private static function setProcessName($name) {
+		if (function_exists('cli_set_process_title')) {
+			cli_set_process_title($name);
+		} else {
+			swoole_set_process_name($name);
+		}
+	}
 	/**
 	 * 普通事件：启动Master进程
 	 * @access public
 	 * @param object $serv
 	 */
 	public static function eventStart($serv) {
-		swoole_set_process_name(Yesf::app()->getConfig('application.name') . ' master');
+		self::setProcessName(Yesf::app()->getConfig('application.name') . ' master');
 		$pidPath = Yesf::app()->getConfig('swoole.pid')  . '/';
 		try {
 			file_put_contents($pidPath . Yesf::app()->getConfig('application.name') . '_master.pid', $serv->master_pid);
@@ -39,7 +46,7 @@ class Server {
 	 * @param object $serv
 	 */
 	public static function eventManagerStart($serv) {
-		swoole_set_process_name(Yesf::app()->getConfig('application.name') . ' manager');
+		self::setProcessName(Yesf::app()->getConfig('application.name') . ' manager');
 	}
 	/**
 	 * 普通事件：启动一个进程
@@ -50,9 +57,9 @@ class Server {
 	public static function eventWorkerStart($serv, $worker_id) {
 		//根据类型，设置不同的进程名
 		if ($serv->taskworker) {
-			swoole_set_process_name(Yesf::app()->getConfig('application.name') . ' task ' . $worker_id);
+			self::setProcessName(Yesf::app()->getConfig('application.name') . ' task ' . $worker_id);
 		} else {
-			swoole_set_process_name(Yesf::app()->getConfig('application.name') . ' worker ' . $worker_id);
+			self::setProcessName(Yesf::app()->getConfig('application.name') . ' worker ' . $worker_id);
 		}
 		//标记一下
 		Swoole::$isTaskWorker = $serv->taskworker;

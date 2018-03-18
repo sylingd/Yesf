@@ -11,6 +11,7 @@
  */
 
 namespace yesf\library;
+use \Swoole\Http\Server as SwServer;
 use \yesf\Yesf;
 use \yesf\Constant;
 use \yesf\library\event\Server;
@@ -24,7 +25,7 @@ class Swoole {
 	 * 初始化
 	 */
 	public static function init() {
-		self::$server = new \swoole_http_server(Yesf::app()->getConfig('swoole.ip'), Yesf::app()->getConfig('swoole.port')); 
+		self::$server = new SwServer(Yesf::app()->getConfig('swoole.ip'), Yesf::app()->getConfig('swoole.port')); 
 		//基本配置
 		$config = Yesf::app()->getConfig('swoole.advanced');
 		if (is_object($config)) {
@@ -203,7 +204,7 @@ class Swoole {
 	}
 	/**
 	 * 获取Swoole示例，用于实现更多高级操作
-	 * @return swoole_server
+	 * @return \object(\Swoole\Server)
 	 */
 	public static function getSwoole() {
 		return self::$server;
