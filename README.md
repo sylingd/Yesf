@@ -1,6 +1,6 @@
 # Yesf
 
-[![GitHub release](https://img.shields.io/github/release/sylingd/Yesf.svg?style=flat-square)](https://github.com/sylingd/Yesf/releases) [![license](https://img.shields.io/github/license/sylingd/Yesf.svg?style=flat-square)](https://github.com/FirefoxBar/xStyle/blob/master/LICENSE) [![Packagist](https://img.shields.io/packagist/dt/sylingd/yesf-framework.svg?style=flat-square)](https://packagist.org/packages/sylingd/yesf-framework) [![GitHub stars](https://img.shields.io/github/stars/sylingd/Yesf.svg?style=flat-square&logo=github&label=Stars)](https://github.com/sylingd/Yesf) [![star](https://gitee.com/sy/Yesf/badge/star.svg?theme=white)](https://gitee.com/sy/Yesf/stargazers)
+[![GitHub release](https://img.shields.io/github/release/sylingd/Yesf.svg?style=flat-square)](https://github.com/sylingd/Yesf/releases) [![license](https://img.shields.io/github/license/sylingd/Yesf.svg?style=flat-square)](https://github.com/FirefoxBar/xStyle/blob/master/LICENSE) [![Packagist](https://img.shields.io/packagist/v/sylingd/yesf-framework.svg?style=flat-square)](https://packagist.org/packages/sylingd/yesf-framework) [![Packagist](https://img.shields.io/packagist/dt/sylingd/yesf-framework.svg?style=flat-square)](https://packagist.org/packages/sylingd/yesf-framework) [![GitHub stars](https://img.shields.io/github/stars/sylingd/Yesf.svg?style=flat-square&logo=github&label=Stars)](https://github.com/sylingd/Yesf) [![star](https://gitee.com/sy/Yesf/badge/star.svg?theme=white)](https://gitee.com/sy/Yesf/stargazers)
 
 Yesf是一个基于Swoole的PHP框架。提供了以下功能：
 
