@@ -138,13 +138,25 @@ abstract class ModelAbstract {
 	}
 	/**
 	 * 修改一条或多条数据
-	 * 注意：$filter不能为空，如果要更新所有数据，请设置$filter为TRUE
+	 * 当传入两个参数时，会认为第二个参数是$filter
+	 * 注意：$filter不能为空，如果要更新所有数据，必须传入$filter为TRUE
 	 * 
 	 * @access public
 	 * @param array $set
+	 * @param array $cols
 	 * @param array $filter
 	 */
-	public static function set($set, $filter) {
+	public static function set($set, $cols, $filter = NULL) {
+		if ($filter === NULL) {
+			$filter = &$cols;
+		} else {
+			//筛选$set列
+			foreach ($set as $k => $v) {
+				if (!in_array($k, $cols, TRUE)) {
+					unset($set[$k]);
+				}
+			}
+		}
 		$query = static::update();
 		$query->cols($set);
 		if ($filter !== TRUE) {
@@ -172,7 +184,7 @@ abstract class ModelAbstract {
 	}
 	/**
 	 * 删除数据
-	 * 注意：$filter不能为空，如果要清除所有数据，请设置$filter为TRUE
+	 * 注意：$filter不能为空，如果要清除所有数据，必须传入$filter为TRUE
 	 * 
 	 * @access public
 	 * @param array|string|int|boolean $filter
@@ -209,9 +221,18 @@ abstract class ModelAbstract {
 	 * 
 	 * @access public
 	 * @param array $data
+	 * @param array $cols
 	 * @return int/null
 	 */
-	public static function add(array $data) {
+	public static function add(array $data, $cols = NULL) {
+		if (is_array($cols)) {
+			//筛选$data列
+			foreach ($data as $k => $v) {
+				if (!in_array($k, $cols, TRUE)) {
+					unset($data[$k]);
+				}
+			}
+		}
 		$query = static::insert()->cols($data);
 		static::executeBuilder($query);
 		if (!empty(static::$_primary_key)) {
