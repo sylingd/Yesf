@@ -17,7 +17,7 @@
 namespace yesf\library\database\builder\Common;
 
 use yesf\library\database\builder\AbstractQuery;
-use yesf\library\database\builder\Exception;
+use yesf\library\exception\DBException;
 
 /**
  *
@@ -371,7 +371,7 @@ CHECK_COLS_IF_EMPTY:
      *
      * @return null
      *
-     * @throws Exception when the reference has already been used.
+     * @throws DBException when the reference has already been used.
      *
      */
     protected function addTableRef($type, $spec)
@@ -385,7 +385,7 @@ CHECK_COLS_IF_EMPTY:
 
         if (isset($this->table_refs[$name])) {
             $used = $this->table_refs[$name];
-            throw new Exception("Cannot reference '$type $spec' after '$used'");
+            throw new DBException("Cannot reference '$type $spec' after '$used'");
         }
 
         $this->table_refs[$name] = "$type $spec";
@@ -495,7 +495,7 @@ CHECK_COLS_IF_EMPTY:
      *
      * @return $this
      *
-     * @throws Exception
+     * @throws DBException
      *
      */
     public function join($join, $spec, $cond = null, array $bind = array())
@@ -552,7 +552,7 @@ CHECK_COLS_IF_EMPTY:
      *
      * @return $this
      *
-     * @throws Exception
+     * @throws DBException
      *
      */
     public function innerJoin($spec, $cond = null, array $bind = array())
@@ -572,7 +572,7 @@ CHECK_COLS_IF_EMPTY:
      *
      * @return $this
      *
-     * @throws Exception
+     * @throws DBException
      *
      */
     public function leftJoin($spec, $cond = null, array $bind = array())
@@ -598,7 +598,7 @@ CHECK_COLS_IF_EMPTY:
      *
      * @return $this
      *
-     * @throws Exception
+     * @throws DBException
      *
      */
     public function joinSubSelect($join, $spec, $name, $cond = null, array $bind = array())

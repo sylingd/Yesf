@@ -16,8 +16,6 @@
  */
 namespace yesf\library\database\builder\Common;
 
-use yesf\library\database\builder\Exception;
-
 /**
  *
  * Base builder for all query objects.

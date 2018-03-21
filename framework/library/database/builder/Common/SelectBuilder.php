@@ -16,7 +16,7 @@
  */
 namespace yesf\library\database\builder\Common;
 
-use yesf\library\database\builder\Exception;
+use yesf\library\exception\DBException;
 
 /**
  *
@@ -33,13 +33,13 @@ class SelectBuilder extends AbstractBuilder
      *
      * @return string
      *
-     * @throws Exception when there are no columns in the SELECT.
+     * @throws DBException when there are no columns in the SELECT.
      *
      */
     public function buildCols(array $cols)
     {
         if (empty($cols)) {
-            throw new Exception('No columns in the SELECT.');
+            throw new DBException('No columns in the SELECT.');
         }
         return $this->indentCsv($cols);
     }

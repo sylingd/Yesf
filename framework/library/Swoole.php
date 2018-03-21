@@ -205,7 +205,7 @@ class Swoole {
 	}
 	/**
 	 * 获取Swoole示例，用于实现更多高级操作
-	 * @return \object(\Swoole\Server)
+	 * @return object(\Swoole\Server)
 	 */
 	public static function getSwoole() {
 		return self::$server;
@@ -220,7 +220,7 @@ class Swoole {
 		return self::call_user_func_array($func, $args);
 	}
 	public static function call_user_func_array($func, $args) {
-		if (is_callable('\Swoole\Coroutine::call_user_func_array')) {
+		if (is_callable('\\Swoole\\Coroutine::call_user_func_array')) {
 			return \Swoole\Coroutine::call_user_func_array($func, $args); // @codeCoverageIgnore
 		} else {
 			return $func(...$args);

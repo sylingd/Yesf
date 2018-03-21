@@ -17,7 +17,7 @@
 namespace yesf\library\database\builder\Common;
 
 use yesf\library\database\builder\AbstractDmlQuery;
-use yesf\library\database\builder\Exception;
+use yesf\library\exception\DBException;
 
 /**
  *
@@ -311,13 +311,13 @@ class Insert extends AbstractDmlQuery implements InsertInterface
      *
      * @return null
      *
-     * @throws Exception on named column missing from row.
+     * @throws DBException on named column missing from row.
      *
      */
     protected function finishCol($col)
     {
         if (! array_key_exists($col, $this->col_values)) {
-            throw new Exception("Column $col missing from row {$this->row}.");
+            throw new DBException("Column $col missing from row {$this->row}.");
         }
 
         // get the current col_value
