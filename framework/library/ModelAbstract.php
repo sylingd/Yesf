@@ -10,7 +10,7 @@
  * @license https://yesf.sylibs.com/license
  */
 
-namespace yesf\library\http;
+namespace yesf\library;
 
 use \yesf\library\database\Database;
 use \yesf\library\exception\Exception;
