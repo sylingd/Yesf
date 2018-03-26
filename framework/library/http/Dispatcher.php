@@ -100,7 +100,7 @@ class Dispatcher {
 				} catch (\Throwable $e) {
 					$result = NULL;
 					//触发失败事件
-					Plugin::trigger('dispatchFailed', [$request, $yesf_response, $e]);
+					Plugin::trigger('dispatchFailed', [$module, $controller, $action, $request, $yesf_response, $e]);
 					//日志记录
 					Logger::error('In request: ' . $e->getMessage() . '. Trace: ' . $e->getTraceAsString());
 				}
@@ -109,7 +109,7 @@ class Dispatcher {
 					$result = $r;
 				}
 			} else {
-				if (Plugin::trigger('dispatchFailed', [$request, $yesf_response]) === NULL) {
+				if (Plugin::trigger('dispatchFailed', [$module, $controller, $action, $request, $yesf_response]) === NULL) {
 					$yesf_response->disableView();
 					$yesf_response->status(404);
 					$yesf_response->write('Not Found');
