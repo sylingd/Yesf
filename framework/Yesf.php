@@ -13,7 +13,7 @@
 namespace yesf;
 use \yesf\library\Swoole;
 use \yesf\library\Config;
-use \yesf\library\Dispatcher;
+use \yesf\library\http\Dispatcher;
 use \yesf\library\http\Response;
 use \yesf\library\exception\StartException;
 

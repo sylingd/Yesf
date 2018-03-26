@@ -10,7 +10,7 @@
  * @license https://yesf.sylibs.com/license
  */
 
-namespace yesf\library;
+namespace yesf\library\http;
 use \yesf\Yesf;
 use \yesf\Constant;
 use \yesf\library\http\Response;
@@ -73,6 +73,11 @@ class Dispatcher {
 	/**
 	 * 进行路由分发
 	 * @codeCoverageIgnore
+	 * @access public
+	 * @param array $routeInfo 路由信息
+	 * @param object $request 来自Swoole的请求内容
+	 * @param object $response 来自Swoole的响应对象
+	 * @return mixed
 	 */
 	public static function dispatch($routeInfo, $request, $response) {
 		$result = NULL;
@@ -80,35 +85,38 @@ class Dispatcher {
 		$controller = empty($routeInfo['controller']) ? self::$default_controller : $routeInfo['controller'];
 		$action = empty($routeInfo['action']) ? self::$default_action : $routeInfo['action'];
 		$viewDir = Yesf::app()->getConfig('application.dir') . 'modules/' . $module . '/views/';
-		$yesfResponse = new Response($response, $controller . '/' . $action, $viewDir);
+		$yesf_response = new Response($response, $controller . '/' . $action, $viewDir);
 		if (!empty($request->extension)) {
-			$yesfResponse->mimeType($request->extension);
+			$yesf_response->mimeType($request->extension);
 		}
 		//触发beforeDispatcher事件
-		if (Plugin::trigger('beforeDispatcher', [$module, $controller, $action, $request, $yesfResponse]) === NULL) {
+		if (Plugin::trigger('beforeDispatcher', [$module, $controller, $action, $request, $yesf_response]) === NULL) {
 			//如果$r非空，则代表结束当前请求
 			if (($code = self::isValid($module, $controller, $action)) === Constant::ROUTER_VALID) {
 				$controllerName = Yesf::getAppNamespace() . '\\controller\\' . $module . '\\' . ucfirst($controller);
 				$actionName = $action . 'Action';
 				try {
-					$result = Swoole::call_user_func([$controllerName, $actionName], $request, $yesfResponse);
+					$result = Swoole::call_user_func([$controllerName, $actionName], $request, $yesf_response);
 				} catch (\Throwable $e) {
 					$result = NULL;
+					//触发失败事件
+					Plugin::trigger('dispatchFailed', [$request, $yesf_response, $e]);
+					//日志记录
 					Logger::error('In request: ' . $e->getMessage() . '. Trace: ' . $e->getTraceAsString());
 				}
 				//触发afterDispatcher事件
-				if (($r = Plugin::trigger('afterDispatcher', [$module, $controller, $action, $request, $yesfResponse, $result])) !== NULL) {
+				if (($r = Plugin::trigger('afterDispatcher', [$module, $controller, $action, $request, $yesf_response, $result])) !== NULL) {
 					$result = $r;
 				}
 			} else {
-				if (Plugin::trigger('http404', [$request, $yesfResponse]) === NULL) {
-					$yesfResponse->disableView();
-					$yesfResponse->status(404);
-					$yesfResponse->write('Not Found');
+				if (Plugin::trigger('dispatchFailed', [$request, $yesf_response]) === NULL) {
+					$yesf_response->disableView();
+					$yesf_response->status(404);
+					$yesf_response->write('Not Found');
 				}
 			}
 		}
-		unset($request, $response, $yesfResponse);
+		unset($request, $response, $yesf_response);
 		return $result;
 	}
 }

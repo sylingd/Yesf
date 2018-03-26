@@ -10,7 +10,7 @@
  * @license https://yesf.sylibs.com/license
  */
 
-namespace yesf\library;
+namespace yesf\library\http;
 use \yesf\Yesf;
 use \yesf\Constant;
 use \yesf\library\http\Response;

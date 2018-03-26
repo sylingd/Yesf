@@ -1,6 +1,6 @@
 <?php
 use \PHPUnit\Framework\TestCase;
-use \yesf\library\Router;
+use \yesf\library\http\Router;
 
 class RouterTest extends TestCase {
 	public function testMap() {

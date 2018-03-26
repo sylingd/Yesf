@@ -14,8 +14,8 @@ namespace yesf\library\event;
 use \yesf\Yesf;
 use \yesf\Constant;
 use \yesf\library\Plugin;
-use \yesf\library\Router;
-use \yesf\library\Dispatcher;
+use \yesf\library\http\Router;
+use \yesf\library\http\Dispatcher;
 
 class HttpServer {
 	//HTTP事件：收到请求

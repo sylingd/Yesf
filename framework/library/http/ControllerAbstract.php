@@ -10,7 +10,7 @@
  * @license https://yesf.sylibs.com/license
  */
 
-namespace yesf\library;
+namespace yesf\library\http;
 
 abstract class ControllerAbstract {
 }
