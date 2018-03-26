@@ -65,7 +65,12 @@ abstract class ModelAbstract {
 	 * @return array
 	 */
 	public static function execute($sql, $data = []) {
-		return Database::get()->query($sql, $data);
+		try {
+			return Database::get()->query($sql, $data);
+		} catch (\Throwable $e) {
+			Logger::error('In database: ' . $e->getMessage() . '. Trace: ' . $e->getTraceAsString());
+			return NULL;
+		}
 	}
 	/**
 	 * 执行一条Builder的结果

@@ -90,7 +90,12 @@ class Dispatcher {
 			if (($code = self::isValid($module, $controller, $action)) === Constant::ROUTER_VALID) {
 				$controllerName = Yesf::getAppNamespace() . '\\controller\\' . $module . '\\' . ucfirst($controller);
 				$actionName = $action . 'Action';
-				$result = Swoole::call_user_func([$controllerName, $actionName], $request, $yesfResponse);
+				try {
+					$result = Swoole::call_user_func([$controllerName, $actionName], $request, $yesfResponse);
+				} catch (\Throwable $e) {
+					$result = NULL;
+					Logger::error('In request: ' . $e->getMessage() . '. Trace: ' . $e->getTraceAsString());
+				}
 				//触发afterDispatcher事件
 				if (($r = Plugin::trigger('afterDispatcher', [$module, $controller, $action, $request, $yesfResponse, $result])) !== NULL) {
 					$result = $r;
