@@ -11,32 +11,87 @@
  */
 
 namespace yesf\library\database;
+use \SplQueue;
+use \Swoole\Coroutine as co;
+use yesf\library\Swoole;
 
 abstract class DatabaseAbstract {
 	protected $config = NULL;
-	protected $connection = NULL;
+	public $connection = NULL;
+	public $connection_count = 0;
+	public $last_run_out_time = NULL;
+	public $wait = NULL;
 	public function __construct(array $config) {
-		$this->set($config);
-	}
-	/**
-	 * 断开当前连接
-	 * 由于PDO没有直接提供close，因此简单的通过置空，使其自动释放
-	 * @access public
-	 */
-	abstract public function close();
-	/**
-	 * 设置连接信息
-	 * 设置新的信息会导致当前连接断开
-	 * @access public
-	 * @param array $config
-	 */
-	public function set(array $config) {
-		$this->close();
+		$this->wait = new SplQueue;
+		$this->connection = new SplQueue;
 		$this->config = $config;
-		$this->connect();
+		$this->last_run_out_time = time();
+		//建立最小连接
+		$count = Database::getMinClientCount(get_class($this));
+		while ($count--) {
+			$this->createConnection();
+		}
 	}
 	/**
-	 * 根据配置连接到数据库
+	 * 获取一个可用连接
+	 * 如果不存在可用连接，会自动判断是否需要建立新的连接
+	 * @access protected
+	 * @return object
+	 */
+	protected function getConnection() {
+		$uid = co::getuid();
+		if ($this->connection->count() === 0) {
+			//是否需要建立新的连接
+			if (Database::getMaxClientCount(get_class($this)) > $this->connection_count) {
+				$this->last_run_out_time = time();
+				$this->connect();
+				return $this->connection->pop();
+			}
+			//wait
+			$this->wait->push($uid);
+			co::suspend();
+			return $this->connection->pop();
+		}
+		if ($this->connection->count() === 1) {
+			$this->last_run_out_time = time();
+		}
+		return $this->connection->pop();
+	}
+	/**
+	 * 使用完成连接，归还给连接池
+	 * @access protected
+	 * @param object $connection
+	 */
+	protected function freeConnection($connection) {
+		$this->connection->push($connection);
+		if (count($this->wait) > 0) {
+			$id = $this->wait->pop();
+			co::resume($id);
+		} else {
+			//有连接处于空闲状态超过15秒，关闭一个连接
+			if ($this->connection_count > Database::getMinClientCount(get_class($this)) && time() - $this->last_run_out_time > 15) {
+				$this->close();
+			}
+		}
+	}
+	/**
+	 * 断开一个连接
+	 * @access public
+	 * @param int $count 释放几个连接
+	 */
+	public function close() {
+		$this->connection_count--;
+	}
+	/**
+	 * 创建新的连接，并压入连接池
+	 * @access protected
+	 */
+	protected function createConnection() {
+		$this->connection->push($this->connect());
+		$this->connection_count++;
+	}
+	/**
+	 * 创建新的连接并返回
 	 * @access protected
 	 */
 	abstract protected function connect();
@@ -45,10 +100,9 @@ abstract class DatabaseAbstract {
 	 * @access public
 	 * @param string $sql SQL语句
 	 * @param array $data 参数预绑定
-	 * @param boolean $tryAgain 发生“MySQL has gone away”错误时是否重试
 	 * @return array
 	 */
-	abstract public function query(string $sql, $data = NULL, $tryAgain = TRUE);
+	abstract public function query(string $sql, $data = NULL);
 	/**
 	 * 执行查询并返回一条结果
 	 * @access public
@@ -85,10 +139,4 @@ abstract class DatabaseAbstract {
 			return $result[$column];
 		}
 	}
-	/**
-	 * 获取最后一个插入的ID
-	 * @access public
-	 * @return string
-	 */
-	abstract public function getLastId();
 }

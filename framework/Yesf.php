@@ -15,11 +15,16 @@ use \yesf\library\Swoole;
 use \yesf\library\Config;
 use \yesf\library\http\Dispatcher;
 use \yesf\library\http\Response;
+use \yesf\library\database\Database;
 use \yesf\library\exception\StartException;
 
 if (!defined('YESF_ROOT')) {
 	define('YESF_ROOT', __DIR__ . '/');
 }
+
+set_error_handler(function($errno, $errstr, $errfile, $errline, $errcontext) {
+	throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
+}, E_WARNING | E_USER_ERROR | E_USER_WARNING | E_DEPRECATED | E_USER_DEPRECATED);
 
 class Yesf {
 	/**
@@ -69,13 +74,16 @@ class Yesf {
 		//获取Composer的Loader
 		self::getLoader()->addPsr4($config->get('application.namespace') . '\\model\\', APP_PATH . 'models');
 		Dispatcher::setDefaultModule($config->get('application.module'));
-		Response::$_tpl_auto_config = ($config->get('application.view.auto') == 1) ? TRUE : FALSE;
-		Response::$_tpl_extension = ($config->has('application.view.extension') ? $config->get('application.view.extension') : 'phtml');
+		Response::_init($config);
+		Database::_init($config);
 		//编码相关
 		if (function_exists('mb_internal_encoding')) {
 			mb_internal_encoding($config->get('application.charset'));
 		}
 		if (extension_loaded('swoole')) {
+			if (version_compare(SWOOLE_VERSION, '4.0.0', '<')) {
+				throw new StartException('Yesf require Swoole 4.0 or later');
+			}
 			Swoole::init();
 			Swoole::initConsole();
 		}

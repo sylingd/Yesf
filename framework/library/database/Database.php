@@ -13,6 +13,7 @@ namespace yesf\library\database;
 
 use \yesf\Yesf;
 use \yesf\Constant;
+use \yesf\library\Config;
 use \yesf\library\Swoole;
 use \yesf\library\exception\Exception;
 use \yesf\library\database\builder\QueryFactory;
@@ -20,64 +21,77 @@ use \yesf\library\database\builder\QueryFactory;
 class Database {
 	private static $db = [];
 	private static $custom_driver = [];
+	private static $pool_config = [];
+	private static $default_type = NULL;
+	/**
+	 * init阶段，读取基本配置
+	 * @access public
+	 */
+	public static function _init(Config $config) {
+		self::$default_type = $config->get('database.type');
+		$c = $config->get('pool');
+		foreach ($c as $k => $v) {
+			self::$pool_config[$k] = [
+				'min' => isset($v['min']) ? $v['min'] : 1,
+				'max' => isset($v['max']) ? $v['max'] : 1,
+			];
+		}
+		if (!isset(self::$pool_config['default'])) {
+			self::$pool_config['default'] = [
+				'min' => 1,
+				'max' => 3,
+			];
+		}
+	}
+	public static function getMinClientCount($name) {
+		return isset(self::$pool_config[$name]) ? self::$pool_config[$name]['min'] : self::$pool_config['default']['min'];
+	}
+	public static function getMaxClientCount($name) {
+		return isset(self::$pool_config[$name]) ? self::$pool_config[$name]['max'] : self::$pool_config['default']['max'];
+	}
 	/**
 	 * 通过读取配置，获取数据库操作类
-	 * 也可以自行实例化相应的操作类
-	 * 此函数会暂存实例类，使用clear方法清除
-	 * 
-	 * 类型分为协程（1）和同步（2），当传入0时，则根据当前环境自动判断
-	 * 在Task进程中会返回同步类，在非Task进程中返回协程类
 	 * 
 	 * @access public
-	 * @param int $type 类型
 	 * @return object(DatabaseInterface)
 	 */
-	public static function get(int $type = Constant::CONNECT_AUTO) {
-		if ($type === Constant::CONNECT_AUTO) {
-			$type = Swoole::$isTaskWorker ? Constant::CONNECT_SYNC : Constant::CONNECT_CORO;
+	public static function get($type = NULL) {
+		$config = Yesf::app()->getConfig();
+		if ($type === NULL) {
+			$type = self::$default_type;
 		}
 		if (isset(self::$db[$type])) {
 			return self::$db[$type];
 		}
-		$config = Yesf::app()->getConfig();
-		$driverType = $config->get('database.type');
-		if (isset(self::$custom_driver[$driverType])) {
+		if (isset(self::$custom_driver[$type])) {
 			//用户自定义driver
-			if ($type === Constant::CONNECT_CORO && self::$custom_driver[$driverType][1] !== NULL) {
-				$driver = self::$custom_driver[$driverType][1];
-			} else {
-				$driver = self::$custom_driver[$driverType][0];
-			}
+			$driver = self::$custom_driver[$type];
 		} else {
-			$driver = 'yesf\\library\\database\\' .
-				($type === Constant::CONNECT_CORO ? 'coroutine' : 'sync') .
-				'\\' . ucfirst($driverType);
+			$driver = 'yesf\\library\\database\\driver\\' . ucfirst($type);
 			if (!class_exists($driver)) {
-				throw new Exception('Driver ' . ($type === Constant::CONNECT_CORO ? 'coroutine' : 'sync') . '/' . ucfirst($config->get('database.type')) . ' not found');
+				throw new Exception('Driver ' . ucfirst($config->get('database.type')) . ' not found');
 			}
 		}
-		$config = [
-			'host' => $config->get('database.host'),
-			'user' => $config->get('database.user'),
-			'password' => $config->get('database.password'),
-			'database' => $config->get('database.name'),
-			'port' => $config->get('database.port')
-		];
+		if ($type === self::$default_type) {
+			$config = [
+				'host' => $config->get('database.host'),
+				'user' => $config->get('database.user'),
+				'password' => $config->get('database.password'),
+				'database' => $config->get('database.name'),
+				'port' => $config->get('database.port')
+			];
+		} else {
+			$config = [
+				'host' => $config->get("database.{$type}.host"),
+				'user' => $config->get("database.{$type}.user"),
+				'password' => $config->get("database.{$type}.password"),
+				'database' => $config->get("database.{$type}.name"),
+				'port' => $config->get("database.{$type}.port")
+			];
+		}
+		$uid = \Swoole\Coroutine::getuid();
 		self::$db[$type] = new $driver($config);
 		return self::$db[$type];
-	}
-	/**
-	 * 清除暂存的实例类
-	 * @access public
-	 * @param int $type 类型
-	 */
-	public static function clear(int $type = Constant::CONNECT_AUTO) {
-		if ($type === Constant::CONNECT_AUTO) {
-			$type = Swoole::$isTaskWorker ? Constant::CONNECT_SYNC : Constant::CONNECT_CORO;
-		}
-		if (isset(self::$db[$type])) {
-			unset(self::$db[$type]);
-		}
 	}
 	/**
 	 * 获取Builder实例类
@@ -99,16 +113,12 @@ class Database {
 	 * 注册自定义driver
 	 * @access public
 	 * @param string $type
-	 * @param string $sync_class 同步类名
-	 * @param string $coro_class 协程类名
+	 * @param string $clazz 类名
 	 */
-	public static function registerDriver(string $type, $sync_class, $coro_class = NULL) {
-		if (!class_exists($sync_class)) {
-			throw new Exception('Sync driver ' . $type . ' not found');
+	public static function registerDriver(string $type, $clazz = NULL) {
+		if (!class_exists($clazz)) {
+			throw new Exception('Driver ' . $type . ' not found');
 		}
-		if ($coro_class !== NULL && !class_exists($coro_class)) {
-			throw new Exception('Coroutine driver ' . $type . ' not found');
-		}
-		self::$custom_driver[$type] = [$sync_class, $coro_class];
+		self::$custom_driver[$type] = $clazz;
 	}
 }

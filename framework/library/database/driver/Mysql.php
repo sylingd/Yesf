@@ -11,7 +11,7 @@
  * @license https://yesf.sylibs.com/license
  */
 
-namespace yesf\library\database\coroutine;
+namespace yesf\library\database\driver;
 
 use \yesf\Yesf;
 use \yesf\library\exception\DBException;
@@ -26,15 +26,16 @@ class Mysql extends DatabaseAbstract implements DatabaseInterface {
 	 * @access public
 	 */
 	public function close() {
-		$this->connection = NULL;
+		$this->getConnection();
+		parent::close();
 	}
 	/**
 	 * 根据配置连接到数据库
 	 * @access protected
 	 */
 	protected function connect() {
-		$this->connection = new co\MySQL();
-		$r = $this->connection->connect([
+		$connection = new co\MySQL();
+		$r = $connection->connect([
 			'host' => $this->config['host'],
 			'user' => $this->config['user'],
 			'password' => $this->config['password'],
@@ -46,44 +47,76 @@ class Mysql extends DatabaseAbstract implements DatabaseInterface {
 		if ($r === FALSE) {
 			throw new DBException('Can not connect to database server');
 		}
+		return $connection;
 	}
 	/**
 	 * 执行查询并返回结果
 	 * @access public
 	 * @param string $sql SQL语句
 	 * @param array $data 参数预绑定
-	 * @param boolean $tryAgain 发生“MySQL has gone away”错误时是否重试
 	 * @return array
 	 */
-	public function query(string $sql, $data = NULL, $tryAgain = TRUE) {
+	public function query(string $sql, $data = NULL) {
+		$connection = $this->getConnection();
+		$result = NULL;
+		$tryAgain = TRUE;
+SQL_START_EXECUTE:
 		if (is_array($data) && count($data) > 0) {
-			$st = $this->connection->prepare($sql);
+			$st = $connection->prepare($sql);
 			if ($st === FALSE) {
 				goto SQL_TRY_AGAIN;
 			}
-			if (is_object($st)) {
-				$r = $st->execute($data);
-			} else {
-				$r = $this->connection->execute($data);
-			}
-			if ($r === FALSE) {
+			try {
+				if (is_object($st)) {
+					$result = $st->execute($data);
+				} else {
+					$result = $connection->execute($data);
+				}
+			} catch (\Throwable $e) {
 				goto SQL_TRY_AGAIN;
 			}
-			return $r;
+			if ($result === FALSE) {
+				goto SQL_TRY_AGAIN;
+			}
+			goto SQL_SUCCESS_RETURN;
 		} else {
-			$r = $this->connection->query($sql);
-			if ($r === FALSE) {
+			try {
+				$result = $connection->query($sql);
+			} catch (\Throwable $e) {
 				goto SQL_TRY_AGAIN;
 			}
-			return $r;
+			if ($result === FALSE) {
+				goto SQL_TRY_AGAIN;
+			}
+			goto SQL_SUCCESS_RETURN;
 		}
 SQL_TRY_AGAIN:
-		if ($this->connection->errno === 2006 && $tryAgain) {
-			$this->connect();
-			return $this->query($sql, $data, FALSE);
+		if ($connection->errno === 2006 && $tryAgain) {
+			$tryAgain = FALSE;
+			$connection->connect([
+				'host' => $this->config['host'],
+				'user' => $this->config['user'],
+				'password' => $this->config['password'],
+				'database' => $this->config['database'],
+				'port' => $this->config['port'],
+				'timeout' => 3,
+				'charset' => 'utf8'
+			]);
+			goto SQL_START_EXECUTE;
 		} else {
-			throw new DBException($this->connection->error, $this->connection->errno);
+			throw new DBException($connection->error, $connection->errno);
 		}
+SQL_SUCCESS_RETURN:
+		if ($result === TRUE) {
+			$result = [
+				'_affected_rows' => $connection->affected_rows
+			];
+			if (stripos($sql, 'insert') === 0) {
+				$result['_insert_id'] = $connection->insert_id;
+			}
+		}
+		$this->freeConnection($connection);
+		return $result;
 	}
 	/**
 	 * 执行查询并返回一条结果
@@ -97,13 +130,5 @@ SQL_TRY_AGAIN:
 			$sql .= ' LIMIT 0,1';
 		}
 		return parent::get($sql, $data);
-	}
-	/**
-	 * 获取最后一个插入的ID
-	 * @access public
-	 * @return string
-	 */
-	public function getLastId() {
-		return $this->connection->insert_id;
 	}
 }

@@ -27,7 +27,4 @@ class Constant {
 	const LISTEN_UNIX_DGRAM = SWOOLE_UNIX_DGRAM;
 	const LISTEN_TCP6 = SWOOLE_TCP6;
 	const LISTEN_UDP6 = SWOOLE_UDP6;
-	const CONNECT_AUTO = 0;
-	const CONNECT_CORO = 1;
-	const CONNECT_SYNC = 2;
 }

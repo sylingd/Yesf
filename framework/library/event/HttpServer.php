@@ -26,9 +26,6 @@ class HttpServer {
 			$baseUri = Yesf::getBaseUri();
 			$baseUriLen = strlen($baseUri);
 		}
-		if ('develop' === Yesf::app()->environment && function_exists('xdebug_start_trace')) {
-			xdebug_start_trace();
-		}
 		//路由解析
 		$uri = $request->server['request_uri'];
 		if (strpos('?', $uri) !== FALSE) {

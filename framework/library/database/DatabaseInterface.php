@@ -20,25 +20,13 @@ interface DatabaseInterface {
 	 */
 	public function __construct(array $config);
 	/**
-	 * 断开当前连接
-	 * @access public
-	 */
-	public function close();
-	/**
-	 * 设置连接信息
-	 * @access public
-	 * @param array $config
-	 */
-	public function set(array $config);
-	/**
 	 * 执行查询并返回结果
 	 * @access public
 	 * @param string $sql SQL语句
 	 * @param array $data 参数预绑定
-	 * @param boolean $tryAgain 发生“MySQL has gone away”或类似错误时是否重试
 	 * @return array
 	 */
-	public function query(string $sql, $data = NULL, $tryAgain = TRUE);
+	public function query(string $sql, $data = NULL);
 	/**
 	 * 执行查询并返回一条结果
 	 * @access public
@@ -58,10 +46,4 @@ interface DatabaseInterface {
 	 * @return array
 	 */
 	public function getColumn(string $sql, $data = NULL, $column = NULL);
-	/**
-	 * 获取最后一个插入的ID
-	 * @access public
-	 * @return string
-	 */
-	public function getLastId();
 }

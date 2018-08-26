@@ -49,15 +49,15 @@ class Swoole {
 		}
 		self::$server->set($config);
 		//基本事件
-		self::$server->on('Start', __NAMESPACE__ . '\\Server::eventStart');
-		self::$server->on('ManagerStart', __NAMESPACE__ . '\\Server::eventManagerStart');
-		self::$server->on('WorkerStart', __NAMESPACE__ . '\\Server::eventWorkerStart');
-		self::$server->on('WorkerError', __NAMESPACE__ . '\\Server::eventWorkerError');
-		self::$server->on('Finish', __NAMESPACE__ . '\\Server::eventFinish');
-		self::$server->on('PipeMessage', __NAMESPACE__ . '\\Server::eventPipeMessage');
+		self::$server->on('Start', __NAMESPACE__ . '\\event\\Server::eventStart');
+		self::$server->on('ManagerStart', __NAMESPACE__ . '\\event\\Server::eventManagerStart');
+		self::$server->on('WorkerStart', __NAMESPACE__ . '\\event\\Server::eventWorkerStart');
+		self::$server->on('WorkerError', __NAMESPACE__ . '\\event\\Server::eventWorkerError');
+		self::$server->on('Finish', __NAMESPACE__ . '\\event\\Server::eventFinish');
+		self::$server->on('PipeMessage', __NAMESPACE__ . '\\event\\Server::eventPipeMessage');
+		self::$server->on('Task', __NAMESPACE__ . '\\event\\Server::eventTask');
 		//HTTP事件
-		self::$server->on('Request', __NAMESPACE__ . '\\Server::eventRequest');
-		self::$server->on('Task', __NAMESPACE__ . '\\Server::eventTask');
+		self::$server->on('Request', __NAMESPACE__ . '\\event\\HttpServer::eventRequest');
 	}
 	public static function start() {
 		self::$server->start();
@@ -209,21 +209,5 @@ class Swoole {
 	 */
 	public static function getSwoole() {
 		return self::$server;
-	}
-	/**
-	 * 兼容性补丁
-	 * 用于兼容call_user_func和call_user_func_array
-	 * 在某些情况下可能导致协程无法恢复上下文
-	 * 导致请求卡住
-	 */
-	public static function call_user_func($func, ...$args) {
-		return self::call_user_func_array($func, $args);
-	}
-	public static function call_user_func_array($func, $args) {
-		if (is_callable('\\Swoole\\Coroutine::call_user_func_array')) {
-			return \Swoole\Coroutine::call_user_func_array($func, $args); // @codeCoverageIgnore
-		} else {
-			return $func(...$args);
-		}
 	}
 }

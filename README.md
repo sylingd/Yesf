@@ -2,7 +2,7 @@
 
 [![license](https://img.shields.io/github/license/sylingd/Yesf.svg?style=flat-square)](https://github.com/sylingd/Yesf/blob/master/LICENSE) [![Packagist](https://img.shields.io/packagist/v/sylingd/yesf-framework.svg?style=flat-square)](https://packagist.org/packages/sylingd/yesf-framework) [![GitHub stars](https://img.shields.io/github/stars/sylingd/Yesf.svg?style=flat-square&logo=github&label=Stars)](https://github.com/sylingd/Yesf) [![star](https://gitee.com/sy/Yesf/badge/star.svg?theme=dark)](https://gitee.com/sy/Yesf/stargazers)
 
-Yesf is a PHP framework based on Swoole. The following functions are provided:
+Yesf is a PHP framework based on Swoole 4.0+. The following functions are provided:
 
 * MVC mode and route distribution
 * Plug-in support

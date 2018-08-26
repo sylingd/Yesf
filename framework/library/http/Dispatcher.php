@@ -13,6 +13,8 @@
 namespace yesf\library\http;
 use \yesf\Yesf;
 use \yesf\Constant;
+use \yesf\library\Plugin;
+use \yesf\library\Logger;
 use \yesf\library\http\Response;
 
 class Dispatcher {
@@ -96,7 +98,7 @@ class Dispatcher {
 				$controllerName = Yesf::getAppNamespace() . '\\controller\\' . $module . '\\' . ucfirst($controller);
 				$actionName = $action . 'Action';
 				try {
-					$result = Swoole::call_user_func([$controllerName, $actionName], $request, $yesf_response);
+					$result = call_user_func([$controllerName, $actionName], $request, $yesf_response);
 				} catch (\Throwable $e) {
 					$result = NULL;
 					//触发失败事件

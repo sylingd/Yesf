@@ -108,17 +108,17 @@ class Server {
 	 */
 	public static function eventConnect($callback_key, $fd, $from_id) {
 		if (isset(self::$_listener[$callback_key])) {
-			self::callback(self::$_listener[$callback_key], 'connect', $fd, $from_id);
+			call_user_func(self::$_listener[$callback_key], 'connect', $fd, $from_id);
 		}
 	}
 	public static function eventClose($callback_key, $fd, $from_id) {
 		if (isset(self::$_listener[$callback_key])) {
-			self::callback(self::$_listener[$callback_key], 'close', $fd, $from_id);
+			call_user_func(self::$_listener[$callback_key], 'close', $fd, $from_id);
 		}
 	}
 	public static function eventReceive($callback_key, $fd, $from_id, string $data) {
 		if (isset(self::$_listener[$callback_key])) {
-			self::callback(self::$_listener[$callback_key], 'receive', $fd, $from_id, $data);
+			call_user_func(self::$_listener[$callback_key], 'receive', $fd, $from_id, $data);
 		}
 	}
 	/**
@@ -133,25 +133,7 @@ class Server {
 			$from_id = $callback_key;
 		}
 		if (isset(self::$_listener[$callback_key])) {
-			self::callback(self::$_listener[$callback_key], 'receive', $fd, $from_id, $data);
-		}
-	}
-	/**
-	 * 模拟call_user_func
-	 */
-	protected static function callback($call, $event, $fd, $from_id, $data = NULL) {
-		if (is_callable('\\Swoole\\Coroutine::call_user_func')) {
-			return \Swoole\Coroutine::call_user_func($call, $event, $fd, $from_id, $data);
-		}
-		if (is_array($call)) {
-			list($class, $method) = $call;
-			if (is_object($class)) {
-				return $class->$method($event, $fd, $from_id, $data);
-			} else {
-				return $class::$method($event, $fd, $from_id, $data);
-			}
-		} else {
-			return $call($event, $fd, $from_id, $data);
+			call_user_func(self::$_listener[$callback_key], 'receive', $fd, $from_id, $data);
 		}
 	}
 }

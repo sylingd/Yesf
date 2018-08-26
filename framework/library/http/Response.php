@@ -12,12 +12,13 @@
 
 namespace yesf\library\http;
 use \yesf\Yesf;
+use \yesf\library\Config;
 use \yesf\library\http\Vars as HttpVars;
 
 class Response {
-	public static $_tpl_auto_config = TRUE;
+	protected static $_tpl_auto_config = FALSE;
 	//模板文件扩展名
-	public static $_tpl_extension = 'phtml';
+	protected static $_tpl_extension = 'phtml';
 	//模板变量
 	protected $_tpl_vars = [];
 	//模板目录
@@ -28,6 +29,13 @@ class Response {
 	protected $_tpl_auto = NULL;
 	//默认模板
 	protected $_tpl_default = '';
+	/**
+	 * 初始化函数
+	 */
+	public static function _init(Config $config) {
+		self::$_tpl_auto_config = ($config->get('application.view.auto') == 1) ? TRUE : FALSE;
+		self::$_tpl_extension = ($config->has('application.view.extension') ? $config->get('application.view.extension') : 'phtml');
+	}
 	/**
 	 * 构建函数
 	 * @param object $response Swoole的Response
