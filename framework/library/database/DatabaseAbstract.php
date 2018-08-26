@@ -17,10 +17,10 @@ use yesf\library\Swoole;
 
 abstract class DatabaseAbstract {
 	protected $config = NULL;
-	public $connection = NULL;
-	public $connection_count = 0;
-	public $last_run_out_time = NULL;
-	public $wait = NULL;
+	protected $connection = NULL;
+	protected $connection_count = 0;
+	protected $last_run_out_time = NULL;
+	protected $wait = NULL;
 	public function __construct(array $config) {
 		$this->wait = new SplQueue;
 		$this->connection = new SplQueue;
