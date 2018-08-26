@@ -76,10 +76,9 @@ abstract class DatabaseAbstract {
 	}
 	/**
 	 * 断开一个连接
-	 * @access public
-	 * @param int $count 释放几个连接
+	 * @access protected
 	 */
-	public function close() {
+	protected function close() {
 		$this->connection_count--;
 	}
 	/**

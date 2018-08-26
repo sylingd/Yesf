@@ -25,7 +25,7 @@ class Mysql extends DatabaseAbstract implements DatabaseInterface {
 	 * 由于Swoole没有直接提供close，因此简单的通过置空，使其自动释放
 	 * @access public
 	 */
-	public function close() {
+	protected function close() {
 		$this->getConnection();
 		parent::close();
 	}
