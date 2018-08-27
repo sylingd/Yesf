@@ -94,7 +94,7 @@ SQL_START_EXECUTE:
 			goto SQL_SUCCESS_RETURN;
 		}
 SQL_TRY_AGAIN:
-		if ($connection->errno === 2006 && $tryAgain) {
+		if (($connection->errno === 2006 || $connection->errno === 2013) && $tryAgain) {
 			$tryAgain = FALSE;
 			$connection->connect([
 				'host' => $this->config['host'],
