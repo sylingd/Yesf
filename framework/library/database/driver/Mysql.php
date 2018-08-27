@@ -1,7 +1,7 @@
 <?php
 /**
- * MySQL简单封装类
- * 此类为协程方式，在某些环境下可能无法使用（例如Task进程中）
+ * MySQL封装类
+ * 在某些环境下，可能需要用户使用co::create手动创建协程环境
  * 
  * @author ShuangYa
  * @package Yesf
@@ -23,6 +23,7 @@ class Mysql extends DatabaseAbstract implements DatabaseInterface {
 	/**
 	 * 断开当前连接
 	 * 由于Swoole没有直接提供close，因此简单的通过置空，使其自动释放
+	 * 
 	 * @access public
 	 */
 	protected function close() {
@@ -31,6 +32,7 @@ class Mysql extends DatabaseAbstract implements DatabaseInterface {
 	}
 	/**
 	 * 根据配置连接到数据库
+	 * 
 	 * @access protected
 	 */
 	protected function connect() {
@@ -51,6 +53,7 @@ class Mysql extends DatabaseAbstract implements DatabaseInterface {
 	}
 	/**
 	 * 执行查询并返回结果
+	 * 
 	 * @access public
 	 * @param string $sql SQL语句
 	 * @param array $data 参数预绑定
@@ -120,6 +123,7 @@ SQL_SUCCESS_RETURN:
 	}
 	/**
 	 * 执行查询并返回一条结果
+	 * 
 	 * @access public
 	 * @param string $sql SQL语句
 	 * @param array $data 参数预绑定
@@ -129,6 +133,32 @@ SQL_SUCCESS_RETURN:
 		if (!preg_match('/limit ([0-9,]+)$/i', $sql)) {
 			$sql .= ' LIMIT 0,1';
 		}
-		return parent::get($sql, $data);
+		$r = $this->query($sql, $data);
+		return count($r) > 0 ? current($r) : NULL;
+	}
+	/**
+	 * 执行查询并返回一条结果中的一列
+	 * 可以只传入前两个参数，而不传入$column，此时$data将会当做$column处理
+	 * 
+	 * @access public
+	 * @param string $sql SQL语句
+	 * @param array $data 参数预绑定
+	 * @param string $column 列名
+	 * @return array
+	 */
+	public function getColumn(string $sql, $data = NULL, $column = NULL) {
+		if ($column === NULL) {
+			if ($data === NULL) {
+				throw new DBException('$column can not be empty');
+			} else {
+				$column = $data;
+			}
+		}
+		$result = $this->get($sql, $data);
+		if ($result === NULL || !isset($result[$column])) {
+			throw new DBException("Column $column not exists");
+		} else {
+			return $result[$column];
+		}
 	}
 }

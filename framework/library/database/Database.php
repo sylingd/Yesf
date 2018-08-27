@@ -25,15 +25,17 @@ class Database {
 	private static $default_type = NULL;
 	/**
 	 * init阶段，读取基本配置
+	 * 
 	 * @access public
+	 * @param object(Config) $config
 	 */
 	public static function _init(Config $config) {
 		self::$default_type = $config->get('database.type');
 		$c = $config->get('pool');
 		foreach ($c as $k => $v) {
 			self::$pool_config[$k] = [
-				'min' => isset($v['min']) ? $v['min'] : 1,
-				'max' => isset($v['max']) ? $v['max'] : 1,
+				'min' => isset($v['min']) ? intval($v['min']) : 1,
+				'max' => isset($v['max']) ? intval($v['max']) : 1,
 			];
 		}
 		if (!isset(self::$pool_config['default'])) {
@@ -53,7 +55,8 @@ class Database {
 	 * 通过读取配置，获取数据库操作类
 	 * 
 	 * @access public
-	 * @return object(DatabaseInterface)
+	 * @param string $type 类型
+	 * @return object(DatabaseAbstract)
 	 */
 	public static function get($type = NULL) {
 		$config = Yesf::app()->getConfig();
@@ -95,6 +98,7 @@ class Database {
 	}
 	/**
 	 * 获取Builder实例类
+	 * 
 	 * @access public
 	 * @param string $type
 	 * @return object(QueryFactory)
@@ -111,6 +115,7 @@ class Database {
 	}
 	/**
 	 * 注册自定义driver
+	 * 
 	 * @access public
 	 * @param string $type
 	 * @param string $clazz 类名

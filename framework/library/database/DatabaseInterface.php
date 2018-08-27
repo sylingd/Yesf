@@ -15,12 +15,14 @@ namespace yesf\library\database;
 interface DatabaseInterface {
 	/**
 	 * 实例化
+	 * 
 	 * @access public
 	 * @param array $config
 	 */
 	public function __construct(array $config);
 	/**
 	 * 执行查询并返回结果
+	 * 
 	 * @access public
 	 * @param string $sql SQL语句
 	 * @param array $data 参数预绑定
@@ -29,6 +31,7 @@ interface DatabaseInterface {
 	public function query(string $sql, $data = NULL);
 	/**
 	 * 执行查询并返回一条结果
+	 * 
 	 * @access public
 	 * @param string $sql SQL语句
 	 * @param array $data 参数预绑定

@@ -35,11 +35,11 @@ abstract class DatabaseAbstract {
 	/**
 	 * 获取一个可用连接
 	 * 如果不存在可用连接，会自动判断是否需要建立新的连接
+	 * 
 	 * @access protected
 	 * @return object
 	 */
 	protected function getConnection() {
-		$uid = co::getuid();
 		if ($this->connection->count() === 0) {
 			//是否需要建立新的连接
 			if (Database::getMaxClientCount(get_class($this)) > $this->connection_count) {
@@ -59,6 +59,7 @@ abstract class DatabaseAbstract {
 	}
 	/**
 	 * 使用完成连接，归还给连接池
+	 * 
 	 * @access protected
 	 * @param object $connection
 	 */
@@ -76,6 +77,7 @@ abstract class DatabaseAbstract {
 	}
 	/**
 	 * 断开一个连接
+	 * 
 	 * @access protected
 	 */
 	protected function close() {
@@ -83,6 +85,7 @@ abstract class DatabaseAbstract {
 	}
 	/**
 	 * 创建新的连接，并压入连接池
+	 * 
 	 * @access protected
 	 */
 	protected function createConnection() {
@@ -91,51 +94,8 @@ abstract class DatabaseAbstract {
 	}
 	/**
 	 * 创建新的连接并返回
+	 * 
 	 * @access protected
 	 */
 	abstract protected function connect();
-	/**
-	 * 执行查询并返回结果
-	 * @access public
-	 * @param string $sql SQL语句
-	 * @param array $data 参数预绑定
-	 * @return array
-	 */
-	abstract public function query(string $sql, $data = NULL);
-	/**
-	 * 执行查询并返回一条结果
-	 * @access public
-	 * @param string $sql SQL语句
-	 * @param array $data 参数预绑定
-	 * @return array
-	 */
-	public function get(string $sql, $data = NULL) {
-		$r = $this->query($sql, $data);
-		return count($r) > 0 ? current($r) : NULL;
-	}
-	/**
-	 * 执行查询并返回一条结果中的一列
-	 * 可以只传入前两个参数，而不传入$column，此时$data将会当做$column处理
-	 * 
-	 * @access public
-	 * @param string $sql SQL语句
-	 * @param array $data 参数预绑定
-	 * @param string $column 列名
-	 * @return array
-	 */
-	public function getColumn(string $sql, $data = NULL, $column = NULL) {
-		if ($column === NULL) {
-			if ($data === NULL) {
-				throw new DBException('$column can not be empty');
-			} else {
-				$column = $data;
-			}
-		}
-		$result = $this->get($sql, $data);
-		if ($result === NULL || !isset($result[$column])) {
-			throw new DBException("Column $column not exists");
-		} else {
-			return $result[$column];
-		}
-	}
 }
