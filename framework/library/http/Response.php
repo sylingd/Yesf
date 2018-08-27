@@ -31,6 +31,9 @@ class Response {
 	protected $_tpl_default = '';
 	/**
 	 * 初始化函数
+	 * 
+	 * @access public
+	 * @param object $config
 	 */
 	public static function _init(Config $config) {
 		self::$_tpl_auto_config = ($config->get('application.view.auto') == 1) ? TRUE : FALSE;
@@ -38,6 +41,8 @@ class Response {
 	}
 	/**
 	 * 构建函数
+	 * 
+	 * @access public
 	 * @param object $response Swoole的Response
 	 * @param string $tpl_path 模板路径
 	 */
@@ -51,6 +56,8 @@ class Response {
 	}
 	/**
 	 * 设置模板路径
+	 * 
+	 * @access public
 	 * @param string $tpl_path
 	 */
 	public function setTplPath($tpl_path) {
@@ -58,12 +65,16 @@ class Response {
 	}
 	/**
 	 * 关闭模板自动渲染
+	 * 
+	 * @access public
 	 */
 	public function disableView() {
 		$this->_tpl_auto = FALSE;
 	}
 	/**
 	 * 将一个模板的渲染结果输出至浏览器
+	 * 
+	 * @access public
 	 * @param string $tpl 模板路径
 	 */
 	public function display($tpl) {
@@ -71,6 +82,8 @@ class Response {
 	}
 	/**
 	 * 获取一个模板的渲染结果但不输出
+	 * 
+	 * @access public
 	 * @param string $tpl 模板路径
 	 * @return string
 	 */
@@ -84,13 +97,28 @@ class Response {
 	}
 	/**
 	 * 将一个字符串输出至浏览器
+	 * 
+	 * @access public
 	 * @param string $content 要输出的字符串
 	 */
 	public function write($content) {
 		$this->_sw_response->write($content);
 	}
 	/**
+	 * 发送一个文件
+	 * 
+	 * @access public
+	 * @param string $filepath
+	 * @param int $offset
+	 * @param int $length
+	 */
+	public function sendfile($filepath, $offset, $length) {
+		$this->_sw_response->sendfile($filepath, $offset, $length);
+	}
+	/**
 	 * 注册一个模板变量
+	 * 
+	 * @access public
 	 * @param string $k 名称
 	 * @param mixed $v 值
 	 */
@@ -99,6 +127,8 @@ class Response {
 	}
 	/**
 	 * 向浏览器发送一个header信息
+	 * 
+	 * @access public
 	 * @param string $k 名称
 	 * @param mixed $v 值
 	 */
@@ -107,6 +137,8 @@ class Response {
 	}
 	/**
 	 * 向浏览器发送一个状态码
+	 * 
+	 * @access public
 	 * @param int $code
 	 */
 	public function status($code) {
@@ -114,6 +146,7 @@ class Response {
 	}
 	/**
 	 * 设置Cookie
+	 * 
 	 * @access public
 	 * @param array $param
 	 * @param string $param[name] 名称
@@ -149,6 +182,8 @@ class Response {
 	}
 	/**
 	 * 发送mimeType的header
+	 * 
+	 * @access public
 	 * @param string $extension 扩展名，例如JSON
 	 */
 	public function mimeType($extension) {
@@ -156,6 +191,8 @@ class Response {
 	}
 	/**
 	 * 析构函数
+	 * 
+	 * @access public
 	 */
 	public function __destruct() {
 		try {
