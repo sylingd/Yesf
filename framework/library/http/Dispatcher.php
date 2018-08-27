@@ -77,7 +77,7 @@ class Dispatcher {
 	 * @codeCoverageIgnore
 	 * @access public
 	 * @param array $routeInfo 路由信息
-	 * @param object $request 来自Swoole的请求内容
+	 * @param object $request 经过Yesf封装的请求内容
 	 * @param object $response 来自Swoole的响应对象
 	 * @return mixed
 	 */
@@ -114,7 +114,7 @@ class Dispatcher {
 				if (Plugin::trigger('dispatchFailed', [$module, $controller, $action, $request, $yesf_response]) === NULL) {
 					$yesf_response->disableView();
 					$yesf_response->status(404);
-					$yesf_response->write('Not Found');
+					$yesf_response->write('');
 				}
 			}
 		}

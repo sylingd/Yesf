@@ -14,6 +14,7 @@ namespace yesf\library\event;
 use \yesf\Yesf;
 use \yesf\Constant;
 use \yesf\library\Plugin;
+use \yesf\library\http\Request;
 use \yesf\library\http\Router;
 use \yesf\library\http\Dispatcher;
 
@@ -38,7 +39,7 @@ class HttpServer {
 		//触发路由解析事件，转发至相应plugin
 		$result = Plugin::trigger('routerStart', [$uri]);
 		//如果plugin返回了解析结果，则终止默认的路由解析
-		$request->extension = NULL;
+		$yesfRequest = new Request($request);
 		if (!is_array($result)) {
 			//为空则读取默认设置
 			if (empty($uri)) {
@@ -52,7 +53,7 @@ class HttpServer {
 				if (Yesf::app()->getConfig('application.router.extension')) {
 					$hasPoint = strrpos($uri, '.');
 					if ($hasPoint !== FALSE) {
-						$request->extension = substr($uri, $hasPoint + 1);
+						$yesfRequest->extension = substr($uri, $hasPoint + 1);
 						$uri = substr($uri, 0, $hasPoint);
 					}
 				}
@@ -78,12 +79,12 @@ class HttpServer {
 			}
 		} else {
 			if (isset($result[3])) {
-				$request->extension = $result[3];
+				$yesfRequest->extension = $result[3];
 			}
 		}
-		$request->param = $result[0];
+		$yesfRequest->param = $result[0];
 		//开始路由分发
-		Dispatcher::dispatch($result[1], $request, $response);
-		unset($request, $response, $yesfResponse, $result);
+		Dispatcher::dispatch($result[1], $yesfRequest, $response);
+		unset($request, $response, $result, $yesfRequest);
 	}
 }
