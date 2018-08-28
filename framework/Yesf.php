@@ -38,8 +38,6 @@ class Yesf {
 	 * 一般不会有此需要，仅当程序处于网站二级目录时会用到
 	 */
 	protected static $baseUri = '/';
-	//路由参数名称
-	protected $routeParam = 'r';
 	//配置
 	protected $config = NULL;
 	//缓存namespace
