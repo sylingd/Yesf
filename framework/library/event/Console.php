@@ -22,7 +22,7 @@ class Console {
 		}
 		$data = json_decode(substr($data, 4), 1); //为了降低环境需求，这里使用JSON
 		$action = $data['action'] . 'Action';
-		if (is_callable([self, $action])) {
+		if (method_exists(__CLASS__, $action)) {
 			self::$action($fd, $from_id, $data);
 		}
 	}

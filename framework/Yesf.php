@@ -104,22 +104,16 @@ class Yesf {
 	public static function getLoader() {
 		static $loader = NULL;
 		if ($loader === NULL) {
-			$files = get_included_files();
-			$composer_file = NULL;
-			foreach ($files as $f) {
-				if (strpos($f, 'composer/autoload_real.php') !== FALSE || strpos($f, 'composer\\autoload_real.php') !== FALSE) {
-					$composer_file = $f;
+			$classes = get_declared_classes();
+			foreach ($classes as $clazz) {
+				if (strpos($clazz, 'ComposerAutoloaderInit') === 0 && method_exists($clazz, 'getLoader')) {
+					$loader = $clazz::getLoader();
 					break;
 				}
 			}
-			if ($composer_file === NULL) {
+			if ($loader === NULL) {
 				throw new StartException('Composer loader not found');
 			}
-			//读取文件
-			$filecontent = file_get_contents($f);
-			preg_match('/class ComposerAutoloaderInit(\w+)/', $filecontent, $matches);
-			$className = 'ComposerAutoloaderInit' . $matches[1];
-			$loader = $className::getLoader();
 		}
 		return $loader;
 	}
@@ -154,16 +148,16 @@ class Yesf {
 	 * @access public
 	 */
 	public function bootstrap() {
-		$bootstrapClass = $this->getConfig('application.bootstrap');
-		if (empty($bootstrapClass)) {
-			$bootstrapClass = 'Bootstrap';
+		$className = $this->getConfig('application.bootstrap');
+		if (empty($className)) {
+			$className = 'Bootstrap';
 		}
-		$bootstrap = APP_PATH . $bootstrapClass . '.php';
-		if (is_file($bootstrap)) {
-			require($bootstrap);
-			$bootstrapClass = new $bootstrapClass;
-			if (method_exists($bootstrapClass, 'run')) {
-				$bootstrapClass->run();
+		$classPath = APP_PATH . $className . '.php';
+		if (is_file($classPath)) {
+			require($classPath);
+			$clazz = new $className;
+			if (method_exists($clazz, 'run')) {
+				$clazz->run();
 			}
 		}
 		return $this;
