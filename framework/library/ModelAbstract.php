@@ -150,6 +150,7 @@ abstract class ModelAbstract {
 	 * @param array $set
 	 * @param array $cols
 	 * @param array $filter
+	 * @return int
 	 */
 	public static function set($set, $cols, $filter = NULL) {
 		if ($filter === NULL) {
@@ -185,7 +186,8 @@ abstract class ModelAbstract {
 				}
 			}
 		}
-		return static::executeBuilder($query);
+		$result = static::executeBuilder($query);
+		return intval($result['_affected_rows']);
 	}
 	/**
 	 * 删除数据
@@ -239,9 +241,9 @@ abstract class ModelAbstract {
 			}
 		}
 		$query = static::insert()->cols($data);
-		static::executeBuilder($query);
+		$result = static::executeBuilder($query);
 		if (!empty(static::$_primary_key)) {
-			return intval(Database::get()->getLastId());
+			return intval($result['_insert_id']);
 		} else {
 			return NULL;
 		}
