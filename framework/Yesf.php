@@ -28,38 +28,46 @@ set_error_handler(function($errno, $errstr, $errfile, $errline, $errcontext) {
 
 class Yesf {
 	/**
-	 * 运行环境，需要与配置文件中同名
-	 * 其中，设置为develop时，会自动打开一些调试功能
-	 */
-	public $environment = 'product';
-	/**
-	 * 基本目录
+	 * 基本路径
 	 * 在进行路由解析时会忽略此前缀。默认为/，即根目录
 	 * 一般不会有此需要，仅当程序处于网站二级目录时会用到
 	 */
 	protected static $baseUri = '/';
-	//配置
-	protected $config = NULL;
 	//缓存namespace
 	protected static $_app_namespace = NULL;
 	//单例化
 	protected static $_instance = NULL;
+	//运行环境，需要与配置文件中同名
+	public $environment = 'product';
+	//配置
+	protected $config = NULL;
 	/**
-	 * 初始化
+	 * 获取单例类
+	 * 
+	 * @access public
+	 * @return object(Yesf)
 	 */
-	public static function app() {
+	public static function app(): Yesf {
 		if (self::$_instance === NULL) {
 			throw new StartException('Yesf have not been construct yet');
 		}
 		return self::$_instance;
 	}
+	/**
+	 * 实例化
+	 * 
+	 * @access public
+	 * @param string/array/config $config 配置
+	 */
 	public function __construct($config) {
-		$this->init();
 		//swoole检查
 		if (!extension_loaded('swoole') && !defined('YESF_UNIT')) {
 			throw new StartException('Extension "Swoole" is required');
 		}
-		self::$_instance = $this;
+		//环境
+		if (defined('APP_ENV')) {
+			$this->environment = APP_ENV;
+		}
 		//配置
 		if ((is_string($config) && is_file($config)) || is_array($config)) {
 			$config = new Config($config);
@@ -85,9 +93,11 @@ class Yesf {
 			Swoole::init();
 			Swoole::initConsole();
 		}
+		self::$_instance = $this;
 	}
 	/**
 	 * 通过读取文件，获取Composer的Loader
+	 * 
 	 * @access public
 	 * @return object(ClassLoader)
 	 */
@@ -114,7 +124,9 @@ class Yesf {
 		return $loader;
 	}
 	/**
-	 * 将部分变量对外暴露
+	 * 将部分变量对外暴露，方便使用
+	 * 
+	 * @access public
 	 */
 	public function getConfig($key = NULL) {
 		if ($key === NULL) {
@@ -136,10 +148,11 @@ class Yesf {
 		return self::$_app_namespace;
 	}
 	/**
-	 * 以下是各个过程的事件
+	 * Bootstrap
+	 * 调用自定义的bootstrap，进行另外的一些初始化操作
+	 * 
+	 * @access public
 	 */
-	protected function init() {
-	}
 	public function bootstrap() {
 		$bootstrapClass = $this->getConfig('application.bootstrap');
 		if (empty($bootstrapClass)) {
@@ -155,6 +168,11 @@ class Yesf {
 		}
 		return $this;
 	}
+	/**
+	 * 初始化完成，开始运行
+	 * 
+	 * @access public
+	 */
 	public function run() {
 		Swoole::start();
 	}
