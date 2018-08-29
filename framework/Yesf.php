@@ -60,6 +60,7 @@ class Yesf {
 	 * @param string/array/config $config 配置
 	 */
 	public function __construct($config) {
+		self::$_instance = $this;
 		//swoole检查
 		if (!extension_loaded('swoole') && !defined('YESF_UNIT')) {
 			throw new StartException('Extension "Swoole" is required');
@@ -93,7 +94,6 @@ class Yesf {
 			Swoole::init();
 			Swoole::initConsole();
 		}
-		self::$_instance = $this;
 	}
 	/**
 	 * 通过读取文件，获取Composer的Loader

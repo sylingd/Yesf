@@ -114,7 +114,6 @@ class Dispatcher {
 				if (Plugin::trigger('dispatchFailed', [$module, $controller, $action, $request, $yesf_response]) === NULL) {
 					$yesf_response->disableView();
 					$yesf_response->status(404);
-					$yesf_response->write('');
 				}
 			}
 		}
