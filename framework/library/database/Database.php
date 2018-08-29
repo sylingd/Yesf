@@ -92,7 +92,6 @@ class Database {
 				'port' => $config->get("database.{$type}.port")
 			];
 		}
-		$uid = \Swoole\Coroutine::getuid();
 		self::$db[$type] = new $driver($config);
 		return self::$db[$type];
 	}
