@@ -19,17 +19,20 @@ use \yesf\library\exception\DBException;
 abstract class ModelAbstract {
 	protected static $_table_name = '';
 	protected static $_primary_key = 'id';
-	private static $_instance = NULL;
+	private static $_instance = [];
 	/**
 	 * 单例化
 	 * @access public
 	 * @return object(ModelAbstract)
 	 */
 	public static function getInstance() {
-		if (self::$_instance === NULL) {
-			self::$_instance = new static;
+		$name = get_called_class();
+		if (!isset(self::$_instance[$name])) {
+			$clazz = new static;
+			self::$_instance[$name] = $clazz;
+			return $clazz;
 		}
-		return self::$_instance;
+		return self::$_instance[$name];
 	}
 	public function __construct() {
 		//检查table_name是否为空
