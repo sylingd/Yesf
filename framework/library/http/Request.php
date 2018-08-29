@@ -15,6 +15,7 @@ use \yesf\Yesf;
 
 class Request {
 	private $sw_request;
+	private $extra_infos = [];
 	public $extension = NULL;
 	public $param = [];
 	public function __construct($sw_request) {
@@ -24,10 +25,22 @@ class Request {
 		return $this->sw_request->rawContent();
 	}
 	public function __get($name) {
-		return isset($this->sw_request->{$name}) ? $this->sw_request->{$name} : NULL;
+		if (isset($this->extra_infos[$name])) {
+			return $this->extra_infos[$name];
+		}
+		if (isset($this->sw_request->{$name})) {
+			return $this->sw_request->{$name};
+		 }
+		 return NULL;
 	}
 	public function __isset($name) {
-		return isset($this->sw_request->{$name});
+		return isset($this->extra_infos[$name]) || isset($this->sw_request->{$name});
+	}
+	public function __set($name, $value) {
+		$this->extra_infos[$name] = $value;
+	}
+	public function __unset($name) {
+		unset($this->extra_infos[$name]);
 	}
 	public function __destruct() {
 		$this->sw_request = NULL;
