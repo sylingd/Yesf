@@ -89,6 +89,7 @@ class Response {
 	 */
 	public function render($tpl) {
 		extract($this->_tpl_vars, EXTR_SKIP);
+		ob_implicit_flush(FALSE);
 		ob_start();
 		if (is_file($this->_tpl_path . $tpl . '.' . self::$_tpl_extension)) {
 			include($this->_tpl_path . $tpl . '.' . self::$_tpl_extension);
