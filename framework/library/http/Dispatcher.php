@@ -108,13 +108,14 @@ class Dispatcher {
 					//触发失败事件
 					if (Plugin::trigger('dispatchFailed', [$module, $controller, $action, $request, $yesf_response, $e]) === NULL) {
 						//如果用户没有自行处理，输出默认模板
+						$yesf_response->disableView();
 						$yesf_response->clearAssign();
-						$yesf_response->assign('module', $module);
-						$yesf_response->assign('controller', $controller);
-						$yesf_response->assign('action', $action);
-						$yesf_response->assign('e', $e);
-						$yesf_response->assign('req', $request);
 						if (Yesf::app()->getEnvironment() === 'develop') {
+							$yesf_response->assign('module', $module);
+							$yesf_response->assign('controller', $controller);
+							$yesf_response->assign('action', $action);
+							$yesf_response->assign('e', $e);
+							$yesf_response->assign('req', $request);
 							$yesf_response->display(YESF_ROOT . 'data/error_debug.php', TRUE);
 						} else {
 							$yesf_response->display(YESF_ROOT . 'data/error.php', TRUE);
@@ -129,12 +130,12 @@ class Dispatcher {
 				if (Plugin::trigger('dispatchFailed', [$module, $controller, $action, $request, $yesf_response]) === NULL) {
 					$yesf_response->disableView();
 					$yesf_response->status(404);
-					$yesf_response->assign('module', $module);
-					$yesf_response->assign('controller', $controller);
-					$yesf_response->assign('action', $action);
-					$yesf_response->assign('code', $code);
-					$yesf_response->assign('req', $request);
 					if (Yesf::app()->getEnvironment() === 'develop') {
+						$yesf_response->assign('module', $module);
+						$yesf_response->assign('controller', $controller);
+						$yesf_response->assign('action', $action);
+						$yesf_response->assign('code', $code);
+						$yesf_response->assign('req', $request);
 						$yesf_response->display(YESF_ROOT . 'data/error_404_debug.php', TRUE);
 					} else {
 						$yesf_response->display(YESF_ROOT . 'data/error_404.php', TRUE);

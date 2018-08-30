@@ -27,33 +27,33 @@ use yesf\Constant;
 		font-size: 18px;
 	}
 	.request {
-      	padding: 50px 80px;
-    }
-    .request .title {
-      	text-transform: uppercase;
-      	font-size: 18px;
-      	letter-spacing: 1px;
-      	padding: 0 5px 5px 5px;
-      	margin-bottom: 15px;
-    }
-    .request table {
-      	width: 100%;
-      	border-collapse: collapse;
-      	margin-bottom: 80px;
-    }
-    .request table td {
-      	padding: 8px 6px;
-      	font-size: 13px;
-      	color: #455275;
-      	border-bottom: 1px solid #e8e8e8;
-      	word-break: break-word;
-    }
-    .request table td.name {
-      	font-weight: 600;
-      	color: #999;
-      	width: 30%;
-      	text-transform: uppercase;
-    }
+		padding: 50px 80px;
+	}
+	.request .title {
+		text-transform: uppercase;
+		font-size: 18px;
+		letter-spacing: 1px;
+		padding: 0 5px 5px 5px;
+		margin-bottom: 15px;
+	}
+	.request table {
+		width: 100%;
+		border-collapse: collapse;
+		margin-bottom: 80px;
+	}
+	.request table td {
+		padding: 8px 6px;
+		font-size: 13px;
+		color: #455275;
+		border-bottom: 1px solid #e8e8e8;
+		word-break: break-word;
+	}
+	.request table td.name {
+		font-weight: 600;
+		color: #999;
+		width: 30%;
+		text-transform: uppercase;
+	}
 	</style>
 </head>
 <body>
