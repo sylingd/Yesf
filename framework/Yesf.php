@@ -38,7 +38,7 @@ class Yesf {
 	//单例化
 	protected static $_instance = NULL;
 	//运行环境，需要与配置文件中同名
-	public $environment = 'product';
+	protected $environment = 'product';
 	//配置
 	protected $config = NULL;
 	/**
@@ -131,6 +131,9 @@ class Yesf {
 	}
 	public function setEnvironment($env) {
 		$this->environment = $env;
+	}
+	public function getEnvironment() {
+		return $this->environment;
 	}
 	public static function setBaseUri($uri) {
 		self::$baseUri = $uri;

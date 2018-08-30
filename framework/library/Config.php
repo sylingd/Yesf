@@ -29,7 +29,7 @@ class Config {
 	protected $replaceConf = [];
 	public function __construct($conf, $appName = NULL) {
 		$this->appName = $appName;
-		$this->environment = Yesf::app()->environment;
+		$this->environment = Yesf::app()->getEnvironment();
 		if (is_array($conf)) {
 			$this->type = Constant::CONFIG_FILE;
 			$this->conf = $conf;

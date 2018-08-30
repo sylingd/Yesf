@@ -76,23 +76,30 @@ class Response {
 	 * 
 	 * @access public
 	 * @param string $tpl 模板路径
+	 * @param boolean $is_abs_path 是否为绝对路径
 	 */
-	public function display($tpl) {
-		$this->write($this->render($tpl));
+	public function display($tpl, $is_abs_path = FALSE) {
+		$this->write($this->render($tpl, $is_abs_path));
 	}
 	/**
 	 * 获取一个模板的渲染结果但不输出
 	 * 
 	 * @access public
 	 * @param string $tpl 模板路径
+	 * @param boolean $is_abs_path 是否为绝对路径
 	 * @return string
 	 */
-	public function render($tpl) {
+	public function render($tpl, $is_abs_path = FALSE) {
+		if ($is_abs_path) {
+			$_tpl_full_path = $tpl;
+		} else {
+			$_tpl_full_path = $this->_tpl_path . $tpl . '.' . self::$_tpl_extension;
+		}
 		extract($this->_tpl_vars, EXTR_SKIP);
 		ob_implicit_flush(FALSE);
 		ob_start();
-		if (is_file($this->_tpl_path . $tpl . '.' . self::$_tpl_extension)) {
-			include($this->_tpl_path . $tpl . '.' . self::$_tpl_extension);
+		if (is_file($_tpl_full_path)) {
+			include($_tpl_full_path);
 		}
 		return ob_get_clean();
 	}
@@ -125,6 +132,14 @@ class Response {
 	 */
 	public function assign($k, $v) {
 		$this->_tpl_vars[$k] = $v;
+	}
+	/**
+	 * 清空模板变量
+	 * 
+	 * @access public
+	 */
+	public function clearAssign() {
+		$this->_tpl_vars[] = [];
 	}
 	/**
 	 * 向浏览器发送一个header信息

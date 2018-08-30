@@ -18,6 +18,7 @@ class Request {
 	private $extra_infos = [];
 	public $extension = NULL;
 	public $param = [];
+	public $request_uri = '';
 	public function __construct($sw_request) {
 		$this->sw_request = $sw_request;
 	}

@@ -40,6 +40,7 @@ class HttpServer {
 		$result = Plugin::trigger('routerStart', [$uri]);
 		//如果plugin返回了解析结果，则终止默认的路由解析
 		$yesfRequest = new Request($request);
+		$yesfRequest->request_uri = $uri;
 		if (!is_array($result)) {
 			//为空则读取默认设置
 			if (empty($uri)) {
