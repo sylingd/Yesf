@@ -92,7 +92,6 @@ class Yesf {
 				throw new StartException('Yesf require Swoole 4.0 or later');
 			}
 			Swoole::init();
-			Swoole::initConsole();
 		}
 	}
 	/**

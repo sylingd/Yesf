@@ -62,27 +62,6 @@ class Swoole {
 	public static function start() {
 		self::$server->start();
 	}
-	public static function initConsole() {
-		$ip =  Yesf::app()->getConfig('swoole.console.ip');
-		$port =  Yesf::app()->getConfig('swoole.console.port');
-		if (empty($ip) || empty($port)) {
-			return;
-		}
-		$config = [
-			'ip' => $ip,
-			'port' => $port, //监听端口
-			'advanced' => [ //关于Swoole的高级选项
-				'open_length_check' => 1,
-				'package_length_type' => 'N',
-				'package_length_offset' => 0,
-				'package_body_offset' => 4,
-				'package_max_length' => 1048576, // 1024 * 1024,
-				'open_tcp_nodelay' => 1,
-				'backlog' => 100,
-			]
-		];
-		self::addListener(Constant::LISTEN_TCP, $config, '\\yesf\\library\\event\\Console::receive');
-	}
 	/**
 	 * 获取统计数据
 	 * @return array

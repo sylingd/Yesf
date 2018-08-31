@@ -61,6 +61,10 @@ class Server {
 		} else {
 			self::setProcessName(Yesf::app()->getConfig('application.name') . ' worker ' . $worker_id);
 		}
+		//清除opcache
+		if (function_exists('opcache_reset')) {
+			opcache_reset();
+		}
 		//标记一下
 		Swoole::$isTaskWorker = $serv->taskworker;
 		//回调
