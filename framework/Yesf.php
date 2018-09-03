@@ -32,15 +32,18 @@ class Yesf {
 	 * 在进行路由解析时会忽略此前缀。默认为/，即根目录
 	 * 一般不会有此需要，仅当程序处于网站二级目录时会用到
 	 */
-	protected static $baseUri = '/';
+	protected static $_base_uri = '/';
 	//缓存namespace
 	protected static $_app_namespace = NULL;
 	//单例化
 	protected static $_instance = NULL;
 	//运行环境，需要与配置文件中同名
-	protected $environment = 'product';
+	protected $_environment = 'product';
 	//配置
-	protected $config = NULL;
+	protected static $_config_project = NULL;
+	protected static $_config_server = NULL;
+	protected $_config = NULL;
+	protected $_config_raw = NULL;
 	/**
 	 * 获取单例类
 	 * 
@@ -59,7 +62,7 @@ class Yesf {
 	 * @access public
 	 * @param string/array/config $config 配置
 	 */
-	public function __construct($config) {
+	public function __construct() {
 		self::$_instance = $this;
 		//swoole检查
 		if (!extension_loaded('swoole') && !defined('YESF_UNIT')) {
@@ -67,25 +70,16 @@ class Yesf {
 		}
 		//环境
 		if (defined('APP_ENV')) {
-			$this->environment = APP_ENV;
+			$this->_environment = APP_ENV;
 		}
-		//配置
-		if ((is_string($config) && is_file($config)) || is_array($config)) {
-			$config = new Config($config);
-		} else {
-			throw new StartException('Config can not be recognised');
-		}
-		$config->replace('application.dir', APP_PATH);
-		$this->config = $config;
-		self::$_app_namespace = $config->get('application.namespace');
+		//其他各项配置
+		self::$_config_server = require(APP_PATH . 'config/Server.php');
+		self::reloadProjectConfig();
 		//获取Composer的Loader
-		self::getLoader()->addPsr4($config->get('application.namespace') . '\\model\\', APP_PATH . 'models');
-		Dispatcher::setDefaultModule($config->get('application.module'));
-		Response::_init($config);
-		Database::_init($config);
+		self::getLoader()->addPsr4(self::$_config_project['namespace'] . '\\model\\', APP_PATH . 'models');
 		//编码相关
 		if (function_exists('mb_internal_encoding')) {
-			mb_internal_encoding($config->get('application.charset'));
+			mb_internal_encoding(self::$_config_project['charset']);
 		}
 		if (extension_loaded('swoole')) {
 			if (version_compare(SWOOLE_VERSION, '4.0.0', '<')) {
@@ -121,24 +115,44 @@ class Yesf {
 	 * 
 	 * @access public
 	 */
+	public static function getProjectConfig($key = NULL) {
+		if ($key === NULL) {
+			return self::$_config_project;
+		} else {
+			return self::$_config_project[$key];
+		}
+	}
+	public static function reloadProjectConfig() {
+		self::$_config_project = require(APP_PATH . 'config/Project.php');
+		self::$_app_namespace = self::$_config_project['namespace'];
+		Dispatcher::init();
+		Response::init();
+	}
+	public static function getServerConfig($key = NULL) {
+		if ($key === NULL) {
+			return self::$_config_server;
+		} else {
+			return self::$_config_server[$key];
+		}
+	}
 	public function getConfig($key = NULL) {
 		if ($key === NULL) {
-			return $this->config;
+			return $this->_config;
 		} else {
-			return $this->config->get($key);
+			return $this->_config->get($key);
 		}
 	}
 	public function setEnvironment($env) {
-		$this->environment = $env;
+		$this->_environment = $env;
 	}
 	public function getEnvironment() {
-		return $this->environment;
+		return $this->_environment;
 	}
 	public static function setBaseUri($uri) {
-		self::$baseUri = $uri;
+		self::$_base_uri = $uri;
 	}
 	public static function getBaseUri() {
-		return self::$baseUri;
+		return self::$_base_uri;
 	}
 	public static function getAppNamespace() {
 		return self::$_app_namespace;
@@ -150,7 +164,7 @@ class Yesf {
 	 * @access public
 	 */
 	public function bootstrap() {
-		$className = $this->getConfig('application.bootstrap');
+		$className = self::getProjectConfig('bootstrap');
 		if (empty($className)) {
 			$className = 'Bootstrap';
 		}
@@ -169,7 +183,23 @@ class Yesf {
 	 * 
 	 * @access public
 	 */
-	public function run() {
+	public function run($config) {
+		$this->_config_raw = $config;
 		Swoole::start();
+	}
+	/**
+	 * 每次Woker启动时进行的初始化
+	 * 用于各种需要被动态重载的内容
+	 */
+	public function initInWorker() {
+		//配置
+		if ((is_string($this->_config_raw) && is_file($this->_config_raw)) || is_array($this->_config_raw)) {
+			$this->_config = new Config($this->_config_raw);
+		} else {
+			throw new StartException('Config can not be recognised');
+		}
+		self::reloadProjectConfig();
+		Database::init();
+		Response::initInWorker();
 	}
 }

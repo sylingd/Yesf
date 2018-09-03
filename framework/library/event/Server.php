@@ -32,11 +32,11 @@ class Server {
 	 * @param object $serv
 	 */
 	public static function eventStart($serv) {
-		self::setProcessName(Yesf::app()->getConfig('application.name') . ' master');
-		$pidPath = Yesf::app()->getConfig('swoole.pid')  . '/';
+		self::setProcessName(Yesf::getProjectConfig('name') . ' master');
+		$pidPath = Yesf::getServerConfig('swoole.pid')  . '/';
 		try {
-			file_put_contents($pidPath . Yesf::app()->getConfig('application.name') . '_master.pid', $serv->master_pid);
-			file_put_contents($pidPath . Yesf::app()->getConfig('application.name') . '_manager.pid', $serv->manager_pid);
+			file_put_contents($pidPath . Yesf::getProjectConfig('name') . '_master.pid', $serv->master_pid);
+			file_put_contents($pidPath . Yesf::getProjectConfig('name') . '_manager.pid', $serv->manager_pid);
 		} catch (\Exception $e) {
 			//忽略写入错误
 		}
@@ -47,7 +47,7 @@ class Server {
 	 * @param object $serv
 	 */
 	public static function eventManagerStart($serv) {
-		self::setProcessName(Yesf::app()->getConfig('application.name') . ' manager');
+		self::setProcessName(Yesf::getProjectConfig('name') . ' manager');
 	}
 	public static function eventManagerStop() {
 	}
@@ -67,7 +67,7 @@ class Server {
 			return;
 		}
 		$pid = $serv->master_pid;
-		$watcher_name = Yesf::app()->getConfig('application.name') . ' hot reload';
+		$watcher_name = Yesf::getProjectConfig('name') . ' hot reload';
 		$watcher_process = new \Swoole\Process(function($worker) use ($watcher_name, &$pid, &$worker_pid) {
 			if (function_exists('cli_set_process_title')) {
 				cli_set_process_title($watcher_name);
@@ -79,7 +79,6 @@ class Server {
 			$list = [];
 			$scan_dir = function($dir) use (&$scan_dir, &$list, &$notify) {
 				if (is_dir($dir)) {
-					echo "Listen $dir\n";
 					$list[inotify_add_watch($notify, $dir, IN_ALL_EVENTS)] = $dir;
 					$files = array_diff(scandir($dir), ['.', '..']);
 					foreach ($files as $file) {
@@ -160,12 +159,13 @@ class Server {
 	 * @param int $worker_id
 	 */
 	public static function eventWorkerStart($serv, $worker_id) {
+		Yesf::app()->initInWorker();
 		//根据类型，设置不同的进程名
 		if ($serv->taskworker) {
-			self::setProcessName(Yesf::app()->getConfig('application.name') . ' task ' . $worker_id);
+			self::setProcessName(Yesf::getProjectConfig('name') . ' task ' . $worker_id);
 		} else {
 			self::initHotReload($serv);
-			self::setProcessName(Yesf::app()->getConfig('application.name') . ' worker ' . $worker_id);
+			self::setProcessName(Yesf::getProjectConfig('name') . ' worker ' . $worker_id);
 		}
 		//清除opcache
 		if (function_exists('opcache_reset')) {

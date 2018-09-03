@@ -19,14 +19,16 @@ use \yesf\library\http\Router;
 use \yesf\library\http\Dispatcher;
 
 class HttpServer {
+	protected static $router = NULL;
+	protected static $module = 'index';
+	public static function init() {
+		self::$module = Yesf::getProjectConfig('index');
+		self::$router = Yesf::getProjectConfig('router');
+	}
 	//HTTP事件：收到请求
 	public static function eventRequest($request, $response) {
-		static $baseUri = NULL;
-		static $baseUriLen = NULL;
-		if ($baseUri === NULL) {
-			$baseUri = Yesf::getBaseUri();
-			$baseUriLen = strlen($baseUri);
-		}
+		$baseUri = Yesf::getBaseUri();
+		$baseUriLen = strlen($baseUri);
 		//路由解析
 		$uri = $request->server['request_uri'];
 		if (strpos('?', $uri) !== FALSE) {
@@ -45,13 +47,13 @@ class HttpServer {
 			//为空则读取默认设置
 			if (empty($uri)) {
 				$result = [[], [
-					'module' => Yesf::app()->getConfig('application.module'),
+					'module' => self::$module,
 					'controller' => 'index',
 					'action' => 'index'
 				]];
 			} else {
 				//扩展名自动处理
-				if (Yesf::app()->getConfig('application.router.extension')) {
+				if (self::$router['extension']) {
 					$hasPoint = strrpos($uri, '.');
 					if ($hasPoint !== FALSE) {
 						$yesfRequest->extension = substr($uri, $hasPoint + 1);
@@ -59,8 +61,7 @@ class HttpServer {
 					}
 				}
 				//进行解析
-				$routerType = Yesf::app()->getConfig('application.router.type');
-				switch ($routerType) {
+				switch (self::$router['type']) {
 					case 'map':
 						$result = Router::parseMap($uri);
 						break;

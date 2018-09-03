@@ -29,15 +29,32 @@ class Response {
 	protected $_tpl_auto = NULL;
 	//默认模板
 	protected $_tpl_default = '';
+	//Cookie相关配置
+	protected static $cookie = [
+		'expire' => -1,
+		'path' => '/',
+		'domain' => ''
+	];
 	/**
 	 * 初始化函数
 	 * 
 	 * @access public
-	 * @param object $config
 	 */
-	public static function _init(Config $config) {
-		self::$_tpl_auto_config = ($config->get('application.view.auto') == 1) ? TRUE : FALSE;
-		self::$_tpl_extension = ($config->has('application.view.extension') ? $config->get('application.view.extension') : 'phtml');
+	public static function init() {
+		$view_config = Yesf::getProjectConfig('view');
+		self::$_tpl_auto_config = ($view_config['auto'] == 1) ? TRUE : FALSE;
+		self::$_tpl_extension = ($view_config['extension'] ? $view_config['extension'] : 'phtml');
+	}
+	public static function initInWorker() {
+		if (Yesf::app()->getConfig('cookie.expire')) {
+			self::$cookie['expire'] = Yesf::app()->getConfig('cookie.expire');
+		}
+		if (Yesf::app()->getConfig('cookie.path')) {
+			self::$cookie['path'] = Yesf::app()->getConfig('cookie.path');
+		}
+		if (Yesf::app()->getConfig('cookie.domain')) {
+			self::$cookie['domain'] = Yesf::app()->getConfig('cookie.domain');
+		}
 	}
 	/**
 	 * 构建函数
@@ -50,7 +67,7 @@ class Response {
 		$this->_sw_response = $response;
 		$this->_tpl_default = $tpl_default;
 		if ($tpl_path === NULL) {
-			$tpl_path = Yesf::app()->getConfig('application.dir') . 'views/';
+			$tpl_path = APP_PATH . 'views/';
 		}
 		$this->_tpl_path = $tpl_path;
 	}
@@ -177,7 +194,7 @@ class Response {
 		$name = $param['name'];
 		//处理过期时间
 		if (!isset($param['expire'])) {
-			$expire = time() + Yesf::app()->getConfig('cookie.expire');
+			$expire = self::$cookie['expire'] === -1 ? 0 : time() + self::$cookie['expire'];
 		} elseif ($param['expire'] === -1) {
 			$expire = time() - 3600;
 		} elseif ($param['expire'] === 0) {
@@ -186,8 +203,8 @@ class Response {
 			$expire = time() + $param['expire'];
 		}
 		//其他参数的处理
-		!isset($param['path']) && $param['path'] = Yesf::app()->getConfig('cookie.path');
-		!isset($param['domain']) && $param['domain'] = Yesf::app()->getConfig('cookie.domain');
+		!isset($param['path']) && $param['path'] = self::$cookie['path'];
+		!isset($param['domain']) && $param['domain'] = self::$cookie['domain'];
 		!isset($param['httponly']) && $param['httponly'] = FALSE;
 		//HTTPS
 		if (!isset($param['https'])) {

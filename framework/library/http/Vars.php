@@ -25,7 +25,7 @@ class Vars {
 		}
 		$mimeType = self::$mimeTypes[$extension];
 		if (in_array($extension, ['js', 'json', 'atom', 'rss', 'xhtml'], TRUE) || substr($mimeType, 0, 5) === 'text/') {
-			$mimeType .= '; charset=' . Yesf::app()->getConfig('charset');
+			$mimeType .= '; charset=' . Yesf::getProjectConfig('charset');
 		}
 		return $mimeType;
 	}

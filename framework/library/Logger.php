@@ -26,23 +26,20 @@ class Logger {
 		'alert' => 6,
 		'emergency' => 7
 	];
+	protected static $log_level = NULL;
+	protected static $logger = NULL;
 	/**
-	 * 记录日志主函数
-	 * @access public
-	 * @param string $type 日志类型
-	 * @param string $message 日志内容
+	 * Init
 	 */
-	public static function log(string $type, string $message) {
-		static $logger = NULL;
+	public static function init() {
 		if (!class_exists('\\SeasLog')) {
 			return;
 		}
-		//初始化
 		$level = Yesf::app()->getConfig('logger.level');
 		if ($level === 'none') {
 			return;
 		}
-		$log_level = ($level && isset(self::LOG_LEVEL[$level])) ? self::LOG_LEVEL[$level] : 3;
+		self::$log_level = ($level && isset(self::LOG_LEVEL[$level])) ? self::LOG_LEVEL[$level] : 3;
 		if ($logger === NULL) {
 			if (Yesf::app()->getConfig('logger.path')) {
 				SeasLog::setBasePath(Yesf::app()->getConfig('logger.path'));
@@ -50,18 +47,26 @@ class Logger {
 			if (Yesf::app()->getConfig('logger.name')) {
 				SeasLog::setLogger(Yesf::app()->getConfig('logger.name'));
 			} else {
-				SeasLog::setLogger(Yesf::app()->getConfig('application.name'));
+				SeasLog::setLogger(Yesf::getProjectConfig('name'));
 			}
-			$logger = SeasLog::getLastLogger();
+			self::$logger = SeasLog::getLastLogger();
 		}
+	}
+	/**
+	 * 记录日志主函数
+	 * @access public
+	 * @param string $type 日志类型
+	 * @param string $message 日志内容
+	 */
+	public static function log(string $type, string $message) {
 		//判断是否应该记录
-		//不使用SeasLog自带的判断，是为了方便程序后期进行修改
-		if (!isset(self::LOG_LEVEL[$type]) || self::LOG_LEVEL[$type] < $log_level) {
+		//不使用SeasLog自带的判断，是为了方便程序动态进行修改
+		if (!isset(self::LOG_LEVEL[$type]) || self::LOG_LEVEL[$type] < self::$log_level) {
 			return;
 		}
 		//获取SeasLog的常量
 		$type = constant('SEASLOG_' . strtoupper($type));
-		$logger->log($type, $message);
+		self::$logger->log($type, $message);
 	}
 	/**
 	 * 以下为各个级别的封装

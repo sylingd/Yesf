@@ -27,9 +27,9 @@ class Database {
 	 * init阶段，读取基本配置
 	 * 
 	 * @access public
-	 * @param object(Config) $config
 	 */
-	public static function _init(Config $config) {
+	public static function init() {
+		$config = Yesf::app()->getConfig();
 		self::$default_type = $config->get('database.type');
 		$c = $config->get('pool');
 		foreach ($c as $k => $v) {

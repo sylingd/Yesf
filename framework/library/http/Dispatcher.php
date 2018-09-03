@@ -22,6 +22,10 @@ class Dispatcher {
 	private static $default_module = 'index';
 	private static $default_action = 'index';
 	private static $default_controller = 'index';
+	public static function init() {
+		self::$modules = Yesf::getProjectConfig('modules');
+		self::setDefaultModule(Yesf::getProjectConfig('module'));
+	}
 	/**
 	 * 设置默认模块
 	 * @param string $module
@@ -54,9 +58,6 @@ class Dispatcher {
 	public static function isValid($module, $controller, $action) {
 		$controllerName = Yesf::getAppNamespace() . '\\controller\\' . $module . '\\' . ucfirst($controller);
 		if (!class_exists($controllerName, FALSE)) {
-			if (self::$modules === NULL) {
-				self::$modules = explode(',', Yesf::app()->getConfig('application.modules'));
-			}
 			if (!in_array($module, self::$modules, TRUE)) {
 				return Constant::ROUTER_ERR_MODULE;
 			}
@@ -86,7 +87,7 @@ class Dispatcher {
 		$module = empty($routeInfo['module']) ? self::$default_module : $routeInfo['module'];
 		$controller = empty($routeInfo['controller']) ? self::$default_controller : $routeInfo['controller'];
 		$action = empty($routeInfo['action']) ? self::$default_action : $routeInfo['action'];
-		$viewDir = Yesf::app()->getConfig('application.dir') . 'modules/' . $module . '/views/';
+		$viewDir = APP_PATH . 'modules/' . $module . '/views/';
 		$yesf_response = new Response($response, $controller . '/' . $action, $viewDir);
 		if (!empty($request->extension)) {
 			$yesf_response->mimeType($request->extension);
