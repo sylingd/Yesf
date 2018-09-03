@@ -48,9 +48,12 @@ class Swoole {
 			$config['open_http2_protocol'] = TRUE;
 		}
 		self::$server->set($config);
+		//是否启用热更新
+		Server::prepareHotReload();
 		//基本事件
 		self::$server->on('Start', __NAMESPACE__ . '\\event\\Server::eventStart');
 		self::$server->on('ManagerStart', __NAMESPACE__ . '\\event\\Server::eventManagerStart');
+		self::$server->on('ManagerStop', __NAMESPACE__ . '\\event\\Server::eventManagerStop');
 		self::$server->on('WorkerStart', __NAMESPACE__ . '\\event\\Server::eventWorkerStart');
 		self::$server->on('WorkerError', __NAMESPACE__ . '\\event\\Server::eventWorkerError');
 		self::$server->on('Finish', __NAMESPACE__ . '\\event\\Server::eventFinish');

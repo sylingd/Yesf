@@ -18,6 +18,7 @@ use \yesf\library\Plugin;
 
 class Server {
 	public static $_listener = [];
+	private static $_hot_reload_lock = NULL;
 	private static function setProcessName($name) {
 		if (function_exists('cli_set_process_title')) {
 			cli_set_process_title($name);
@@ -48,6 +49,110 @@ class Server {
 	public static function eventManagerStart($serv) {
 		self::setProcessName(Yesf::app()->getConfig('application.name') . ' manager');
 	}
+	public static function eventManagerStop() {
+	}
+	/**
+	 * 启动热更新功能
+	 * 
+	 * @access protected
+	 */
+	public static function prepareHotReload() {
+		if (Yesf::app()->getEnvironment() === 'develop' && function_exists('inotify_init')) {
+			self::$_hot_reload_lock = new \Swoole\Lock(SWOOLE_MUTEX);
+		}
+	}
+	protected static function initHotReload($serv) {
+		//判断是否启动热更新功能
+		if (self::$_hot_reload_lock === NULL || !self::$_hot_reload_lock->trylock()) {
+			return;
+		}
+		$pid = $serv->master_pid;
+		$watcher_name = Yesf::app()->getConfig('application.name') . ' hot reload';
+		$watcher_process = new \Swoole\Process(function($worker) use ($watcher_name, &$pid, &$worker_pid) {
+			if (function_exists('cli_set_process_title')) {
+				cli_set_process_title($watcher_name);
+			} else {
+				swoole_set_process_name($watcher_name);
+			}
+			$notify = inotify_init();
+			//因为监听目录后，目录下的文件操作也会触发，所以只获取目录
+			$list = [];
+			$scan_dir = function($dir) use (&$scan_dir, &$list, &$notify) {
+				if (is_dir($dir)) {
+					echo "Listen $dir\n";
+					$list[inotify_add_watch($notify, $dir, IN_ALL_EVENTS)] = $dir;
+					$files = array_diff(scandir($dir), ['.', '..']);
+					foreach ($files as $file) {
+						$scan_dir($dir . '/' . $file);
+					}
+				}
+			};
+			$scan_dir(rtrim(APP_PATH, '/'));
+			//加入EventLoop
+			$reload_timer = NULL;
+			swoole_event_add($notify, function() use (&$notify, &$list, &$pid, &$reload_timer) {
+				$events = inotify_read($notify);
+				if (!empty($events)) {
+					$require_reload = FALSE;
+					foreach ($events as $event) {
+						$mask = $event['mask'];
+						if ($mask & IN_ISDIR) {
+							$mask = $mask ^ IN_ISDIR;
+						}
+						$fullpath = $list[$event['wd']] . '/' . $event['name'];
+						switch ($mask) {
+							case IN_CREATE:
+							case IN_MOVED_TO:
+								$require_reload = TRUE;
+								//添加目录时，建立监听
+								if (is_dir($fullpath)) {
+									$list[inotify_add_watch($notify, $fullpath, IN_ALL_EVENTS)] = $fullpath;
+								}
+								break;
+							case IN_DELETE_SELF:
+								$require_reload = TRUE;
+								//自身被删除
+								unset($list[$event['wd']]);
+								break;
+							case IN_DELETE:
+							case IN_MOVED_FROM:
+								$require_reload = TRUE;
+								if (($key = array_search($fullpath, $list, TRUE)) !== FALSE) {
+									unset($list[$key]);
+								}
+								break;
+							case IN_MODIFY:
+								$require_reload = TRUE;
+								break;
+						}
+					}
+					if ($require_reload) {
+						//延时0.5s
+						if ($reload_timer !== NULL) {
+							swoole_timer_clear($reload_timer);
+							$reload_timer = NULL;
+						}
+						$reload_timer = swoole_timer_after(500, function() use (&$pid, &$reload_timer) {
+							$reload_timer = NULL;
+							\Swoole\Process::kill($pid, SIGUSR1);
+						});
+					}
+				}
+			});
+			//检查master进程是否存在
+			swoole_timer_tick(1000, function() use (&$pid, &$worker) {
+				if (!\Swoole\Process::kill($pid, 0)) {
+					$worker->exit();
+				}
+			});
+		}, FALSE);
+		$watcher_process->start();
+		\Swoole\Process::signal(SIGCHLD, function($sig) {
+			//必须为false，非阻塞模式
+			while ($ret = \Swoole\Process::wait(false)) {
+			}
+		});
+	}
 	/**
 	 * 普通事件：启动一个进程
 	 * @access public
@@ -59,6 +164,7 @@ class Server {
 		if ($serv->taskworker) {
 			self::setProcessName(Yesf::app()->getConfig('application.name') . ' task ' . $worker_id);
 		} else {
+			self::initHotReload($serv);
 			self::setProcessName(Yesf::app()->getConfig('application.name') . ' worker ' . $worker_id);
 		}
 		//清除opcache
