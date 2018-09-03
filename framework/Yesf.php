@@ -13,6 +13,7 @@
 namespace yesf;
 use \yesf\library\Swoole;
 use \yesf\library\Config;
+use \yesf\library\Logger;
 use \yesf\library\http\Dispatcher;
 use \yesf\library\http\Response;
 use \yesf\library\database\Database;
@@ -71,6 +72,9 @@ class Yesf {
 		//环境
 		if (defined('APP_ENV')) {
 			$this->_environment = APP_ENV;
+		}
+		if (!defined('APP_PATH')) {
+			throw new StartException('You must define APP_PATH before initialize Yesf');
 		}
 		//其他各项配置
 		self::$_config_server = require(APP_PATH . 'config/Server.php');
@@ -199,6 +203,7 @@ class Yesf {
 			throw new StartException('Config can not be recognised');
 		}
 		self::reloadProjectConfig();
+		Logger::init();
 		Database::init();
 		Response::initInWorker();
 	}
