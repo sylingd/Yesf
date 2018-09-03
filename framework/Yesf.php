@@ -42,6 +42,7 @@ class Yesf {
 	protected $_environment = 'product';
 	//配置
 	protected static $_config_project = NULL;
+	protected static $_config_project_hash = '';
 	protected static $_config_server = NULL;
 	protected $_config = NULL;
 	protected $_config_raw = NULL;
@@ -75,6 +76,13 @@ class Yesf {
 		}
 		if (!defined('APP_PATH')) {
 			throw new StartException('You must define APP_PATH before initialize Yesf');
+		}
+		//配置检查
+		if (!is_file(APP_PATH . 'config/Project.php')) {
+			throw new StartException('Project configure file not found');
+		}
+		if (!is_file(APP_PATH . 'config/Server.php')) {
+			throw new StartException('Server configure file not found');
 		}
 		//其他各项配置
 		self::$_config_server = require(APP_PATH . 'config/Server.php');
@@ -127,6 +135,11 @@ class Yesf {
 		}
 	}
 	public static function reloadProjectConfig() {
+		$hash = md5_file(APP_PATH . 'config/Project.php');
+		if (self::$_config_project_hash === $hash) {
+			return;
+		}
+		self::$_config_project_hash = $hash;
 		self::$_config_project = require(APP_PATH . 'config/Project.php');
 		self::$_app_namespace = self::$_config_project['namespace'];
 		Dispatcher::init();
