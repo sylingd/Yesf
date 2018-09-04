@@ -5,7 +5,7 @@ use yesf\Constant;
 require(__DIR__ . '/../vendor/autoload.php');
 
 //从命令行读取参数
-$opt = getopt('a:c:skrfh', ['app:', 'config:', 'help', 'start', 'kill', 'reload', 'force']);
+$opt = getopt('a:c:skrfhd', ['app:', 'config:', 'help', 'start', 'kill', 'reload', 'force', 'develop']);
 
 //判断功能
 if (isset($opt['s']) || isset($opt['start'])) {
@@ -33,6 +33,7 @@ Arguments:
 	-a, --app The application path
 	-c, --config Config of application
 	-f, --force Is it forced to close (default not), use in -k/--kill
+	-d, --develop Set environment to "develop" to enable debug mode
 
 Examples:
 	yesf -s -a ./application -c ./application/config/env.ini
@@ -106,6 +107,9 @@ EOT;
 		if ($config === FALSE) {
 			echo "Config is invalid";
 			exit;
+		}
+		if (isset($opt['d']) || isset($opt['develop'])) {
+			define('APP_ENV', 'develop');
 		}
 		
 		//初始化
