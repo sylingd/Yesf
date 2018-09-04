@@ -1,0 +1,11 @@
+{
+	"name": "sylingd/yesf-app",
+	"description": "Yesf Application",
+	"keywords": [],
+	"license": "Apache-2.0",
+	"type": "project",
+	"require": {
+		"php": ">=7.0.0",
+		"sylingd/yesf-framework": "dev-master"
+	}
+}
