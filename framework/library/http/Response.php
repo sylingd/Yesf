@@ -14,13 +14,16 @@ namespace yesf\library\http;
 use \yesf\Yesf;
 use \yesf\library\Config;
 use \yesf\library\http\Vars as HttpVars;
+use yesf\library\exception\Exception;
 
 class Response {
 	protected static $_tpl_auto_config = FALSE;
 	//模板文件扩展名
 	protected static $_tpl_extension = 'phtml';
+	//模板引擎
+	protected static $_tpl_engine = NULL;
 	//模板变量
-	protected $_tpl_vars = [];
+	protected $_tpl_vars = NULL;
 	//模板目录
 	protected $_tpl_path;
 	//Swoole的Response
@@ -29,6 +32,8 @@ class Response {
 	protected $_tpl_auto = NULL;
 	//默认模板
 	protected $_tpl_default = '';
+	//模板引擎的实例化
+	protected $_tpl_engine_obj = NULL;
 	//Cookie相关配置
 	protected static $cookie = [
 		'expire' => -1,
@@ -56,6 +61,12 @@ class Response {
 			self::$cookie['domain'] = Yesf::app()->getConfig('cookie.domain');
 		}
 	}
+	public static function setTemplateEngine(string $clazz) {
+		if (!is_subclass_of($clazz, __NAMESPACE__ . '\\TemplateInterface')) {
+			throw new Exception("$clazz not implemented TemplateInterface");
+		}
+		self::$_tpl_engine = $clazz;
+	}
 	/**
 	 * 构建函数
 	 * 
@@ -70,6 +81,11 @@ class Response {
 			$tpl_path = APP_PATH . 'views/';
 		}
 		$this->_tpl_path = $tpl_path;
+		if (self::$_tpl_engine !== NULL) {
+			$this->_tpl_engine_obj = new self::$_tpl_engine;
+		} else {
+			$this->_tpl_vars = [];
+		}
 	}
 	/**
 	 * 设置模板路径
@@ -112,6 +128,9 @@ class Response {
 		} else {
 			$_tpl_full_path = $this->_tpl_path . $tpl . '.' . self::$_tpl_extension;
 		}
+		if (!$is_abs_path && $this->_tpl_engine_obj !== NULL) {
+			return $this->_tpl_engine_obj->render($_tpl_full_path);
+		}
 		extract($this->_tpl_vars, EXTR_SKIP);
 		ob_implicit_flush(FALSE);
 		ob_start();
@@ -148,7 +167,11 @@ class Response {
 	 * @param mixed $v 值
 	 */
 	public function assign($k, $v) {
-		$this->_tpl_vars[$k] = $v;
+		if ($this->_tpl_engine_obj !== NULL) {
+			$this->_tpl_engine_obj->assign($k, $v);
+		} else {
+			$this->_tpl_vars[$k] = $v;
+		}
 	}
 	/**
 	 * 清空模板变量
@@ -156,7 +179,11 @@ class Response {
 	 * @access public
 	 */
 	public function clearAssign() {
-		$this->_tpl_vars[] = [];
+		if ($this->_tpl_engine_obj !== NULL) {
+			$this->_tpl_engine_obj->clearAssign();
+		} else {
+			$this->_tpl_vars[] = [];
+		}
 	}
 	/**
 	 * 向浏览器发送一个header信息
