@@ -52,6 +52,7 @@ class Swoole {
 		Server::prepareHotReload();
 		//基本事件
 		self::$server->on('Start', __NAMESPACE__ . '\\event\\Server::eventStart');
+		self::$server->on('Shutdown', __NAMESPACE__ . '\\event\\Server::eventShutdown');
 		self::$server->on('ManagerStart', __NAMESPACE__ . '\\event\\Server::eventManagerStart');
 		self::$server->on('ManagerStop', __NAMESPACE__ . '\\event\\Server::eventManagerStop');
 		self::$server->on('WorkerStart', __NAMESPACE__ . '\\event\\Server::eventWorkerStart');

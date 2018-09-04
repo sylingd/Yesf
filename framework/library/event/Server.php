@@ -33,13 +33,23 @@ class Server {
 	 */
 	public static function eventStart($serv) {
 		self::setProcessName(Yesf::getProjectConfig('name') . ' master');
-		$pidPath = Yesf::getServerConfig('swoole.pid')  . '/';
+		$pidPath = rtrim(Yesf::getServerConfig('pid'), '/') . '/';
 		try {
 			file_put_contents($pidPath . Yesf::getProjectConfig('name') . '_master.pid', $serv->master_pid);
 			file_put_contents($pidPath . Yesf::getProjectConfig('name') . '_manager.pid', $serv->manager_pid);
 		} catch (\Exception $e) {
 			//忽略写入错误
 		}
+	}
+	/**
+	 * 普通事件：关闭程序
+	 * @access public
+	 * @param object $serv
+	 */
+	public static function eventShutdown($serv) {
+		$pidPath = rtrim(Yesf::getServerConfig('pid'), '/') . '/';
+		@unlink($pidPath . Yesf::getProjectConfig('name') . '_master.pid');
+		@unlink($pidPath . Yesf::getProjectConfig('name') . '_manager.pid');
 	}
 	/**
 	 * 普通事件：启动Manager进程
