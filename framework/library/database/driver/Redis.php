@@ -49,8 +49,8 @@ class Redis extends DatabaseAbstract {
 				throw new DBException('Authenticate failed, ' . $connection->errMsg, $connection->errCode);
 			}
 		}
-		if (!empty($this->config['index'])) {
-			$r = $connection->select($this->config['index']);
+		if (!empty($this->config['name'])) {
+			$r = $connection->select($this->config['name']);
 			if ($r === FALSE) {
 				throw new DBException('Select database failed, ' . $connection->errMsg, $connection->errCode);
 			}
@@ -74,7 +74,7 @@ class Redis extends DatabaseAbstract {
 			$this->freeConnection($connection);
 			throw new Exception('Method ' . $name . ' not exists');
 		}
-		$result = call_user_func_array([$connection, $name], $arguments);
+		$result = $connection->$name(...$arguments);
 		$this->freeConnection($connection);
 		return $result;
 	}

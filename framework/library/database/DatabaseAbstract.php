@@ -44,8 +44,7 @@ abstract class DatabaseAbstract {
 			//是否需要建立新的连接
 			if (Database::getMaxClientCount(get_class($this)) > $this->connection_count) {
 				$this->last_run_out_time = time();
-				$this->connect();
-				return $this->connection->pop();
+				return $this->connect();
 			}
 			//wait
 			$this->wait->push($uid);
