@@ -131,7 +131,7 @@ class Yesf {
 		if ($key === NULL) {
 			return self::$_config_project;
 		} else {
-			return self::$_config_project[$key];
+			return isset(self::$_config_project[$key]) ? self::$_config_project[$key] : NULL;
 		}
 	}
 	public static function reloadProjectConfig() {
@@ -149,7 +149,7 @@ class Yesf {
 		if ($key === NULL) {
 			return self::$_config_server;
 		} else {
-			return self::$_config_server[$key];
+			return isset(self::$_config_server[$key]) ? self::$_config_server[$key] : NULL;
 		}
 	}
 	public function getConfig($key = NULL) {
