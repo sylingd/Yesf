@@ -107,7 +107,10 @@ SQL_TRY_AGAIN:
 			]);
 			goto SQL_START_EXECUTE;
 		} else {
-			throw new DBException($connection->error, $connection->errno);
+			$error = $connection->error;
+			$errno = $connection->errno;
+			$this->freeConnection($connection);
+			throw new DBException($error, $errno);
 		}
 SQL_SUCCESS_RETURN:
 		if ($result === TRUE) {

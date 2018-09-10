@@ -74,7 +74,23 @@ class Redis extends DatabaseAbstract {
 			$this->freeConnection($connection);
 			throw new Exception('Method ' . $name . ' not exists');
 		}
+		$tryAgain = TRUE;
+REDIS_START_EXECUTE:
 		$result = $connection->$name(...$arguments);
+		//发生了错误
+		if ($connection->errCode !== 0) {
+			if (!$connection->connected && $tryAgain) {
+				@$connection->close();
+				$tryAgain = FALSE;
+				$connection = $this->connect();
+				goto REDIS_START_EXECUTE;
+			} else {
+				$error = $connection->errMsg;
+				$errno = $connection->errCode;
+				$this->freeConnection($connection);
+				throw new DBException($error, $errno);
+			}
+		}
 		$this->freeConnection($connection);
 		return $result;
 	}
