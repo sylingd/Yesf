@@ -40,7 +40,7 @@ class Logger {
 			return;
 		}
 		self::$log_level = ($level && isset(self::LOG_LEVEL[$level])) ? self::LOG_LEVEL[$level] : 3;
-		if ($logger === NULL) {
+		if (self::$logger === NULL) {
 			if (Yesf::app()->getConfig('logger.path')) {
 				SeasLog::setBasePath(Yesf::app()->getConfig('logger.path'));
 			}
