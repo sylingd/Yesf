@@ -37,7 +37,7 @@ class Swoole {
 			}
 		}
 		$ssl = Yesf::getServerConfig('ssl');
-		if ($ssl['enable']) {
+		if ($ssl && $ssl['enable']) {
 			$config['ssl_cert_file'] = $ssl['cert'];
 			$config['ssl_key_file'] = $ssl['key'];
 		}
