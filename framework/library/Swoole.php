@@ -24,6 +24,8 @@ class Swoole {
 	protected static $server = NULL;
 	/**
 	 * 初始化
+	 * 
+	 * @access public
 	 */
 	public static function init() {
 		self::$server = new SwServer(Yesf::getServerConfig('ip'), Yesf::getServerConfig('port')); 
@@ -68,6 +70,8 @@ class Swoole {
 	}
 	/**
 	 * 获取统计数据
+	 * 
+	 * @access public
 	 * @return array
 	 */
 	public static function getStat() {
@@ -75,13 +79,17 @@ class Swoole {
 	}
 	/**
 	 * 重载
-	 *@param boolean $task
+	 * 
+	 * @access public
+	 * @param boolean $task 是否重载Task进程
 	 */
-	public static function reload($task = FALSE) {
+	public static function reload($task = TRUE) {
 		self::$server->reload($task);
 	}
 	/**
 	 * 添加监听
+	 * 
+	 * @access public
 	 * @param int $type 监听类型
 	 * @param mixed $config 选项，可以为数组或配置项名称
 	 * @param callable $callback 回调函数
@@ -121,6 +129,7 @@ class Swoole {
 			Server::$_listener[$port] = $callback;
 		}
 		if ($type === Constant::LISTEN_TCP || $type === Constant::LISTEN_TCP6 || $type === Constant::LISTEN_UNIX) {
+			//Unix或TCP
 			$service = self::$server->addListener($addr, $port, $type);
 			if (isset($config['advanced'])) {
 				$service->set($config['advanced']);
@@ -136,6 +145,7 @@ class Swoole {
 				Server::eventClose($callback_key, $fd, $from_id);
 			});
 		} elseif ($type === Constant::LISTEN_UDP || $type === Constant::LISTEN_UDP6 || $type === Constant::LISTEN_UNIX_DGRAM) {
+			//Unix dgram或UDP
 			$service = self::$server->addListener($addr, $port, $type);
 			if (isset($config['advanced'])) {
 				$service->set($config['advanced']);
@@ -149,19 +159,57 @@ class Swoole {
 	}
 	/**
 	 * 投递Task
+	 * 
+	 * @access public
 	 * @param mixed $data 传递数据
 	 * @param int $worker_id 投递到的task进程ID
 	 * @param callable $callback 回调函数
 	 */
 	public static function task($data, $worker_id = -1, $callback = NULL) {
-		if ($callback === NULL) {
-			self::$server->task($data, $worker_id);
-		} else {
+		if ($callback === TRUE) {
+			return self::$server->taskCo([$data]);
+		} elseif (is_callable($callback)) {
 			self::$server->task($data, $worker_id, $callback);
+		} else {
+			self::$server->task($data, $worker_id);
+		}
+	}
+	/**
+	 * 批量投递Task
+	 * 对于不同的$callback，有如下三种处理方式：
+	 * $callback为TRUE：使用协程方式等待
+	 * $callback为回调函数：使用异步投递，并等待返回
+	 * $callback为空：异步投递
+	 * 
+	 * @access public
+	 * @param array $data 传递数据
+	 * @param boolean/callable $callback 回调函数
+	 */
+	public static function taskMulit($data, $callback) {
+		if ($callback === TRUE) {
+			return self::$server->taskCo($data);
+		} elseif (is_callable($callback)) {
+			$result = [];
+			$ids = [];
+			foreach ($data as $k => $v) {
+				$task_id = self::$server->task($v, -1, function($serv, $id, $rs) use (&$data, &$result, &$callback) {
+					$result[$ids[$id]] = $rs;
+					if (count($result) === count($data)) {
+						$callback($data);
+					}
+				});
+				$ids[$task_id] = $k;
+			}
+		} else {
+			foreach ($data as $k => $v) {
+				self::$server->task($v, -1);
+			}
 		}
 	}
 	/**
 	 * 向客户端发送消息
+	 * 
+	 * @access public
 	 * @param string $data
 	 * @param int $fd
 	 * @param int $from_id
@@ -171,6 +219,8 @@ class Swoole {
 	}
 	/**
 	 * 向UDP客户端发送消息
+	 * 
+	 * @access public
 	 * @param string $data
 	 * @param mixed $addr
 	 * @param int $port
@@ -180,6 +230,8 @@ class Swoole {
 	}
 	/**
 	 * 发送消息到某个worker进程（支持task_worker）
+	 * 
+	 * @access public
 	 * @param string $message
 	 * @param int $worker_id
 	 */
@@ -188,6 +240,8 @@ class Swoole {
 	}
 	/**
 	 * 获取Swoole示例，用于实现更多高级操作
+	 * 
+	 * @access public
 	 * @return object(\Swoole\Server)
 	 */
 	public static function getSwoole() {
