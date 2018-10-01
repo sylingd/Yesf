@@ -45,12 +45,7 @@ class Plugin {
 		$result = NULL;
 		if (isset(self::$plugins[$event])) {
 			foreach (self::$plugins[$event] as $callback) {
-				try {
-					$result = call_user_func_array($callback, $data);
-				} catch (\Throwable $e) {
-					Logger::error('In event ' . $event . ': ' . $e->getMessage() . '. Trace: ' . $e->getTraceAsString());
-					break;
-				}
+				$result = call_user_func_array($callback, $data);
 				if ($result !== NULL) {
 					break;
 				}

@@ -112,7 +112,8 @@ class Response {
 	 * @param boolean $is_abs_path 是否为绝对路径
 	 */
 	public function display($tpl, $is_abs_path = FALSE) {
-		$this->write($this->render($tpl, $is_abs_path));
+		$data = $this->render($tpl, $is_abs_path);
+		if (!empty($data)) $this->write($data);
 	}
 	/**
 	 * 获取一个模板的渲染结果但不输出
@@ -254,18 +255,17 @@ class Response {
 	 * 
 	 * @access public
 	 */
-	public function __destruct() {
-		try {
+	public function end() {
+		$this->_tpl_vars = NULL;
+		if ($this->_sw_response) {
 			if (($this->_tpl_auto === NULL && self::$_tpl_auto_config) || $this->_tpl_auto) {
 				$this->display($this->_tpl_default);
 			}
-			if ($this->_sw_response !== NULL) {
-				$this->_sw_response->end();
-				$this->_sw_response = NULL;
-			}
-			$this->_tpl_vars = NULL;
-		} catch (\Exception $e) {
-			//容错处理
+			$this->_sw_response->end();
+			$this->_sw_response = NULL;
 		}
+	}
+	public function __destruct() {
+		$this->end();
 	}
 }

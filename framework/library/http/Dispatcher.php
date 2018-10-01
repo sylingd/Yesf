@@ -92,59 +92,65 @@ class Dispatcher {
 		if (!empty($request->extension)) {
 			$yesf_response->mimeType($request->extension);
 		}
-		//触发beforeDispatcher事件
-		if (Plugin::trigger('beforeDispatcher', [$module, $controller, $action, $request, $yesf_response]) === NULL) {
-			//如果$r非空，则代表结束当前请求
-			$code = self::isValid($module, $controller, $action);
-			if ($code === Constant::ROUTER_VALID) {
-				$controllerName = Yesf::getAppNamespace() . '\\controller\\' . $module . '\\' . ucfirst($controller);
-				$actionName = $action . 'Action';
-				try {
-					$result = call_user_func([$controllerName, $actionName], $request, $yesf_response);
-				} catch (\Throwable $e) {
-					$yesf_response->disableView();
-					$result = NULL;
-					//日志记录
-					Logger::error('In request: ' . $e->getMessage() . '. Trace: ' . $e->getTraceAsString());
-					//触发失败事件
-					if (Plugin::trigger('dispatchFailed', [$module, $controller, $action, $request, $yesf_response, $e]) === NULL) {
-						//如果用户没有自行处理，输出默认模板
+		$result = NULL;
+		try {
+			//触发beforeDispatcher事件
+			$arr = [$module, $controller, $action, $request, $yesf_response];
+			$is_continue = Plugin::trigger('beforeDispatcher', $arr);
+			if ($is_continue === NULL) {
+				$code = self::isValid($module, $controller, $action);
+				if ($code === Constant::ROUTER_VALID) {
+					$controllerName = Yesf::getAppNamespace() . '\\controller\\' . $module . '\\' . ucfirst($controller);
+					$actionName = $action . 'Action';
+					$result = $controllerName::$actionName($request, $yesf_response);
+				} else {
+					// Not found
+					$arr = [$module, $controller, $action, $request, $yesf_response];
+					if (Plugin::trigger('dispatchFailed', $arr) === NULL) {
 						$yesf_response->disableView();
-						$yesf_response->clearAssign();
+						$yesf_response->status(404);
 						if (Yesf::app()->getEnvironment() === 'develop') {
 							$yesf_response->assign('module', $module);
 							$yesf_response->assign('controller', $controller);
 							$yesf_response->assign('action', $action);
-							$yesf_response->assign('e', $e);
+							$yesf_response->assign('code', $code);
 							$yesf_response->assign('req', $request);
-							$yesf_response->display(YESF_ROOT . 'data/error_debug.php', TRUE);
+							$yesf_response->display(YESF_ROOT . 'data/error_404_debug.php', TRUE);
 						} else {
-							$yesf_response->display(YESF_ROOT . 'data/error.php', TRUE);
+							$yesf_response->display(YESF_ROOT . 'data/error_404.php', TRUE);
 						}
 					}
 				}
-				//触发afterDispatcher事件
-				if (($r = Plugin::trigger('afterDispatcher', [$module, $controller, $action, $request, $yesf_response, $result])) !== NULL) {
-					$result = $r;
-				}
-			} else {
-				if (Plugin::trigger('dispatchFailed', [$module, $controller, $action, $request, $yesf_response]) === NULL) {
-					$yesf_response->disableView();
-					$yesf_response->status(404);
-					if (Yesf::app()->getEnvironment() === 'develop') {
-						$yesf_response->assign('module', $module);
-						$yesf_response->assign('controller', $controller);
-						$yesf_response->assign('action', $action);
-						$yesf_response->assign('code', $code);
-						$yesf_response->assign('req', $request);
-						$yesf_response->display(YESF_ROOT . 'data/error_404_debug.php', TRUE);
-					} else {
-						$yesf_response->display(YESF_ROOT . 'data/error_404.php', TRUE);
-					}
-				}
 			}
+		} catch (\Throwable $e) {
+			$result = self::handleDispathException($module, $controller, $action, $request, $yesf_response, $e);
 		}
+		$yesf_response->end();
 		unset($request, $response, $yesf_response);
 		return $result;
+	}
+	private static function handleDispathException($module, $controller, $action, $request, $response, $e) {
+		$response->disableView();
+		//日志记录
+		Logger::error('Uncaught exception: ' . $e->getMessage() . '. Trace: ' . $e->getTraceAsString());
+		//触发失败事件
+		$arr = [$module, $controller, $action, $request, $response, $e];
+		if (Plugin::trigger('dispatchFailed', $arr) === NULL) {
+			//如果用户没有自行处理，输出默认模板
+			$response->clearAssign();
+			if (Yesf::app()->getEnvironment() === 'develop') {
+				$response->assign('module', $module);
+				$response->assign('controller', $controller);
+				$response->assign('action', $action);
+				$response->assign('e', $e);
+				$response->assign('req', $request);
+				$response->display(YESF_ROOT . 'data/error_debug.php', TRUE);
+			} else {
+				$response->display(YESF_ROOT . 'data/error.php', TRUE);
+			}
+		}
+		//触发afterDispatcher事件
+		$arr = [$module, $controller, $action, $request, $response, $result];
+		return Plugin::trigger('afterDispatcher', $arr);
 	}
 }
