@@ -67,6 +67,9 @@ class Dispatcher {
 				return Constant::ROUTER_ERR_CONTROLLER;
 			}
 			require($controllerPath);
+			if (!class_exists($controllerName, FALSE)) {
+				return Constant::ROUTER_ERR_CONTROLLER;
+			}
 		}
 		if (!method_exists($controllerName, $action . 'Action')) {
 			return Constant::ROUTER_ERR_ACTION;
