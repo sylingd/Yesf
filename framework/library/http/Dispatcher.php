@@ -153,7 +153,7 @@ class Dispatcher {
 			}
 		}
 		//触发afterDispatcher事件
-		$arr = [$module, $controller, $action, $request, $response, $result];
+		$arr = [$module, $controller, $action, $request, $response];
 		return Plugin::trigger('afterDispatcher', $arr);
 	}
 }

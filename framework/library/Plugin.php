@@ -45,7 +45,7 @@ class Plugin {
 		$result = NULL;
 		if (isset(self::$plugins[$event])) {
 			foreach (self::$plugins[$event] as $callback) {
-				$result = call_user_func_array($callback, $data);
+				$result = $callback(...$data);
 				if ($result !== NULL) {
 					break;
 				}

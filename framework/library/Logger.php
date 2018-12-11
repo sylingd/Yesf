@@ -45,11 +45,11 @@ class Logger {
 				SeasLog::setBasePath(Yesf::app()->getConfig('logger.path'));
 			}
 			if (Yesf::app()->getConfig('logger.name')) {
-				SeasLog::setLogger(Yesf::app()->getConfig('logger.name'));
+				self::$logger = Yesf::app()->getConfig('logger.name');
 			} else {
-				SeasLog::setLogger(Yesf::getProjectConfig('name'));
+				self::$logger = Yesf::getProjectConfig('name');
 			}
-			self::$logger = SeasLog::getLastLogger();
+			SeasLog::setLogger(self::$logger);
 		}
 	}
 	/**
@@ -60,13 +60,13 @@ class Logger {
 	 */
 	public static function log(string $type, string $message) {
 		//判断是否应该记录
-		//不使用SeasLog自带的判断，是为了方便程序动态进行修改
+		//不使用SeasLog自带的判断，方便程序动态进行修改
 		if (!isset(self::LOG_LEVEL[$type]) || self::LOG_LEVEL[$type] < self::$log_level) {
 			return;
 		}
 		//获取SeasLog的常量
 		$type = constant('SEASLOG_' . strtoupper($type));
-		self::$logger->log($type, $message);
+		SeasLog::log($type, $message, self::$logger);
 	}
 	/**
 	 * 以下为各个级别的封装
