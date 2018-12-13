@@ -66,7 +66,7 @@ class Logger {
 		}
 		//获取SeasLog的常量
 		$type = constant('SEASLOG_' . strtoupper($type));
-		SeasLog::log($type, $message, self::$logger);
+		SeasLog::log($type, $message, [], self::$logger);
 	}
 	/**
 	 * 以下为各个级别的封装
@@ -75,27 +75,27 @@ class Logger {
 	 * @param string $message
 	 */
 	public static function debug($message) {
-		self::log(__METHOD__, $message);
+		self::log(__FUNCTION__, $message);
 	}
 	public static function info($message) {
-		self::log(__METHOD__, $message);
+		self::log(__FUNCTION__, $message);
 	}
 	public static function notice($message) {
-		self::log(__METHOD__, $message);
+		self::log(__FUNCTION__, $message);
 	}
 	public static function warning($message) {
-		self::log(__METHOD__, $message);
+		self::log(__FUNCTION__, $message);
 	}
 	public static function error($message) {
-		self::log(__METHOD__, $message);
+		self::log(__FUNCTION__, $message);
 	}
 	public static function critical($message) {
-		self::log(__METHOD__, $message);
+		self::log(__FUNCTION__, $message);
 	}
 	public static function alert($message) {
-		self::log(__METHOD__, $message);
+		self::log(__FUNCTION__, $message);
 	}
 	public static function emergency($message) {
-		self::log(__METHOD__, $message);
+		self::log(__FUNCTION__, $message);
 	}
 }
