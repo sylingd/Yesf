@@ -65,11 +65,11 @@ class Mysql extends DatabaseAbstract implements DatabaseInterface {
 		$tryAgain = TRUE;
 SQL_START_EXECUTE:
 		if (is_array($data) && count($data) > 0) {
-			$st = $connection->prepare($sql);
-			if ($st === FALSE) {
-				goto SQL_TRY_AGAIN;
-			}
 			try {
+				$st = $connection->prepare($sql);
+				if ($st === FALSE) {
+					goto SQL_TRY_AGAIN;
+				}
 				if (is_object($st)) {
 					$result = $st->execute($data);
 				} else {
