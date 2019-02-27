@@ -13,9 +13,10 @@
 
 namespace yesf\library;
 use \yesf\Yesf;
+use \Psr\Log\LoggerInterface;
 use \SeasLog;
 
-class Logger {
+class Logger implements LoggerInterface {
 	const LOG_LEVEL = [
 		'debug' => 0,
 		'info' => 1,
@@ -58,7 +59,7 @@ class Logger {
 	 * @param string $type 日志类型
 	 * @param string $message 日志内容
 	 */
-	public static function log(string $type, string $message) {
+	public static function log(string $type, string $message, array $context = []) {
 		//判断是否应该记录
 		//不使用SeasLog自带的判断，方便程序动态进行修改
 		if (!isset(self::LOG_LEVEL[$type]) || self::LOG_LEVEL[$type] < self::$log_level) {
@@ -66,7 +67,7 @@ class Logger {
 		}
 		//获取SeasLog的常量
 		$type = constant('SEASLOG_' . strtoupper($type));
-		SeasLog::log($type, $message, [], self::$logger);
+		SeasLog::log($type, $message, $context, self::$logger);
 	}
 	/**
 	 * 以下为各个级别的封装
@@ -74,28 +75,28 @@ class Logger {
 	 * @access public
 	 * @param string $message
 	 */
-	public static function debug($message) {
-		self::log(__FUNCTION__, $message);
+	public static function debug($message, array $context = []) {
+		self::log(__FUNCTION__, $message, $context);
 	}
-	public static function info($message) {
-		self::log(__FUNCTION__, $message);
+	public static function info($message, array $context = []) {
+		self::log(__FUNCTION__, $message, $context);
 	}
-	public static function notice($message) {
-		self::log(__FUNCTION__, $message);
+	public static function notice($message, array $context = []) {
+		self::log(__FUNCTION__, $message, $context);
 	}
-	public static function warning($message) {
-		self::log(__FUNCTION__, $message);
+	public static function warning($message, array $context = []) {
+		self::log(__FUNCTION__, $message, $context);
 	}
-	public static function error($message) {
-		self::log(__FUNCTION__, $message);
+	public static function error($message, array $context = []) {
+		self::log(__FUNCTION__, $message, $context);
 	}
-	public static function critical($message) {
-		self::log(__FUNCTION__, $message);
+	public static function critical($message, array $context = []) {
+		self::log(__FUNCTION__, $message, $context);
 	}
-	public static function alert($message) {
-		self::log(__FUNCTION__, $message);
+	public static function alert($message, array $context = []) {
+		self::log(__FUNCTION__, $message, $context);
 	}
-	public static function emergency($message) {
-		self::log(__FUNCTION__, $message);
+	public static function emergency($message, array $context = []) {
+		self::log(__FUNCTION__, $message, $context);
 	}
 }
