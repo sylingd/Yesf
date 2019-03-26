@@ -12,12 +12,16 @@
 
 namespace Yesf\Http;
 use Yesf\Yesf;
-use Yesf\Constant;
 use Yesf\Plugin;
 use Yesf\Logger;
 use Yesf\Http\Response;
 
 class Dispatcher {
+	const ROUTE_VALID = 0;
+	const ROUTE_ERR_MODULE = 1;
+	const ROUTE_ERR_CONTROLLER = 2;
+	const ROUTE_ERR_ACTION = 3;
+
 	private static $modules = NULL;
 	private static $default_module = 'index';
 	private static $default_action = 'index';
@@ -59,22 +63,22 @@ class Dispatcher {
 		$controllerName = Yesf::getAppNamespace() . '\\controller\\' . $module . '\\' . ucfirst($controller);
 		if (!class_exists($controllerName, FALSE)) {
 			if (!in_array($module, self::$modules, TRUE)) {
-				return Constant::ROUTER_ERR_MODULE;
+				return self::ROUTE_ERR_MODULE;
 			}
 			//判断controller是否存在
 			$controllerPath = APP_PATH . 'modules/' . $module . '/controllers/' . $controller. '.php';
 			if (!is_file($controllerPath)) {
-				return Constant::ROUTER_ERR_CONTROLLER;
+				return self::ROUTE_ERR_CONTROLLER;
 			}
 			require($controllerPath);
 			if (!class_exists($controllerName, FALSE)) {
-				return Constant::ROUTER_ERR_CONTROLLER;
+				return self::ROUTE_ERR_CONTROLLER;
 			}
 		}
 		if (!method_exists($controllerName, $action . 'Action')) {
-			return Constant::ROUTER_ERR_ACTION;
+			return self::ROUTE_ERR_ACTION;
 		}
-		return Constant::ROUTER_VALID;
+		return self::ROUTE_VALID;
 	}
 	/**
 	 * 进行路由分发
@@ -102,8 +106,7 @@ class Dispatcher {
 			$is_continue = Plugin::trigger('beforeDispatcher', $arr);
 			if ($is_continue === NULL) {
 				$code = self::isValid($module, $controller, $action);
-				if ($code === Constant::ROUTER_VALID) {
-					$controllerName = Yesf::getAppNamespace() . '\\controller\\' . $module . '\\' . ucfirst($controller);
+				if ($code === self::ROUTE_VALID) {
 					$actionName = $action . 'Action';
 					$result = $controllerName::$actionName($request, $yesf_response);
 				} else {

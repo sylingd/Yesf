@@ -11,13 +11,18 @@
  */
 
 namespace Yesf;
-use \Swoole\Http\Server as SwServer;
+use Swoole\Http\Server as SwServer;
 use Yesf\Yesf;
-use Yesf\Constant;
 use Yesf\Event\Server;
 use Yesf\Exception\NotFoundException;
 
 class Swoole {
+	const LISTEN_TCP = SWOOLE_TCP;
+	const LISTEN_UDP = SWOOLE_UDP;
+	const LISTEN_UNIX = SWOOLE_UNIX_STREAM;
+	const LISTEN_UNIX_DGRAM = SWOOLE_UNIX_DGRAM;
+	const LISTEN_TCP6 = SWOOLE_TCP6;
+	const LISTEN_UDP6 = SWOOLE_UDP6;
 	//当前是否为task进程，在workerStart后才有效
 	public static $isTaskWorker = FALSE;
 	//Swoole实例类
@@ -107,7 +112,7 @@ class Swoole {
 			}
 		}
 		//If type is unix, do not need port
-		if ($type === Constant::LISTEN_UNIX || $type === Constant::LISTEN_UNIX_DGRAM) {
+		if ($type === self::LISTEN_UNIX || $type === self::LISTEN_UNIX_DGRAM) {
 			$addr = $config['sock'];
 			$port = 0;
 			if (empty($addr)) {
@@ -128,13 +133,13 @@ class Swoole {
 			}
 			Server::$_listener[$port] = $callback;
 		}
-		if ($type === Constant::LISTEN_TCP || $type === Constant::LISTEN_TCP6 || $type === Constant::LISTEN_UNIX) {
+		if ($type === self::LISTEN_TCP || $type === self::LISTEN_TCP6 || $type === self::LISTEN_UNIX) {
 			//Unix或TCP
 			$service = self::$server->addListener($addr, $port, $type);
 			if (isset($config['advanced'])) {
 				$service->set($config['advanced']);
 			}
-			$callback_key = ($type === Constant::LISTEN_UNIX ? $addr : $port);
+			$callback_key = ($type === self::LISTEN_UNIX ? $addr : $port);
 			$service->on('Receive', function($server, $fd, $from_id, $data) use ($callback_key) {
 				Server::eventReceive($callback_key, $fd, $from_id, $data);
 			});
@@ -144,13 +149,13 @@ class Swoole {
 			$service->on('Close', function($server, $fd, $from_id) use ($callback_key) {
 				Server::eventClose($callback_key, $fd, $from_id);
 			});
-		} elseif ($type === Constant::LISTEN_UDP || $type === Constant::LISTEN_UDP6 || $type === Constant::LISTEN_UNIX_DGRAM) {
+		} elseif ($type === self::LISTEN_UDP || $type === self::LISTEN_UDP6 || $type === self::LISTEN_UNIX_DGRAM) {
 			//Unix dgram或UDP
 			$service = self::$server->addListener($addr, $port, $type);
 			if (isset($config['advanced'])) {
 				$service->set($config['advanced']);
 			}
-			$callback_key = ($type === Constant::LISTEN_UNIX_DGRAM ? $addr : $port);
+			$callback_key = ($type === self::LISTEN_UNIX_DGRAM ? $addr : $port);
 			$service->on('Packet', function($server, string $data, array $client_info) use ($callback_key) {
 				Server::eventPacket($callback_key, $data, $client_info);
 			});

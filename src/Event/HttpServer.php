@@ -12,7 +12,6 @@
 
 namespace Yesf\Event;
 use Yesf\Yesf;
-use Yesf\Constant;
 use Yesf\Plugin;
 use Yesf\Http\Request;
 use Yesf\Http\Router;

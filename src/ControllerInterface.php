@@ -1,6 +1,6 @@
 <?php
 /**
- * Coltroller基本类
+ * Coltroller接口
  * 
  * @author ShuangYa
  * @package Yesf
@@ -11,5 +11,5 @@
  */
 namespace Yesf;
 
-abstract class ControllerAbstract {
+interface ControllerInterface {
 }

@@ -14,11 +14,15 @@
  */
 
 namespace Yesf;
-use \Yaconf;
+use Yaconf;
 use Yesf\Yesf;
-use Yesf\Constant;
 
 class Config {
+	const TYPE_YACONF = 1;
+	const TYPE_QCONF = 2;
+	const TYPE_YAF = 3;
+	const TYPE_FILE = 4;
+
 	protected $appName;
 	protected $environment;
 	protected $type;
@@ -29,22 +33,22 @@ class Config {
 		$this->appName = $appName;
 		$this->environment = Yesf::app()->getEnvironment();
 		if (is_array($conf)) {
-			$this->type = Constant::CONFIG_FILE;
+			$this->type = self::TYPE_FILE;
 			$this->conf = $conf;
-		} elseif ($conf === Constant::CONFIG_YACONF) {
-			$this->type = Constant::CONFIG_YACONF;
-		} elseif ($conf === Constant::CONFIG_QCONF) {
-			$this->type = Constant::CONFIG_QCONF;
+		} elseif ($conf === self::TYPE_YACONF) {
+			$this->type = self::TYPE_YACONF;
+		} elseif ($conf === self::TYPE_QCONF) {
+			$this->type = self::TYPE_QCONF;
 		} elseif (is_file($conf)) {
 			if (extension_loaded('Yaf')) {
-				$this->type = Constant::CONFIG_YAF;
+				$this->type = self::TYPE_YAF;
 				if (class_exists('\\Yaf_Config_Ini', FALSE)) {
 					$this->conf = new \Yaf_Config_Ini($conf, $this->environment);
 				} else {
 					$this->conf = new \Yaf\Config\Ini($conf, $this->environment);
 				}
 			} else {
-				$this->type = Constant::CONFIG_FILE;
+				$this->type = self::TYPE_FILE;
 				$this->conf = $this->parseIniConfig($conf);
 			}
 		} else {
@@ -112,13 +116,13 @@ class Config {
 			return $this->replaceConf[$key];
 		}
 		switch ($this->type) {
-			case Constant::CONFIG_YACONF:
+			case self::TYPE_YACONF:
 				return $this->getByYaconf($key);
-			case Constant::CONFIG_QCONF:
+			case self::TYPE_QCONF:
 				return $this->getByQconf($key);
-			case Constant::CONFIG_YAF:
+			case self::TYPE_YAF:
 				return $this->getByYaf($key);
-			case Constant::CONFIG_FILE:
+			case self::TYPE_FILE:
 				return $this->getByConf($key);
 		}
 		return NULL;

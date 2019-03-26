@@ -1,5 +1,5 @@
 <?php
-use Yesf\Constant;
+use Yesf\Http\Dispatcher;
 ?>
 <!DOCTYPE html>
 <html>
@@ -62,14 +62,14 @@ use Yesf\Constant;
 		<div class="description">
 			<?php
 			switch ($code) {
-				case Constant::ROUTER_ERR_ACTION:
-					echo 'ROUTER_ERR_ACTION';
+				case Dispatcher::ROUTE_ERR_ACTION:
+					echo 'ROUTE_ERR_ACTION';
 					break;
-				case Constant::ROUTER_ERR_CONTROLLER:
-					echo 'ROUTER_ERR_CONTROLLER';
+				case Dispatcher::ROUTE_ERR_CONTROLLER:
+					echo 'ROUTE_ERR_CONTROLLER';
 					break;
-				case Constant::ROUTER_ERR_MODULE:
-					echo 'ROUTER_ERR_MODULE';
+				case Dispatcher::ROUTE_ERR_MODULE:
+					echo 'ROUTE_ERR_MODULE';
 					break;
 			}
 			?>

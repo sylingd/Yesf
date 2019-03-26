@@ -76,11 +76,24 @@ class Container implements ContainerInterface {
 		// constructor
 		$constructor = $ref->getConstructor();
 		if ($constructor !== NULL) {
+			// Read comment for alias
+			$comment = $constructor->getDocComment();
+			$is_autowire = preg_match_all('/@Autowired\s+([\w\\\\]+)\s+([\w\\\\]+)\s+/', $comment, $autowire_matches);
+			$alias = [];
+			if ($is_autowire && count($autowire_matches[1]) > 0) {
+				foreach ($autowire_matches[1] as $k => $v) {
+					$alias[$v] = $autowire_matches[2][$k];
+				}
+			}
 			$params = $constructor->getParameters();
 			$init_params = [];
 			foreach ($params as $param) {
 				if ($param->isOptional()) {
 					$init_params[] = $param->getDefaultValue();
+				} elseif (isset($alias[$param->getName()])) {
+					$typeName = $alias[$param->getName()];
+					$from[] = $typeName;
+					$init_params[] = $this->get($typeName, $from);
 				} elseif ($param->hasType()) {
 					$type = $param->getType();
 					if (class_exists('ReflectionNamedType') && $type instanceof \ReflectionNamedType) {
@@ -93,13 +106,11 @@ class Container implements ContainerInterface {
 						settype($value, $typeName);
 						$init_params[] = $value;
 					} else {
-						if (class_exists($typeName)) {
-							$from[] = $typeName;
-							$init_params[] = $this->get($typeName, $from);
-						} else {
-							$init_params[] = NULL;
-						}
+						$from[] = $typeName;
+						$init_params[] = $this->get($typeName, $from);
 					}
+				} else {
+					$init_params[] = NULL;
 				}
 			}
 			$instance = $ref->newInstance(...$init_params);
@@ -113,18 +124,29 @@ class Container implements ContainerInterface {
 				continue;
 			}
 			$comment = $property->getDocComment();
-			$is_autowire = preg_match('/@Autowired(\s+)([a-zA-Z0-9_\\\\]+)(\s+)/', $comment, $autowire);
-			if ($is_autowire !== FALSE && !empty($autowire[2]) && class_exists($autowire[2])) {
-				$is_public = $property->isPublic();
-				if (!$is_public) {
-					$property->setAccessible(TRUE);
-				}
-				if ($property->getValue($instance) === NULL) {
-					$from[] = $autowire[2];
-					$property->setValue($instance, $this->get($autowire[2], $from));
-				}
-				if (!$is_public) {
-					$property->setAccessible(FALSE);
+			$is_autowire = preg_match('/@Autowired\s+([\w\\\\]+)\s+/', $comment, $autowire);
+			if ($is_autowire) {
+				// Using getter and setter
+				$propertyName = $property->getName();
+				$setter = 'set' . ucfirst($propertyName);
+				$getter = 'get' . ucfirst($propertyName);
+				if (method_exists($instance, $setter) && method_exists($instance, $getter)) {
+					if ($instance->$getter() === NULL) {
+						$from[] = $autowire[1];
+						$instance->$setter($this->get($autowire[1], $from));
+					}
+				} else {
+					$is_public = $property->isPublic();
+					if (!$is_public) {
+						$property->setAccessible(TRUE);
+					}
+					if ($property->getValue($instance) === NULL) {
+						$from[] = $autowire[1];
+						$property->setValue($instance, $this->get($autowire[1], $from));
+					}
+					if (!$is_public) {
+						$property->setAccessible(FALSE);
+					}
 				}
 			}
 		}

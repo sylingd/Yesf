@@ -11,8 +11,8 @@
  */
 
 namespace Yesf\Database;
-use \SplQueue;
-use \Swoole\Coroutine as co;
+use SplQueue;
+use Swoole\Coroutine as co;
 use Yesf\Swoole;
 
 abstract class DatabaseAbstract {

@@ -12,7 +12,6 @@
 
 namespace Yesf\Http;
 use Yesf\Yesf;
-use Yesf\Constant;
 use Yesf\Http\Response;
 
 class Router {

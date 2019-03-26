@@ -12,7 +12,6 @@
 namespace Yesf\Database;
 
 use Yesf\Yesf;
-use Yesf\Constant;
 use Yesf\Config;
 use Yesf\Swoole;
 use Yesf\Exception\Exception;
