@@ -15,7 +15,7 @@ use \Swoole\Http\Server as SwServer;
 use Yesf\Yesf;
 use Yesf\Constant;
 use Yesf\Event\Server;
-use Yesf\Exception\StartException;
+use Yesf\Exception\NotFoundException;
 
 class Swoole {
 	//当前是否为task进程，在workerStart后才有效
@@ -45,7 +45,7 @@ class Swoole {
 		}
 		if (Yesf::getServerConfig('http2')) {
 			if (!isset($config['ssl_cert_file'])) {
-				throw new StartException('Certfile not found');
+				throw new NotFoundException('Certfile not found');
 			}
 			$config['open_http2_protocol'] = TRUE;
 		}

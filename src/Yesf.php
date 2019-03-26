@@ -18,6 +18,8 @@ use Yesf\Http\Dispatcher;
 use Yesf\Http\Response;
 use Yesf\Database\Database;
 use Yesf\Exception\StartException;
+use Yesf\Exception\NotFoundException;
+use Yesf\Exception\RequirementException;
 
 if (!defined('YESF_ROOT')) {
 	define('YESF_ROOT', __DIR__ . '/');
@@ -68,7 +70,7 @@ class Yesf {
 		self::$_instance = $this;
 		//swoole检查
 		if (!extension_loaded('swoole') && !defined('YESF_UNIT')) {
-			throw new StartException('Extension "Swoole" is required');
+			throw new RequirementException('Extension "Swoole" is required');
 		}
 		//环境
 		if (defined('APP_ENV')) {
@@ -79,10 +81,10 @@ class Yesf {
 		}
 		//配置检查
 		if (!is_file(APP_PATH . 'config/Project.php')) {
-			throw new StartException('Project configure file not found');
+			throw new NotFoundException('Project configure file not found');
 		}
 		if (!is_file(APP_PATH . 'config/Server.php')) {
-			throw new StartException('Server configure file not found');
+			throw new NotFoundException('Server configure file not found');
 		}
 		//其他各项配置
 		self::$_config_server = require(APP_PATH . 'config/Server.php');
@@ -95,7 +97,7 @@ class Yesf {
 		}
 		if (extension_loaded('swoole')) {
 			if (version_compare(SWOOLE_VERSION, '4.0.0', '<')) {
-				throw new StartException('Yesf require Swoole 4.0 or later');
+				throw new RequirementException('Yesf require Swoole 4.0 or later');
 			}
 			Swoole::init();
 		}
@@ -117,7 +119,7 @@ class Yesf {
 				}
 			}
 			if ($loader === NULL) {
-				throw new StartException('Composer loader not found');
+				throw new RequirementException('Composer loader not found');
 			}
 		}
 		return $loader;
@@ -213,7 +215,7 @@ class Yesf {
 		if ((is_string($this->_config_raw) && is_file($this->_config_raw)) || is_array($this->_config_raw)) {
 			$this->_config = new Config($this->_config_raw);
 		} else {
-			throw new StartException('Config can not be recognised');
+			throw new NotFoundException('Config can not be recognised');
 		}
 		self::reloadProjectConfig();
 		Logger::init();
