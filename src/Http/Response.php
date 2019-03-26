@@ -13,8 +13,9 @@
 namespace Yesf\Http;
 use Yesf\Yesf;
 use Yesf\Config;
+use Yesf\DI\Container;
 use Yesf\Http\Vars as HttpVars;
-use Yesf\Exception\Exception;
+use Yesf\Exception\InvalidClassException;
 
 class Response {
 	protected static $_tpl_auto_config = FALSE;
@@ -61,11 +62,12 @@ class Response {
 			self::$cookie['domain'] = Yesf::app()->getConfig('cookie.domain');
 		}
 	}
-	public static function setTemplateEngine(string $clazz) {
+	public static function setTemplateEngine(string $classId) {
+		$clazz = Container::getInstance()->get($classId);
 		if (!is_subclass_of($clazz, __NAMESPACE__ . '\\TemplateInterface')) {
-			throw new Exception("$clazz not implemented TemplateInterface");
+			throw new InvalidClassException("$clazz not implemented TemplateInterface");
 		}
-		self::$_tpl_engine = $clazz;
+		self::$_tpl_engine = $classId;
 	}
 	/**
 	 * 构建函数
@@ -82,7 +84,7 @@ class Response {
 		}
 		$this->_tpl_path = $tpl_path;
 		if (self::$_tpl_engine !== NULL) {
-			$this->_tpl_engine_obj = new self::$_tpl_engine;
+			$this->_tpl_engine_obj = Container::getInstance()->get(self::$_tpl_engine, TRUE);
 		} else {
 			$this->_tpl_vars = [];
 		}

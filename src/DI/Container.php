@@ -52,14 +52,15 @@ class Container implements ContainerInterface {
 	/**
 	 * Get
 	 * @param string $id
+	 * @param boolean $must_create
 	 * @param array $from Check cyclic dependency
      * @return object
 	 */
-	public function get(string $id, array $from = []) {
+	public function get(string $id, bool $must_create = FALSE, array $from = []) {
 		while (isset($this->alias[$id])) {
 			$id = $this->alias[$id];
 		}
-		if (isset($this->instance[$id])) {
+		if (isset($this->instance[$id]) && !$must_create) {
 			return $this->instance[$id];
 		}
 		if (!class_exists($id)) {
@@ -93,7 +94,7 @@ class Container implements ContainerInterface {
 				} elseif (isset($alias[$param->getName()])) {
 					$typeName = $alias[$param->getName()];
 					$from[] = $typeName;
-					$init_params[] = $this->get($typeName, $from);
+					$init_params[] = $this->get($typeName, FALSE, $from);
 				} elseif ($param->hasType()) {
 					$type = $param->getType();
 					if (class_exists('ReflectionNamedType') && $type instanceof \ReflectionNamedType) {
@@ -107,7 +108,7 @@ class Container implements ContainerInterface {
 						$init_params[] = $value;
 					} else {
 						$from[] = $typeName;
-						$init_params[] = $this->get($typeName, $from);
+						$init_params[] = $this->get($typeName, FALSE, $from);
 					}
 				} else {
 					$init_params[] = NULL;
@@ -133,7 +134,7 @@ class Container implements ContainerInterface {
 				if (method_exists($instance, $setter) && method_exists($instance, $getter)) {
 					if ($instance->$getter() === NULL) {
 						$from[] = $autowire[1];
-						$instance->$setter($this->get($autowire[1], $from));
+						$instance->$setter($this->get($autowire[1], FALSE, $from));
 					}
 				} else {
 					$is_public = $property->isPublic();
@@ -142,7 +143,7 @@ class Container implements ContainerInterface {
 					}
 					if ($property->getValue($instance) === NULL) {
 						$from[] = $autowire[1];
-						$property->setValue($instance, $this->get($autowire[1], $from));
+						$property->setValue($instance, $this->get($autowire[1], FALSE, $from));
 					}
 					if (!$is_public) {
 						$property->setAccessible(FALSE);

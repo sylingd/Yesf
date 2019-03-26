@@ -16,24 +16,9 @@ use Yesf\Database\Database;
 use Yesf\Exception\Exception;
 use Yesf\Exception\DBException;
 
-abstract class ModelAbstract {
+abstract class ModelAbstract implements ModelInterface {
 	protected static $_table_name = '';
 	protected static $_primary_key = 'id';
-	private static $_instance = [];
-	/**
-	 * 单例化
-	 * @access public
-	 * @return object(ModelAbstract)
-	 */
-	public static function getInstance() {
-		$name = get_called_class();
-		if (!isset(self::$_instance[$name])) {
-			$clazz = new static;
-			self::$_instance[$name] = $clazz;
-			return $clazz;
-		}
-		return self::$_instance[$name];
-	}
 	public function __construct() {
 		//检查table_name是否为空
 		if (empty(static::$_table_name)) {

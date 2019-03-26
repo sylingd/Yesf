@@ -17,7 +17,7 @@ class Vars {
 	protected static $mimeTypes = NULL;
 	public static function mimeType($extension, $includeCharset = TRUE) {
 		if (self::$mimeTypes === NULL) {
-			self::$mimeTypes = require(YESF_ROOT . 'data/mimeTypes.php');
+			self::$mimeTypes = require(YESF_ROOT . 'Data/mimeTypes.php');
 		}
 		$extension = strtolower($extension);
 		if (!isset(self::$mimeTypes[$extension])) {
