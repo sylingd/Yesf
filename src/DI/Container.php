@@ -11,6 +11,7 @@
  */
 namespace Yesf\DI;
 
+use ReflectionClass;
 use Psr\Container\ContainerInterface;
 use Yesf\Exception\NotFoundException;
 use Yesf\Exception\InvalidClassException;
@@ -19,6 +20,8 @@ use Yesf\Exception\CyclicDependencyException;
 class Container implements ContainerInterface {
 	private $instance = [];
 	private $alias = [];
+	private $not_singleton = [];
+	private $creating = [];
 	private static $_instance = NULL;
 	public static function getInstance() {
 		if (self::$_instance === NULL) {
@@ -32,12 +35,15 @@ class Container implements ContainerInterface {
 	public function setAlias($id1, $id2) {
 		$this->alias[$id1] = $id2;
 	}
+	public function setNotSingleton($id) {
+		$this->not_singleton[$id] = TRUE;
+	}
 	/**
 	 * Has
 	 * @param string $id
 	 * @return bool
 	 */
-	public function has(string $id) {
+	public function has($id) {
 		while (isset($this->alias[$id])) {
 			$id = $this->alias[$id];
 		}
@@ -52,24 +58,23 @@ class Container implements ContainerInterface {
 	/**
 	 * Get
 	 * @param string $id
-	 * @param boolean $must_create
-	 * @param array $from Check cyclic dependency
      * @return object
 	 */
-	public function get(string $id, bool $must_create = FALSE, array $from = []) {
+	public function get($id) {
 		while (isset($this->alias[$id])) {
 			$id = $this->alias[$id];
 		}
-		if (isset($this->instance[$id]) && !$must_create) {
+		if (isset($this->instance[$id]) && !isset($this->not_singleton[$id])) {
 			return $this->instance[$id];
 		}
 		if (!class_exists($id)) {
 			throw new NotFoundException("Class $id not found");
 		}
 		// Check cyclic dependency
-		if (in_array($id, $from, TRUE)) {
+		if (isset($this->creating[$id])) {
 			throw new CyclicDependencyException("Found cyclic dependency of $id");
 		}
+		$this->creating[$id] = TRUE;
 		$ref = new ReflectionClass($id);
 		if (!$ref->isInstantiable()) {
 			throw new InvalidClassException("Can not create instance of $id");
@@ -93,8 +98,7 @@ class Container implements ContainerInterface {
 					$init_params[] = $param->getDefaultValue();
 				} elseif (isset($alias[$param->getName()])) {
 					$typeName = $alias[$param->getName()];
-					$from[] = $typeName;
-					$init_params[] = $this->get($typeName, FALSE, $from);
+					$init_params[] = $this->get($typeName);
 				} elseif ($param->hasType()) {
 					$type = $param->getType();
 					if (class_exists('ReflectionNamedType') && $type instanceof \ReflectionNamedType) {
@@ -133,8 +137,7 @@ class Container implements ContainerInterface {
 				$getter = 'get' . ucfirst($propertyName);
 				if (method_exists($instance, $setter) && method_exists($instance, $getter)) {
 					if ($instance->$getter() === NULL) {
-						$from[] = $autowire[1];
-						$instance->$setter($this->get($autowire[1], FALSE, $from));
+						$instance->$setter($this->get($autowire[1]));
 					}
 				} else {
 					$is_public = $property->isPublic();
@@ -142,8 +145,7 @@ class Container implements ContainerInterface {
 						$property->setAccessible(TRUE);
 					}
 					if ($property->getValue($instance) === NULL) {
-						$from[] = $autowire[1];
-						$property->setValue($instance, $this->get($autowire[1], FALSE, $from));
+						$property->setValue($instance, $this->get($autowire[1]));
 					}
 					if (!$is_public) {
 						$property->setAccessible(FALSE);
@@ -152,7 +154,10 @@ class Container implements ContainerInterface {
 			}
 		}
 		// put into instance
-		$this->instance[$id] = $instance;
+		if (!isset($this->not_singleton[$id])) {
+			$this->instance[$id] = $instance;
+		}
+		unset($this->creating[$id]);
 		return $instance;
 	}
 }

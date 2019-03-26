@@ -79,9 +79,9 @@ class Dispatcher {
 	 * Get module, controller and action
 	 */
 	private static function getRouteInfo($route) {
-		$module = empty($routeInfo['module']) ? self::$default_module : $routeInfo['module'];
-		$controller = empty($routeInfo['controller']) ? self::$default_controller : $routeInfo['controller'];
-		$action = empty($routeInfo['action']) ? self::$default_action : $routeInfo['action'];
+		$module = empty($routeInfo['module']) ? self::$default_module : ucfirst($routeInfo['module']);
+		$controller = empty($routeInfo['controller']) ? self::$default_controller : ucfirst($routeInfo['controller']);
+		$action = empty($routeInfo['action']) ? self::$default_action : ucfirst($routeInfo['action']);
 		return [$module, $controller, $action];
 	}
 	/**
@@ -96,7 +96,7 @@ class Dispatcher {
 	public static function dispatch($routeInfo, $request, $res) {
 		$result = NULL;
 		list($module, $controller, $action) = self::getRouteInfo($routeInfo);
-		$viewDir = APP_PATH . 'Modules/' . $module . '/Views/';
+		$viewDir = APP_PATH . 'Modules/' . $module . '/View/';
 		$response = new Response($res, $controller . '/' . $action, $viewDir);
 		if (!empty($request->extension)) {
 			$response->mimeType($request->extension);

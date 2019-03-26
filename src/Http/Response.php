@@ -62,11 +62,12 @@ class Response {
 			self::$cookie['domain'] = Yesf::app()->getConfig('cookie.domain');
 		}
 	}
-	public static function setTemplateEngine(string $classId) {
-		$clazz = Container::getInstance()->get($classId);
+	public static function setTemplateEngine(string $id) {
+		$clazz = Container::getInstance()->get($id);
 		if (!is_subclass_of($clazz, __NAMESPACE__ . '\\TemplateInterface')) {
 			throw new InvalidClassException("$clazz not implemented TemplateInterface");
 		}
+		Container::getInstance()->setNotSingleton($id);
 		self::$_tpl_engine = $classId;
 	}
 	/**
@@ -84,7 +85,7 @@ class Response {
 		}
 		$this->_tpl_path = $tpl_path;
 		if (self::$_tpl_engine !== NULL) {
-			$this->_tpl_engine_obj = Container::getInstance()->get(self::$_tpl_engine, TRUE);
+			$this->_tpl_engine_obj = Container::getInstance()->get(self::$_tpl_engine);
 		} else {
 			$this->_tpl_vars = [];
 		}

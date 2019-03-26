@@ -81,17 +81,17 @@ class Yesf {
 			throw new StartException('You must define APP_PATH before initialize Yesf');
 		}
 		//配置检查
-		if (!is_file(APP_PATH . 'config/Project.php')) {
+		if (!is_file(APP_PATH . 'Config/Project.php')) {
 			throw new NotFoundException('Project configure file not found');
 		}
-		if (!is_file(APP_PATH . 'config/Server.php')) {
+		if (!is_file(APP_PATH . 'Config/Server.php')) {
 			throw new NotFoundException('Server configure file not found');
 		}
 		//其他各项配置
-		self::$_config_server = require(APP_PATH . 'config/Server.php');
+		self::$_config_server = require(APP_PATH . 'Config/Server.php');
 		self::reloadProjectConfig();
-		//获取Composer的Loader
-		self::getLoader()->addPsr4(self::$_config_project['namespace'], APP_PATH);
+		//将APP的namespace添加到Autoload
+		self::addAppToLoader();
 		//编码相关
 		if (function_exists('mb_internal_encoding')) {
 			mb_internal_encoding(self::$_config_project['charset']);
@@ -102,6 +102,16 @@ class Yesf {
 			}
 			Swoole::init();
 		}
+	}
+	/**
+	 * 将APP的namespace添加到Autoload
+	 */
+	private static function addAppToLoader() {
+		$namespace = self::$_config_project['namespace'];
+		if (strpos('\\', $namespace) === FALSE) {
+			$namespace .= '\\';
+		}
+		self::getLoader()->addPsr4($namespace, APP_PATH);
 	}
 	/**
 	 * 通过读取文件，获取Composer的Loader
@@ -138,12 +148,12 @@ class Yesf {
 		}
 	}
 	public static function reloadProjectConfig() {
-		$hash = md5_file(APP_PATH . 'config/Project.php');
+		$hash = md5_file(APP_PATH . 'Config/Project.php');
 		if (self::$_config_project_hash === $hash) {
 			return;
 		}
 		self::$_config_project_hash = $hash;
-		self::$_config_project = require(APP_PATH . 'config/Project.php');
+		self::$_config_project = require(APP_PATH . 'Config/Project.php');
 		self::$_app_namespace = self::$_config_project['namespace'];
 		Dispatcher::init();
 		Response::init();
