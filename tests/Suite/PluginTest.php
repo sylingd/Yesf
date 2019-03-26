@@ -43,9 +43,4 @@ class PluginTest extends TestCase {
 		Plugin::clear('test');
 		$this->assertEquals(NULL, Plugin::trigger('test', ['_test_data_']));
 	}
-	public function testError() {
-		Plugin::clear('test');
-		Plugin::register('test', [__CLASS__, 'errorCallback']);
-		$this->assertEquals(NULL, Plugin::trigger('test'));
-	}
 }

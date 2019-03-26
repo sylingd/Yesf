@@ -1,4 +1,6 @@
 <?php
+namespace YesfApp;
+
 use Yesf\Router;
 use Yesf\Swoole;
 use YesfApp\library\PluginHandler;

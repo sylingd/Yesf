@@ -1,8 +1,8 @@
 <?php
 use Yesf\Yesf;
 define('PROJECT_PATH', realpath(__DIR__ . '/..') . '/');
-define('APP_PATH', __DIR__ . '/TestApp/');
-define('YESF_ROOT', PROJECT_PATH . 'framework/');
+define('APP_PATH', __DIR__ . '/TestData/');
+define('YESF_ROOT', PROJECT_PATH . 'src/');
 define('YESF_UNIT', 1);
 define('YESF_TEST', __DIR__ . '/');
 define('YESF_TEST_DATA', __DIR__ . '/TestData/');

@@ -4,7 +4,6 @@ namespace YesfApp\library;
 use Yesf\Plugin;
 use Yesf\Logger;
 
-
 class PluginHandler {
 	public static function register() {
 		Plugin::register('routerStart', [__CLASS__, 'onRouterStart']);
