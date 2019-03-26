@@ -1,0 +1,22 @@
+sudo: false
+language: php
+php:
+  - '7.0'
+  - '7.1'
+  - '7.2'
+
+notifications:
+  email: false
+
+cache:
+  directories:
+    - $HOME/.composer/cache/files
+
+before_install:
+  - travis_retry composer self-update
+
+install:
+  - composer install
+
+script:
+  - composer test

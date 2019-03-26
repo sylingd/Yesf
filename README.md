@@ -1,6 +1,11 @@
 # Yesf
 
-[![license](https://img.shields.io/github/license/sylingd/Yesf.svg?style=flat-square)](https://github.com/sylingd/Yesf/blob/master/LICENSE) [![Packagist](https://img.shields.io/packagist/v/sylingd/yesf-framework.svg?style=flat-square)](https://packagist.org/packages/sylingd/yesf-framework) [![GitHub stars](https://img.shields.io/github/stars/sylingd/Yesf.svg?style=flat-square&logo=github&label=Stars)](https://github.com/sylingd/Yesf) [![star](https://gitee.com/sy/Yesf/badge/star.svg?theme=dark)](https://gitee.com/sy/Yesf/stargazers)
+[![Build Status](
+https://img.shields.io/travis/sylingd/Yesf/master.svg?style=flat-square)](https://travis-ci.org/sylingd/Yesf)
+[![Packagist](https://img.shields.io/packagist/v/sylingd/yesf-framework.svg?style=flat-square)](https://packagist.org/packages/sylingd/yesf-framework)
+[![GitHub stars](https://img.shields.io/github/stars/sylingd/Yesf.svg?style=flat-square&logo=github&label=Stars)](https://github.com/sylingd/Yesf)
+[![star](https://gitee.com/sy/Yesf/badge/star.svg?theme=dark)](https://gitee.com/sy/Yesf/stargazers)
+[![license](https://img.shields.io/github/license/sylingd/Yesf.svg?style=flat-square)](https://github.com/sylingd/Yesf/blob/master/LICENSE)
 
 Yesf is a PHP framework based on Swoole 4.0+. The following functions are provided:
 
