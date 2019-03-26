@@ -1,7 +1,7 @@
 <?php
 use yesf\Constant;
-use yesf\library\Router;
-use yesf\library\Swoole;
+use yesf\Router;
+use yesf\Swoole;
 use yesfApp\library\PluginHandler;
 
 class Bootstrap {

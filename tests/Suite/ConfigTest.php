@@ -1,6 +1,6 @@
 <?php
 use \PHPUnit\Framework\TestCase;
-use \yesf\library\Config;
+use \yesf\Config;
 
 class ConfigTest extends TestCase {
 	const AppName = 'MyApplication';

@@ -1,8 +1,8 @@
 <?php
 namespace yesfApp\library;
 
-use yesf\library\Plugin;
-use yesf\library\Logger;
+use yesf\Plugin;
+use yesf\Logger;
 
 
 class PluginHandler {
