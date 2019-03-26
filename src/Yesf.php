@@ -14,6 +14,7 @@ namespace Yesf;
 use Yesf\Swoole;
 use Yesf\Config;
 use Yesf\Logger;
+use Yesf\DI\Container;
 use Yesf\Http\Dispatcher;
 use Yesf\Http\Response;
 use Yesf\Database\Database;
@@ -90,7 +91,7 @@ class Yesf {
 		self::$_config_server = require(APP_PATH . 'config/Server.php');
 		self::reloadProjectConfig();
 		//获取Composer的Loader
-		self::getLoader()->addPsr4(self::$_config_project['namespace'] . '\\model\\', APP_PATH . 'models');
+		self::getLoader()->addPsr4(self::$_config_project['namespace'], APP_PATH);
 		//编码相关
 		if (function_exists('mb_internal_encoding')) {
 			mb_internal_encoding(self::$_config_project['charset']);
@@ -183,17 +184,11 @@ class Yesf {
 	 * @access public
 	 */
 	public function bootstrap() {
-		$className = self::getProjectConfig('bootstrap');
-		if (empty($className)) {
-			$className = 'Bootstrap';
-		}
-		$classPath = APP_PATH . $className . '.php';
-		if (is_file($classPath)) {
-			require($classPath);
-			$clazz = new $className;
-			if (method_exists($clazz, 'run')) {
-				$clazz->run();
-			}
+		$container = Container::getInstance();
+		$className = self::getProjectConfig('namespace') . '\\Bootstrap';
+		if ($container->has($className)) {
+			$clazz = $container->get($className);
+			$clazz->run();
 		}
 		return $this;
 	}

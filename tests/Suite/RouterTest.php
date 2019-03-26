@@ -1,5 +1,5 @@
 <?php
-use \PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\TestCase;
 use Yesf\Http\Router;
 
 class RouterTest extends TestCase {

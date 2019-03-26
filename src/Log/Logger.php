@@ -11,7 +11,7 @@
  */
 namespace Yesf\Log;
 use Yesf\Yesf;
-use \Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 
 class Logger implements LoggerAwareInterface {
 	const LOG_LEVEL = [

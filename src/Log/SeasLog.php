@@ -12,7 +12,7 @@
  */
 namespace Yesf\Log;
 use Yesf\Yesf;
-use \Psr\Log\LoggerInterface;
+use Psr\Log\LoggerInterface;
 
 class SeasLog implements LoggerInterface {
 	protected $log_level = NULL;

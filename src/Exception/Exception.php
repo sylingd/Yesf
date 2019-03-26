@@ -12,7 +12,7 @@
 
 namespace Yesf\Exception;
 
-use \RuntimeException;
+use RuntimeException;
 
 class Exception extends RuntimeException {
 	protected $info = [];

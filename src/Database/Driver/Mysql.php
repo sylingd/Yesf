@@ -17,7 +17,7 @@ use Yesf\Yesf;
 use Yesf\Exception\DBException;
 use Yesf\Database\DatabaseAbstract;
 use Yesf\Database\DatabaseInterface;
-use \Swoole\Coroutine as co;
+use Swoole\Coroutine as co;
 
 class Mysql extends DatabaseAbstract implements DatabaseInterface {
 	/**

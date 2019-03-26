@@ -18,7 +18,7 @@ use Yesf\Exception\Exception;
 use Yesf\Exception\DBException;
 use Yesf\Database\DatabaseAbstract;
 use Yesf\Database\DatabaseInterface;
-use \Swoole\Coroutine as co;
+use Swoole\Coroutine as co;
 
 class Redis extends DatabaseAbstract {
 	private $options = [];
