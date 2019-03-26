@@ -11,9 +11,9 @@
  */
 
 namespace Yesf\Http;
-use \yesf\Yesf;
-use \yesf\Config;
-use \Yesf\Http\Vars as HttpVars;
+use Yesf\Yesf;
+use Yesf\Config;
+use Yesf\Http\Vars as HttpVars;
 use Yesf\Exception\Exception;
 
 class Response {

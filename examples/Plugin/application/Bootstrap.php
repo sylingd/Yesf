@@ -1,8 +1,8 @@
 <?php
-use yesf\Constant;
-use yesf\Router;
-use yesf\Swoole;
-use yesfApp\library\PluginHandler;
+use Yesf\Constant;
+use Yesf\Router;
+use Yesf\Swoole;
+use YesfApp\library\PluginHandler;
 
 class Bootstrap {
 	public function run() {

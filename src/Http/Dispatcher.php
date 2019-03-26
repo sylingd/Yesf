@@ -11,11 +11,11 @@
  */
 
 namespace Yesf\Http;
-use \yesf\Yesf;
-use \yesf\Constant;
-use \yesf\Plugin;
-use \yesf\Logger;
-use \Yesf\Http\Response;
+use Yesf\Yesf;
+use Yesf\Constant;
+use Yesf\Plugin;
+use Yesf\Logger;
+use Yesf\Http\Response;
 
 class Dispatcher {
 	private static $modules = NULL;

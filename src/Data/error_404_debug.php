@@ -1,5 +1,5 @@
 <?php
-use yesf\Constant;
+use Yesf\Constant;
 ?>
 <!DOCTYPE html>
 <html>

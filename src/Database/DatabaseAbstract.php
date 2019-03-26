@@ -13,7 +13,7 @@
 namespace Yesf\Database;
 use \SplQueue;
 use \Swoole\Coroutine as co;
-use yesf\Swoole;
+use Yesf\Swoole;
 
 abstract class DatabaseAbstract {
 	protected $config = NULL;

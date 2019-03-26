@@ -11,10 +11,10 @@
  */
 
 namespace Yesf\Event;
-use \yesf\Yesf;
-use \yesf\Constant;
-use \yesf\Swoole;
-use \yesf\Plugin;
+use Yesf\Yesf;
+use Yesf\Constant;
+use Yesf\Swoole;
+use Yesf\Plugin;
 
 class Server {
 	public static $_listener = [];

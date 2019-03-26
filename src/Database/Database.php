@@ -11,12 +11,12 @@
 
 namespace Yesf\Database;
 
-use \yesf\Yesf;
-use \yesf\Constant;
-use \yesf\Config;
-use \yesf\Swoole;
-use \Yesf\Exception\Exception;
-use \Yesf\Database\Builder\QueryFactory;
+use Yesf\Yesf;
+use Yesf\Constant;
+use Yesf\Config;
+use Yesf\Swoole;
+use Yesf\Exception\Exception;
+use Yesf\Database\Builder\QueryFactory;
 
 class Database {
 	private static $db = [];

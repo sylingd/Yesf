@@ -15,8 +15,8 @@
 
 namespace Yesf;
 use \Yaconf;
-use \yesf\Yesf;
-use \yesf\Constant;
+use Yesf\Yesf;
+use Yesf\Constant;
 
 class Config {
 	protected $appName;

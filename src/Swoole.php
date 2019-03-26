@@ -12,10 +12,10 @@
 
 namespace Yesf;
 use \Swoole\Http\Server as SwServer;
-use \yesf\Yesf;
-use \yesf\Constant;
-use \Yesf\Event\Server;
-use \Yesf\Exception\StartException;
+use Yesf\Yesf;
+use Yesf\Constant;
+use Yesf\Event\Server;
+use Yesf\Exception\StartException;
 
 class Swoole {
 	//当前是否为task进程，在workerStart后才有效

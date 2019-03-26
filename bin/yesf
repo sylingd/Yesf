@@ -1,6 +1,6 @@
 #!/usr/bin/env php
 <?php
-use yesf\Constant;
+use Yesf\Constant;
 //Composer
 require(__DIR__ . '/../vendor/autoload.php');
 

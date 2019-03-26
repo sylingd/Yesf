@@ -1,6 +1,6 @@
 <?php
 namespace YesfApp\controller\index;
-use \yesf\ControllerAbstract;
+use Yesf\ControllerAbstract;
 class Index extends ControllerAbstract {
 	public static function indexAction($request, $response) {
 		$response->assign('message', 'Hello, Yesf!');

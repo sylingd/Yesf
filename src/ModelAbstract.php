@@ -12,9 +12,9 @@
 
 namespace Yesf;
 
-use \Yesf\Database\Database;
-use \Yesf\Exception\Exception;
-use \Yesf\Exception\DBException;
+use Yesf\Database\Database;
+use Yesf\Exception\Exception;
+use Yesf\Exception\DBException;
 
 abstract class ModelAbstract {
 	protected static $_table_name = '';

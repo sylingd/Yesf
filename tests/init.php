@@ -1,5 +1,5 @@
 <?php
-use yesf\Yesf;
+use Yesf\Yesf;
 define('PROJECT_PATH', realpath(__DIR__ . '/..') . '/');
 define('APP_PATH', __DIR__ . '/TestApp/');
 define('YESF_ROOT', PROJECT_PATH . 'framework/');

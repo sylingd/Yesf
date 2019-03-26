@@ -11,13 +11,13 @@
  */
 
 namespace Yesf;
-use \yesf\Swoole;
-use \yesf\Config;
-use \yesf\Logger;
-use \Yesf\Http\Dispatcher;
-use \Yesf\Http\Response;
-use \Yesf\Database\Database;
-use \Yesf\Exception\StartException;
+use Yesf\Swoole;
+use Yesf\Config;
+use Yesf\Logger;
+use Yesf\Http\Dispatcher;
+use Yesf\Http\Response;
+use Yesf\Database\Database;
+use Yesf\Exception\StartException;
 
 if (!defined('YESF_ROOT')) {
 	define('YESF_ROOT', __DIR__ . '/');

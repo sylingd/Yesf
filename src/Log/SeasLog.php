@@ -11,7 +11,7 @@
  * @license https://yesf.sylibs.com/license
  */
 namespace Yesf\Log;
-use \yesf\Yesf;
+use Yesf\Yesf;
 use \Psr\Log\LoggerInterface;
 
 class SeasLog implements LoggerInterface {

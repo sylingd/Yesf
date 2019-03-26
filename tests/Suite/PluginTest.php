@@ -1,6 +1,6 @@
 <?php
 use \PHPUnit\Framework\TestCase;
-use \yesf\Plugin;
+use Yesf\Plugin;
 
 class PluginTest extends TestCase {
 	public static $isTrigger = 0;

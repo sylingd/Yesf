@@ -11,12 +11,12 @@
  */
 
 namespace Yesf\Event;
-use \yesf\Yesf;
-use \yesf\Constant;
-use \yesf\Plugin;
-use \Yesf\Http\Request;
-use \Yesf\Http\Router;
-use \Yesf\Http\Dispatcher;
+use Yesf\Yesf;
+use Yesf\Constant;
+use Yesf\Plugin;
+use Yesf\Http\Request;
+use Yesf\Http\Router;
+use Yesf\Http\Dispatcher;
 
 class HttpServer {
 	protected static $router = NULL;

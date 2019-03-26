@@ -11,9 +11,9 @@
  */
 
 namespace Yesf\Http;
-use \yesf\Yesf;
-use \yesf\Constant;
-use \Yesf\Http\Response;
+use Yesf\Yesf;
+use Yesf\Constant;
+use Yesf\Http\Response;
 
 class Router {
 	protected static $rewrite = [];

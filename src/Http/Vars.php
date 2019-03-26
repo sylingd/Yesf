@@ -11,7 +11,7 @@
  */
 
 namespace Yesf\Http;
-use \yesf\Yesf;
+use Yesf\Yesf;
 
 class Vars {
 	protected static $mimeTypes = NULL;
