@@ -1,5 +1,5 @@
 <?php
-namespace yesfApp\controller\api;
+namespace YesfApp\controller\api;
 use \yesf\ControllerAbstract;
 class Index extends ControllerAbstract {
 	public static function indexAction($request, $response) {

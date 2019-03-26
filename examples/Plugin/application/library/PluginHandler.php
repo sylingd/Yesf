@@ -1,5 +1,5 @@
 <?php
-namespace yesfApp\library;
+namespace YesfApp\library;
 
 use yesf\Plugin;
 use yesf\Logger;
