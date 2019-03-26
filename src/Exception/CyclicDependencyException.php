@@ -1,6 +1,6 @@
 <?php
 /**
- * 启动异常类
+ * 循环依赖
  * 
  * @author ShuangYa
  * @package Yesf
@@ -13,5 +13,5 @@ namespace Yesf\Exception;
 
 use Psr\Container\ContainerExceptionInterface;
 
-class CreateInterfaceException extends Exception implements ContainerExceptionInterface {
+class CyclicDependencyException extends Exception implements ContainerExceptionInterface {
 }

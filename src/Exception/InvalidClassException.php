@@ -1,6 +1,6 @@
 <?php
 /**
- * 未找到
+ * 尝试创建无效的类
  * 
  * @author ShuangYa
  * @package Yesf
@@ -11,7 +11,7 @@
  */
 namespace Yesf\Exception;
 
-use Psr\Container\NotFoundExceptionInterface;
+use Psr\Container\ContainerExceptionInterface;
 
-class NotFoundException extends Exception implements NotFoundExceptionInterface {
+class InvalidClassException extends Exception implements ContainerExceptionInterface {
 }

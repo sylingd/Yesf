@@ -1,6 +1,6 @@
 <?php
 /**
- * 启动异常类
+ * 环境需求不满足
  * 
  * @author ShuangYa
  * @package Yesf

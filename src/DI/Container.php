@@ -12,6 +12,9 @@
 namespace Yesf\DI;
 
 use Psr\Container\ContainerInterface;
+use Yesf\Exception\NotFoundException;
+use Yesf\Exception\InvalidClassException;
+use Yesf\Exception\CyclicDependencyException;
 
 class Container implements ContainerInterface {
 	private $instance = [];
@@ -49,9 +52,10 @@ class Container implements ContainerInterface {
 	/**
 	 * Get
 	 * @param string $id
-     * @return mixed Entry.
+	 * @param array $from Check cyclic dependency
+     * @return object
 	 */
-	public function get(string $id) {
+	public function get(string $id, array $from = []) {
 		while (isset($this->alias[$id])) {
 			$id = $this->alias[$id];
 		}
@@ -61,9 +65,13 @@ class Container implements ContainerInterface {
 		if (!class_exists($id)) {
 			throw new NotFoundException("Class $id not found");
 		}
+		// Check cyclic dependency
+		if (in_array($id, $from, TRUE)) {
+			throw new CyclicDependencyException("Found cyclic dependency of $id");
+		}
 		$ref = new ReflectionClass($id);
 		if (!$ref->isInstantiable()) {
-			throw new CreateInterfaceException("Can not create instance of $id");
+			throw new InvalidClassException("Can not create instance of $id");
 		}
 		// constructor
 		$constructor = $ref->getConstructor();
@@ -86,7 +94,8 @@ class Container implements ContainerInterface {
 						$init_params[] = $value;
 					} else {
 						if (class_exists($typeName)) {
-							$init_params[] = $this->create($typeName);
+							$from[] = $typeName;
+							$init_params[] = $this->get($typeName, $from);
 						} else {
 							$init_params[] = NULL;
 						}
@@ -111,7 +120,8 @@ class Container implements ContainerInterface {
 					$property->setAccessible(TRUE);
 				}
 				if ($property->getValue($instance) === NULL) {
-					$property->setValue($instance, $this->create($autowire[2]));
+					$from[] = $autowire[2];
+					$property->setValue($instance, $this->get($autowire[2], $from));
 				}
 				if (!$is_public) {
 					$property->setAccessible(FALSE);
