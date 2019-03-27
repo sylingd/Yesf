@@ -14,36 +14,36 @@ namespace Yesf\Connection;
 use Yesf\Yesf;
 
 class Pool {
-	public $config;
+	public static $config;
 	/**
 	 * init阶段，读取基本配置
 	 * 
 	 * @access public
 	 */
-	public function __construct() {
+	public static function init() {
 		$config = Yesf::app()->getConfig();
 		$c = $config->get('pool');
 		foreach ($c as $k => $v) {
-			self::$pool_config[$k] = [
+			self::$config[$k] = [
 				'min' => isset($v['min']) ? intval($v['min']) : 1,
 				'max' => isset($v['max']) ? intval($v['max']) : 1,
 			];
 		}
-		if (!isset(self::$pool_config['default'])) {
-			self::$pool_config['default'] = [
+		if (!isset(self::$config['default'])) {
+			self::$config['default'] = [
 				'min' => 1,
 				'max' => 3,
 			];
 		}
-		self::$default_type = $config->get('database.type');
 	}
 	public static function getMin($name) {
-		return isset(self::$pool_config[$name]) ? self::$pool_config[$name]['min'] : self::$pool_config['default']['min'];
+		return isset(self::$config[$name]) ? self::$config[$name]['min'] : self::$config['default']['min'];
 	}
 	public static function getMax($name) {
-		return isset(self::$pool_config[$name]) ? self::$pool_config[$name]['max'] : self::$pool_config['default']['max'];
+		return isset(self::$config[$name]) ? self::$config[$name]['max'] : self::$config['default']['max'];
 	}
 	public function get($config = null) {
 		//
+		self::$default_type = $config->get('database.type');
 	}
 }

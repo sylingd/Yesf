@@ -183,6 +183,7 @@ class Server {
 		//标记一下
 		Swoole::$isTaskWorker = $serv->taskworker;
 		//回调
+		Internal::onWorkerStart();
 		Plugin::trigger('workerStart', [$serv->taskworker, $worker_id]);
 	}
 	/**
