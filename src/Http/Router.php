@@ -9,8 +9,8 @@
  * @copyright Copyright (c) 2017-2018 ShuangYa
  * @license https://yesf.sylibs.com/license
  */
-
 namespace Yesf\Http;
+
 use Yesf\Yesf;
 use Yesf\Http\Response;
 

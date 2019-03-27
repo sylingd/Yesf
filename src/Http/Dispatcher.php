@@ -16,7 +16,6 @@ use Yesf\Plugin;
 use Yesf\Logger;
 use Yesf\DI\Container;
 use Yesf\DI\GetEntryUtil;
-use Yesf\Http\Response;
 
 class Dispatcher {
 	const ROUTE_VALID = 0;
@@ -131,8 +130,9 @@ class Dispatcher {
 	private static function handleNotFound($module, $controller, $action, $request, $response) {
 		$arr = [$module, $controller, $action, $request, $yesf_response];
 		if (Plugin::trigger('dispatchFailed', $arr) === NULL) {
-			$response->disableView();
 			$response->status(404);
+			$response->disableView();
+			$response->setCurrentTemplateEngine(Template::class);
 			if (Yesf::app()->getEnvironment() === 'develop') {
 				$response->assign('module', $module);
 				$response->assign('controller', $controller);
@@ -146,14 +146,14 @@ class Dispatcher {
 		}
 	}
 	private static function handleDispathException($module, $controller, $action, $request, $response, $e) {
-		$response->disableView();
 		//日志记录
 		Logger::error('Uncaught exception: ' . $e->getMessage() . '. Trace: ' . $e->getTraceAsString());
 		//触发失败事件
 		$arr = [$module, $controller, $action, $request, $response, $e];
 		if (Plugin::trigger('dispatchFailed', $arr) === NULL) {
 			//如果用户没有自行处理，输出默认模板
-			$response->clearAssign();
+			$response->disableView();
+			$response->setCurrentTemplateEngine(Template::class);
 			if (Yesf::app()->getEnvironment() === 'develop') {
 				$response->assign('module', $module);
 				$response->assign('controller', $controller);
