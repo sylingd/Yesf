@@ -42,10 +42,16 @@ class DITest extends TestCase {
 		$this->assertTrue(Container::getInstance()->has(TestApp\DI\UnloadedClass::class));
 		$this->assertFalse(Container::getInstance()->has('A\\Not\\Exists\\Clazz'));
 	}
-	public function testNotSingleton() {
-		Container::getInstance()->setNotSingleton(TestApp\DI\NotSingleton::class);
-		$obj1 = Container::getInstance()->get(TestApp\DI\NotSingleton::class);
-		$obj2 = Container::getInstance()->get(TestApp\DI\NotSingleton::class);
+	public function testMulti() {
+		Container::getInstance()->setMulti(TestApp\DI\MultiWithClone::class, Container::MULTI_CLONE);
+		$obj1 = Container::getInstance()->get(TestApp\DI\MultiWithClone::class);
+		$obj2 = Container::getInstance()->get(TestApp\DI\MultiWithClone::class);
+		$this->assertTrue($obj1->cloned);
+		$this->assertTrue($obj2->cloned);
+		$this->assertNotSame($obj1->id, $obj2->id);
+		Container::getInstance()->setMulti(TestApp\DI\MultiWithNew::class, Container::MULTI_NEW);
+		$obj1 = Container::getInstance()->get(TestApp\DI\MultiWithNew::class);
+		$obj2 = Container::getInstance()->get(TestApp\DI\MultiWithNew::class);
 		$this->assertNotSame($obj1->id, $obj2->id);
 	}
 }

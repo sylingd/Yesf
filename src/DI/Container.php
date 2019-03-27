@@ -18,9 +18,12 @@ use Yesf\Exception\InvalidClassException;
 use Yesf\Exception\CyclicDependencyException;
 
 class Container implements ContainerInterface {
+	const MULTI_CLONE = 1;
+	const MULTI_NEW = 2;
+
 	private $instance = [];
 	private $alias = [];
-	private $not_singleton = [];
+	private $multi = [];
 	private $creating = [];
 	private static $_instance = NULL;
 	public static function getInstance() {
@@ -35,8 +38,8 @@ class Container implements ContainerInterface {
 	public function setAlias($id1, $id2) {
 		$this->alias[$id1] = $id2;
 	}
-	public function setNotSingleton($id) {
-		$this->not_singleton[$id] = TRUE;
+	public function setMulti($id, $type = self::MULTI_CLONE) {
+		$this->multi[$id] = $type;
 	}
 	/**
 	 * Has
@@ -64,8 +67,12 @@ class Container implements ContainerInterface {
 		while (isset($this->alias[$id])) {
 			$id = $this->alias[$id];
 		}
-		if (isset($this->instance[$id]) && !isset($this->not_singleton[$id])) {
-			return $this->instance[$id];
+		if (isset($this->instance[$id])) {
+			if (!isset($this->multi[$id])) {
+				return $this->instance[$id];
+			} elseif ($this->multi[$id] === self::MULTI_CLONE) {
+				return clone $this->instance[$id];
+			}
 		}
 		if (!class_exists($id)) {
 			throw new NotFoundException("Class $id not found");
@@ -154,7 +161,7 @@ class Container implements ContainerInterface {
 			}
 		}
 		// put into instance
-		if (!isset($this->not_singleton[$id])) {
+		if (!isset($this->multi[$id]) || $this->multi[$id] === self::MULTI_CLONE) {
 			$this->instance[$id] = $instance;
 		}
 		unset($this->creating[$id]);

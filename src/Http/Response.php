@@ -67,7 +67,7 @@ class Response {
 		if (!is_subclass_of($clazz, __NAMESPACE__ . '\\TemplateInterface')) {
 			throw new InvalidClassException("$clazz not implemented TemplateInterface");
 		}
-		Container::getInstance()->setNotSingleton($id);
+		Container::getInstance()->setMulti($id, Container::MULTI_CLONE);
 		self::$_tpl_engine = $classId;
 	}
 	/**
