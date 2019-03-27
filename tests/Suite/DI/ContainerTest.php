@@ -6,9 +6,8 @@ use Yesf\Exception\NotFoundException;
 use Yesf\Exception\InvalidClassException;
 use Yesf\Exception\CyclicDependencyException;
 
-class DITest extends TestCase {
+class ContainerTest extends TestCase {
 	public function setUp() {
-		Yesf::getLoader()->addPsr4('TestApp\\DI\\', YESF_TEST_DATA . '/DI');
 		// Set alias
 		Container::getInstance()->setAlias('ClassOneAlias', TestApp\DI\ClassOne::class);
 	}

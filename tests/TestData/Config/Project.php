@@ -11,7 +11,7 @@ return [
 	'modules' => ['index', 'admin'],
 	'module' => 'index',
 	'view' => [
-		'auto' => FALSE,
+		'auto' => TRUE,
 		'extension' => 'phtml'
 	]
 ];

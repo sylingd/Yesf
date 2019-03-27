@@ -8,3 +8,5 @@ define('YESF_TEST', __DIR__ . '/');
 define('YESF_TEST_DATA', __DIR__ . '/TestData/');
 require(PROJECT_PATH . '/vendor/autoload.php');
 $app = new Yesf();
+
+Yesf::getLoader()->addPsr4('TestApp\\', YESF_TEST_DATA);

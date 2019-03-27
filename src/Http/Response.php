@@ -64,6 +64,12 @@ class Response {
 			self::$cookie['domain'] = Yesf::app()->getConfig('cookie.domain');
 		}
 	}
+	/**
+	 * 设置默认模板类
+	 * 
+	 * @access public
+	 * @param string $id
+	 */
 	public static function setTemplateEngine(string $id) {
 		Container::getInstance()->setMulti($id, Container::MULTI_CLONE);
 		$clazz = Container::getInstance()->get($id);
@@ -72,13 +78,19 @@ class Response {
 		}
 		self::$tpl_engine = $classId;
 	}
+	/**
+	 * 设置当前响应使用的模板类
+	 * 
+	 * @access public
+	 * @param string $id
+	 */
 	public function setCurrentTemplateEngine(string $id) {
 		Container::getInstance()->setMulti($id, Container::MULTI_CLONE);
 		$clazz = Container::getInstance()->get($id);
 		if (!is_subclass_of($clazz, __NAMESPACE__ . '\\TemplateInterface')) {
 			throw new InvalidClassException("$clazz not implemented TemplateInterface");
 		}
-		$this->$tpl_engine_obj = $clazz;
+		$this->tpl_engine_obj = $clazz;
 	}
 	/**
 	 * 构建函数
@@ -95,15 +107,6 @@ class Response {
 		}
 		$this->tpl_path = $tpl_path;
 		$this->tpl_engine_obj = Container::getInstance()->get(self::$tpl_engine);
-	}
-	/**
-	 * 设置模板路径
-	 * 
-	 * @access public
-	 * @param string $tpl_path
-	 */
-	public function setTplPath($tpl_path) {
-		$this->tpl_path = $tpl_path;
 	}
 	/**
 	 * 关闭模板自动渲染
@@ -125,6 +128,15 @@ class Response {
 		if (!empty($data)) $this->write($data);
 	}
 	/**
+	 * 获取模板类实例
+	 * 
+	 * @access public
+	 * @return object
+	 */
+	public function getTemplate() {
+		return $this->tpl_engine_obj;
+	}
+	/**
 	 * 获取一个模板的渲染结果但不输出
 	 * 
 	 * @access public
@@ -139,6 +151,24 @@ class Response {
 			$_tpl_full_path = $this->tpl_path . $tpl . '.' . self::$tpl_extension;
 		}
 		return $this->tpl_engine_obj->render($_tpl_full_path);
+	}
+	/**
+	 * 注册一个模板变量
+	 * 
+	 * @access public
+	 * @param string $k 名称
+	 * @param mixed $v 值
+	 */
+	public function assign($k, $v) {
+		$this->tpl_engine_obj->assign($k, $v);
+	}
+	/**
+	 * 清空模板变量
+	 * 
+	 * @access public
+	 */
+	public function clearAssign() {
+		$this->tpl_engine_obj->clearAssign();
 	}
 	/**
 	 * 将一个字符串输出至浏览器
@@ -159,24 +189,9 @@ class Response {
 	 */
 	public function sendfile($filepath, $offset, $length) {
 		$this->sw_response->sendfile($filepath, $offset, $length);
-	}
-	/**
-	 * 注册一个模板变量
-	 * 
-	 * @access public
-	 * @param string $k 名称
-	 * @param mixed $v 值
-	 */
-	public function assign($k, $v) {
-		$this->tpl_engine_obj->assign($k, $v);
-	}
-	/**
-	 * 清空模板变量
-	 * 
-	 * @access public
-	 */
-	public function clearAssign() {
-		$this->tpl_engine_obj->clearAssign();
+		$this->is_end = TRUE;
+		$this->sw_response = NULL;
+		$this->tpl_engine_obj = NULL;
 	}
 	/**
 	 * 向浏览器发送一个header信息
@@ -259,7 +274,7 @@ class Response {
 			$this->sw_response->end();
 			$this->sw_response = NULL;
 		}
-		$this->tpl_vars = NULL;
+		$this->tpl_engine_obj = NULL;
 	}
 	public function __destruct() {
 		$this->end();
