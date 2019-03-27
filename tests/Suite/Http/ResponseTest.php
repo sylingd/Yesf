@@ -10,7 +10,7 @@ class ResponseTest extends TestCase {
 	public function setUp() {
 		$this->fake_resp = new FakeResponse;
 		Response::init();
-		Response::initInWorker();
+		// Response::initInWorker();
 	}
 	public function testDefaultTemplate() {
 		$resp = clone $this->fake_resp;
