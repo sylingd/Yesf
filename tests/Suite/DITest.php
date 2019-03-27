@@ -46,9 +46,13 @@ class DITest extends TestCase {
 		Container::getInstance()->setMulti(TestApp\DI\MultiWithClone::class, Container::MULTI_CLONE);
 		$obj1 = Container::getInstance()->get(TestApp\DI\MultiWithClone::class);
 		$obj2 = Container::getInstance()->get(TestApp\DI\MultiWithClone::class);
-		$this->assertTrue($obj1->cloned);
+		$obj3 = Container::getInstance()->get(TestApp\DI\MultiWithClone::class);
+		// The first one is not cloned from others
+		$this->assertFalse($obj1->cloned);
 		$this->assertTrue($obj2->cloned);
+		$this->assertTrue($obj3->cloned);
 		$this->assertNotSame($obj1->id, $obj2->id);
+		$this->assertNotSame($obj1->id, $obj3->id);
 		Container::getInstance()->setMulti(TestApp\DI\MultiWithNew::class, Container::MULTI_NEW);
 		$obj1 = Container::getInstance()->get(TestApp\DI\MultiWithNew::class);
 		$obj2 = Container::getInstance()->get(TestApp\DI\MultiWithNew::class);
