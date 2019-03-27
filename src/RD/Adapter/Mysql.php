@@ -5,52 +5,21 @@
  * 
  * @author ShuangYa
  * @package Yesf
- * @category Database
+ * @category Relational Database
  * @link https://www.sylingd.com/
  * @copyright Copyright (c) 2017-2018 ShuangYa
  * @license https://yesf.sylibs.com/license
  */
-
-namespace Yesf\Database\Driver;
+namespace Yesf\Database\Adapter;
 
 use Yesf\Yesf;
 use Yesf\Exception\DBException;
-use Yesf\Database\DatabaseAbstract;
+use Yesf\Connection\Mysql as MysqlConnection;
+use Yesf\Database\Database;
 use Yesf\Database\DatabaseInterface;
 use Swoole\Coroutine as co;
 
-class Mysql extends DatabaseAbstract implements DatabaseInterface {
-	/**
-	 * 断开当前连接
-	 * 由于Swoole没有直接提供close，因此简单的通过置空，使其自动释放
-	 * 
-	 * @access public
-	 */
-	protected function close() {
-		$this->getConnection();
-		parent::close();
-	}
-	/**
-	 * 根据配置连接到数据库
-	 * 
-	 * @access protected
-	 */
-	protected function connect() {
-		$connection = new co\MySQL();
-		$r = $connection->connect([
-			'host' => $this->config['host'],
-			'user' => $this->config['user'],
-			'password' => $this->config['password'],
-			'database' => $this->config['database'],
-			'port' => $this->config['port'],
-			'timeout' => 3,
-			'charset' => 'utf8'
-		]);
-		if ($r === FALSE) {
-			throw new DBException('Can not connect to database server');
-		}
-		return $connection;
-	}
+class Mysql extends MysqlConnection implements DatabaseInterface {
 	/**
 	 * 执行查询并返回结果
 	 * 

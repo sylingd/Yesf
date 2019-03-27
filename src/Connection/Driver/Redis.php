@@ -5,32 +5,31 @@
  * 
  * @author ShuangYa
  * @package Yesf
- * @category Database
+ * @category Driver
  * @link https://www.sylingd.com/
  * @copyright Copyright (c) 2017-2018 ShuangYa
  * @license https://yesf.sylibs.com/license
  */
-
-namespace Yesf\Database\Driver;
+namespace Yesf\Connection\Driver;
 
 use Yesf\Yesf;
 use Yesf\Exception\Exception;
-use Yesf\Exception\DBException;
-use Yesf\Database\DatabaseAbstract;
-use Yesf\Database\DatabaseInterface;
+use Yesf\Exception\ConnectionException;
 use Swoole\Coroutine as co;
 
-class Redis extends DatabaseAbstract {
+class Redis {
+	use PoolTrait;
 	private $options = [];
-	/**
-	 * 断开当前连接
-	 * 
-	 * @access public
-	 */
-	protected function close() {
-		$connection = $this->getConnection();
-		$connection->close();
-		parent::close();
+	protected $config = NULL;
+	public function getMinClient() {
+		return Database::getMinClientCount(get_class($this));
+	}
+	public function getMaxClient() {
+		return Database::getMaxClientCount(get_class($this));
+	}
+	public function __construct(array $config) {
+		$this->config = $config;
+		$this->initPool();
 	}
 	/**
 	 * 根据配置连接到数据库
@@ -46,13 +45,13 @@ class Redis extends DatabaseAbstract {
 		if (!empty($this->config['password'])) {
 			$r = $connection->auth($this->config['password']);
 			if ($r === FALSE) {
-				throw new DBException('Authenticate failed, ' . $connection->errMsg, $connection->errCode);
+				throw new ConnectionException('Authenticate failed, ' . $connection->errMsg, $connection->errCode);
 			}
 		}
 		if (!empty($this->config['name'])) {
 			$r = $connection->select($this->config['name']);
 			if ($r === FALSE) {
-				throw new DBException('Select database failed, ' . $connection->errMsg, $connection->errCode);
+				throw new ConnectionException('Select database failed, ' . $connection->errMsg, $connection->errCode);
 			}
 		}
 		foreach ($this->options as $k => $v) {
@@ -113,24 +112,5 @@ REDIS_START_EXECUTE:
 		foreach ($all as $v) {
 			$this->freeConnection($v);
 		}
-	}
-	/**
-	 * 获取单个连接
-	 * 注意：此方法需要手动释放连接
-	 * 
-	 * @access public
-	 * @return object(Redis)
-	 */
-	public function lockConnection() {
-		return $this->getConnection();
-	}
-	/**
-	 * 返回一个连接到连接池
-	 * 
-	 * @access public
-	 * @param object(Redis) $conn
-	 */
-	public function unlockConnection($conn) {
-		$this->freeConnection($conn);
 	}
 }

@@ -3,8 +3,8 @@
  * 数据库常用操作类
  * 
  * @author ShuangYa
- * @package pkgist
- * @category Library
+ * @package Yesf
+ * @category Relational Database
  * @link https://www.sylingd.com/
  * @copyright Copyright (c) 2017-2018 ShuangYa
  */
@@ -22,34 +22,6 @@ class Database {
 	private static $custom_driver = [];
 	private static $pool_config = [];
 	private static $default_type = NULL;
-	/**
-	 * init阶段，读取基本配置
-	 * 
-	 * @access public
-	 */
-	public static function init() {
-		$config = Yesf::app()->getConfig();
-		self::$default_type = $config->get('database.type');
-		$c = $config->get('pool');
-		foreach ($c as $k => $v) {
-			self::$pool_config[$k] = [
-				'min' => isset($v['min']) ? intval($v['min']) : 1,
-				'max' => isset($v['max']) ? intval($v['max']) : 1,
-			];
-		}
-		if (!isset(self::$pool_config['default'])) {
-			self::$pool_config['default'] = [
-				'min' => 1,
-				'max' => 3,
-			];
-		}
-	}
-	public static function getMinClientCount($name) {
-		return isset(self::$pool_config[$name]) ? self::$pool_config[$name]['min'] : self::$pool_config['default']['min'];
-	}
-	public static function getMaxClientCount($name) {
-		return isset(self::$pool_config[$name]) ? self::$pool_config[$name]['max'] : self::$pool_config['default']['max'];
-	}
 	/**
 	 * 通过读取配置，获取数据库操作类
 	 * 
@@ -69,7 +41,7 @@ class Database {
 			//用户自定义driver
 			$driver = self::$custom_driver[$type];
 		} else {
-			$driver = 'Yesf\\Database\\Driver\\' . ucfirst($type);
+			$driver = 'Yesf\\Driver\\' . ucfirst($type);
 			if (!class_exists($driver)) {
 				throw new Exception('Driver ' . ucfirst($config->get('database.type')) . ' not found');
 			}

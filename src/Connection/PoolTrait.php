@@ -1,6 +1,6 @@
 <?php
 /**
- * 数据库基本类
+ * 连接池基本类
  * 
  * @author ShuangYa
  * @package Yesf
@@ -9,25 +9,27 @@
  * @copyright Copyright (c) 2017-2018 ShuangYa
  * @license https://yesf.sylibs.com/license
  */
+namespace Yesf\Connection;
 
-namespace Yesf\Database;
 use SplQueue;
-use Swoole\Coroutine as co;
 use Yesf\Swoole;
+use Yesf\Exception\NotFoundException;
+use Swoole\Coroutine as co;
 
-abstract class DatabaseAbstract {
-	protected $config = NULL;
+trait PoolTrait {
 	protected $connection = NULL;
 	protected $connection_count = 0;
 	protected $last_run_out_time = NULL;
 	protected $wait = NULL;
-	public function __construct(array $config) {
+	public function initPool() {
+		if (!method_exists($this, 'getMinClient') || !method_exists($this, 'getMaxClient')) {
+			throw new NotFoundException("Method getMinClient or getMaxClient not found");
+		}
 		$this->wait = new SplQueue;
 		$this->connection = new SplQueue;
-		$this->config = $config;
 		$this->last_run_out_time = time();
 		//建立最小连接
-		$count = Database::getMinClientCount(get_class($this));
+		$count = $this->getMinClient();
 		while ($count--) {
 			$this->createConnection();
 		}
@@ -36,13 +38,13 @@ abstract class DatabaseAbstract {
 	 * 获取一个可用连接
 	 * 如果不存在可用连接，会自动判断是否需要建立新的连接
 	 * 
-	 * @access protected
+	 * @access public
 	 * @return object
 	 */
-	protected function getConnection() {
+	public function getConnection() {
 		if ($this->connection->count() === 0) {
 			//是否需要建立新的连接
-			if (Database::getMaxClientCount(get_class($this)) > $this->connection_count) {
+			if ($this->getMaxClient() > $this->connection_count) {
 				$this->last_run_out_time = time();
 				return $this->connect();
 			}
@@ -59,17 +61,17 @@ abstract class DatabaseAbstract {
 	/**
 	 * 使用完成连接，归还给连接池
 	 * 
-	 * @access protected
+	 * @access public
 	 * @param object $connection
 	 */
-	protected function freeConnection($connection) {
+	public function freeConnection($connection) {
 		$this->connection->push($connection);
 		if (count($this->wait) > 0) {
 			$id = $this->wait->pop();
 			co::resume($id);
 		} else {
 			//有连接处于空闲状态超过15秒，关闭一个连接
-			if ($this->connection_count > Database::getMinClientCount(get_class($this)) && time() - $this->last_run_out_time > 15) {
+			if ($this->connection_count > $this->getMinClient() && time() - $this->last_run_out_time > 15) {
 				$this->close();
 			}
 		}
@@ -96,5 +98,6 @@ abstract class DatabaseAbstract {
 	 * 
 	 * @access protected
 	 */
-	abstract protected function connect();
+	protected function connect() {
+	}
 }
