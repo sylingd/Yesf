@@ -188,7 +188,7 @@ class Insert extends Common\Insert
     public function onDuplicateKeyUpdate($col, $value)
     {
         if ($value === null) {
-            $value = 'NULL';
+            $value = 'null';
         }
 
         $key = $this->quoter->quoteName($col);

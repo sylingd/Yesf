@@ -30,6 +30,6 @@ class Exception extends RuntimeException {
 		}
 	}
 	public function __get($name) {
-		return isset($this->info[$name]) ? $this->info[$name] : NULL;
+		return isset($this->info[$name]) ? $this->info[$name] : null;
 	}
 }

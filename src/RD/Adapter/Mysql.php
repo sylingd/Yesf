@@ -28,15 +28,15 @@ class Mysql extends MysqlConnection implements DatabaseInterface {
 	 * @param array $data 参数预绑定
 	 * @return array
 	 */
-	public function query(string $sql, $data = NULL) {
+	public function query(string $sql, $data = null) {
 		$connection = $this->getConnection();
-		$result = NULL;
-		$tryAgain = TRUE;
+		$result = null;
+		$tryAgain = true;
 SQL_START_EXECUTE:
 		if (is_array($data) && count($data) > 0) {
 			try {
 				$st = $connection->prepare($sql);
-				if ($st === FALSE) {
+				if ($st === false) {
 					goto SQL_TRY_AGAIN;
 				}
 				if (is_object($st)) {
@@ -47,7 +47,7 @@ SQL_START_EXECUTE:
 			} catch (\Throwable $e) {
 				goto SQL_TRY_AGAIN;
 			}
-			if ($result === FALSE) {
+			if ($result === false) {
 				goto SQL_TRY_AGAIN;
 			}
 			goto SQL_SUCCESS_RETURN;
@@ -57,14 +57,14 @@ SQL_START_EXECUTE:
 			} catch (\Throwable $e) {
 				goto SQL_TRY_AGAIN;
 			}
-			if ($result === FALSE) {
+			if ($result === false) {
 				goto SQL_TRY_AGAIN;
 			}
 			goto SQL_SUCCESS_RETURN;
 		}
 SQL_TRY_AGAIN:
 		if (($connection->errno === 2006 || $connection->errno === 2013) && $tryAgain) {
-			$tryAgain = FALSE;
+			$tryAgain = false;
 			$connection->connect([
 				'host' => $this->config['host'],
 				'user' => $this->config['user'],
@@ -82,7 +82,7 @@ SQL_TRY_AGAIN:
 			throw new DBException($error, $errno);
 		}
 SQL_SUCCESS_RETURN:
-		if ($result === TRUE) {
+		if ($result === true) {
 			$result = [
 				'_affected_rows' => $connection->affected_rows
 			];
@@ -101,12 +101,12 @@ SQL_SUCCESS_RETURN:
 	 * @param array $data 参数预绑定
 	 * @return array
 	 */
-	public function get(string $sql, $data = NULL) {
+	public function get(string $sql, $data = null) {
 		if (!preg_match('/limit ([0-9,]+)$/i', $sql)) {
 			$sql .= ' LIMIT 0,1';
 		}
 		$r = $this->query($sql, $data);
-		return count($r) > 0 ? current($r) : NULL;
+		return count($r) > 0 ? current($r) : null;
 	}
 	/**
 	 * 执行查询并返回一条结果中的一列
@@ -118,16 +118,16 @@ SQL_SUCCESS_RETURN:
 	 * @param string $column 列名
 	 * @return array
 	 */
-	public function getColumn(string $sql, $data = NULL, $column = NULL) {
-		if ($column === NULL) {
-			if ($data === NULL) {
+	public function getColumn(string $sql, $data = null, $column = null) {
+		if ($column === null) {
+			if ($data === null) {
 				throw new DBException('$column can not be empty');
 			} else {
 				$column = $data;
 			}
 		}
 		$result = $this->get($sql, $data);
-		if ($result === NULL || !isset($result[$column])) {
+		if ($result === null || !isset($result[$column])) {
 			throw new DBException("Column $column not exists");
 		} else {
 			return $result[$column];

@@ -410,7 +410,7 @@ abstract class AbstractQuery
      * @param boolean $isNumber if is true, will replace ":key" placeholder with "?"
      * @return array
      */
-    public function getStatementAndValues($isNumber = FALSE) {
+    public function getStatementAndValues($isNumber = false) {
         $statement = $this->getStatement();
         $bind_values = $this->getBindValues();
         if ($isNumber) {

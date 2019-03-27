@@ -16,7 +16,7 @@ use Yesf\Yesf;
 use Psr\Log\LoggerInterface;
 
 class SeasLog implements LoggerInterface {
-	protected $log_level = NULL;
+	protected $log_level = null;
 	/**
 	 * Init
 	 */

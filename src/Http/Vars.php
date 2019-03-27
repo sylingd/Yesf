@@ -14,9 +14,9 @@ namespace Yesf\Http;
 use Yesf\Yesf;
 
 class Vars {
-	protected static $mimeTypes = NULL;
-	public static function mimeType($extension, $includeCharset = TRUE) {
-		if (self::$mimeTypes === NULL) {
+	protected static $mimeTypes = null;
+	public static function mimeType($extension, $includeCharset = true) {
+		if (self::$mimeTypes === null) {
 			self::$mimeTypes = require(YESF_ROOT . 'Data/mimeTypes.php');
 		}
 		$extension = strtolower($extension);
@@ -24,7 +24,7 @@ class Vars {
 			return 'application/octet-stream';
 		}
 		$mimeType = self::$mimeTypes[$extension];
-		if (in_array($extension, ['js', 'json', 'atom', 'rss', 'xhtml'], TRUE) || substr($mimeType, 0, 5) === 'text/') {
+		if (in_array($extension, ['js', 'json', 'atom', 'rss', 'xhtml'], true) || substr($mimeType, 0, 5) === 'text/') {
 			$mimeType .= '; charset=' . Yesf::getProjectConfig('charset');
 		}
 		return $mimeType;

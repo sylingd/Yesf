@@ -6,7 +6,7 @@ class TestClass {
 	 * Should be ignored
 	 * @Autowired TestApp\DI\ClassOne
 	 */
-	public static $static_one = NULL;
+	public static $static_one = null;
 
 	/** @Autowired ClassOneAlias */
 	public $one_alias;

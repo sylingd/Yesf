@@ -42,11 +42,11 @@ class Plugin {
 	 * @param array $data 参数
 	 */
 	public static function trigger(string $event, $data = []) {
-		$result = NULL;
+		$result = null;
 		if (isset(self::$plugins[$event])) {
 			foreach (self::$plugins[$event] as $callback) {
 				$result = $callback(...$data);
-				if ($result !== NULL) {
+				if ($result !== null) {
 					break;
 				}
 			}

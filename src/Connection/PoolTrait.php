@@ -17,10 +17,10 @@ use Yesf\Exception\NotFoundException;
 use Swoole\Coroutine as co;
 
 trait PoolTrait {
-	protected $connection = NULL;
+	protected $connection = null;
 	protected $connection_count = 0;
-	protected $last_run_out_time = NULL;
-	protected $wait = NULL;
+	protected $last_run_out_time = null;
+	protected $wait = null;
 	public function initPool() {
 		if (!method_exists($this, 'getMinClient') || !method_exists($this, 'getMaxClient')) {
 			throw new NotFoundException("Method getMinClient or getMaxClient not found");

@@ -18,23 +18,23 @@ use Yesf\Http\Vars as HttpVars;
 use Yesf\Exception\InvalidClassException;
 
 class Response {
-	protected static $tpl_auto_config = FALSE;
+	protected static $tpl_auto_config = false;
 	//模板文件扩展名
 	protected static $tpl_extension = 'phtml';
 	//模板引擎
-	protected static $tpl_engine = NULL;
+	protected static $tpl_engine = null;
 	//模板目录
 	protected $tpl_path;
 	//Swoole的Response
-	protected $sw_response = NULL;
+	protected $sw_response = null;
 	//是否自动渲染
-	protected $tpl_auto = NULL;
+	protected $tpl_auto = null;
 	//默认模板
 	protected $tpl_default = '';
 	//模板引擎的实例化
-	protected $tpl_engine_obj = NULL;
+	protected $tpl_engine_obj = null;
 	//是否已经结束
-	protected $is_end = FALSE;
+	protected $is_end = false;
 	//Cookie相关配置
 	protected static $cookie = [
 		'expire' => -1,
@@ -48,7 +48,7 @@ class Response {
 	 */
 	public static function init() {
 		$view_config = Yesf::getProjectConfig('view');
-		self::$tpl_auto_config = ($view_config['auto'] == 1) ? TRUE : FALSE;
+		self::$tpl_auto_config = ($view_config['auto'] == 1) ? true : false;
 		self::$tpl_extension = ($view_config['extension'] ? $view_config['extension'] : 'phtml');
 		self::$tpl_engine = Template::class;
 		Container::getInstance()->setMulti(Template::class, Container::MULTI_CLONE);
@@ -99,10 +99,10 @@ class Response {
 	 * @param object $response Swoole的Response
 	 * @param string $tpl_path 模板路径
 	 */
-	public function __construct($response, $tpl_default = NULL, $tpl_path = NULL) {
+	public function __construct($response, $tpl_default = null, $tpl_path = null) {
 		$this->sw_response = $response;
 		$this->tpl_default = $tpl_default;
-		if ($tpl_path === NULL) {
+		if ($tpl_path === null) {
 			$tpl_path = APP_PATH . 'View/';
 		}
 		$this->tpl_path = $tpl_path;
@@ -114,7 +114,7 @@ class Response {
 	 * @access public
 	 */
 	public function disableView() {
-		$this->tpl_auto = FALSE;
+		$this->tpl_auto = false;
 	}
 	/**
 	 * 将一个模板的渲染结果输出至浏览器
@@ -123,7 +123,7 @@ class Response {
 	 * @param string $tpl 模板路径
 	 * @param boolean $is_abs_path 是否为绝对路径
 	 */
-	public function display($tpl, $is_abs_path = FALSE) {
+	public function display($tpl, $is_abs_path = false) {
 		$data = $this->render($tpl, $is_abs_path);
 		if (!empty($data)) $this->write($data);
 	}
@@ -144,7 +144,7 @@ class Response {
 	 * @param boolean $is_abs_path 是否为绝对路径
 	 * @return string
 	 */
-	public function render($tpl, $is_abs_path = FALSE) {
+	public function render($tpl, $is_abs_path = false) {
 		if ($is_abs_path) {
 			$_tpl_full_path = $tpl;
 		} else {
@@ -189,9 +189,9 @@ class Response {
 	 */
 	public function sendfile($filepath, $offset, $length) {
 		$this->sw_response->sendfile($filepath, $offset, $length);
-		$this->is_end = TRUE;
-		$this->sw_response = NULL;
-		$this->tpl_engine_obj = NULL;
+		$this->is_end = true;
+		$this->sw_response = null;
+		$this->tpl_engine_obj = null;
 	}
 	/**
 	 * 向浏览器发送一个header信息
@@ -240,10 +240,10 @@ class Response {
 		//其他参数的处理
 		!isset($param['path']) && $param['path'] = self::$cookie['path'];
 		!isset($param['domain']) && $param['domain'] = self::$cookie['domain'];
-		!isset($param['httponly']) && $param['httponly'] = FALSE;
+		!isset($param['httponly']) && $param['httponly'] = false;
 		//HTTPS
 		if (!isset($param['https'])) {
-			$param['https'] = FALSE;
+			$param['https'] = false;
 		}
 		//设置
 		$this->sw_response->cookie($name, $param['value'], $expire, $param['path'], $param['domain'], $param['https'], $param['httponly']);
@@ -266,15 +266,15 @@ class Response {
 		if ($this->is_end) {
 			return;
 		}
-		$this->is_end = TRUE;
+		$this->is_end = true;
 		if ($this->sw_response) {
-			if (($this->tpl_auto === NULL && self::$tpl_auto_config) || $this->tpl_auto) {
+			if (($this->tpl_auto === null && self::$tpl_auto_config) || $this->tpl_auto) {
 				$this->display($this->tpl_default);
 			}
 			$this->sw_response->end();
-			$this->sw_response = NULL;
+			$this->sw_response = null;
 		}
-		$this->tpl_engine_obj = NULL;
+		$this->tpl_engine_obj = null;
 	}
 	public function __destruct() {
 		$this->end();

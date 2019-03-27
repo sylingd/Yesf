@@ -17,7 +17,7 @@ use Yesf\Plugin;
 
 class Server {
 	public static $_listener = [];
-	private static $_hot_reload_lock = NULL;
+	private static $_hot_reload_lock = null;
 	private static function setProcessName($name) {
 		if (function_exists('cli_set_process_title')) {
 			cli_set_process_title($name);
@@ -72,7 +72,7 @@ class Server {
 	}
 	protected static function initHotReload($serv) {
 		//判断是否启动热更新功能
-		if (self::$_hot_reload_lock === NULL || !self::$_hot_reload_lock->trylock()) {
+		if (self::$_hot_reload_lock === null || !self::$_hot_reload_lock->trylock()) {
 			return;
 		}
 		$pid = $serv->master_pid;
@@ -97,11 +97,11 @@ class Server {
 			};
 			$scan_dir(rtrim(APP_PATH, '/'));
 			//加入EventLoop
-			$reload_timer = NULL;
+			$reload_timer = null;
 			swoole_event_add($notify, function() use (&$notify, &$list, &$pid, &$reload_timer) {
 				$events = inotify_read($notify);
 				if (!empty($events)) {
-					$require_reload = FALSE;
+					$require_reload = false;
 					foreach ($events as $event) {
 						$mask = $event['mask'];
 						if ($mask & IN_ISDIR) {
@@ -111,37 +111,37 @@ class Server {
 						switch ($mask) {
 							case IN_CREATE:
 							case IN_MOVED_TO:
-								$require_reload = TRUE;
+								$require_reload = true;
 								//添加目录时，建立监听
 								if (is_dir($fullpath)) {
 									$list[inotify_add_watch($notify, $fullpath, IN_ALL_EVENTS)] = $fullpath;
 								}
 								break;
 							case IN_DELETE_SELF:
-								$require_reload = TRUE;
+								$require_reload = true;
 								//自身被删除
 								unset($list[$event['wd']]);
 								break;
 							case IN_DELETE:
 							case IN_MOVED_FROM:
-								$require_reload = TRUE;
-								if (($key = array_search($fullpath, $list, TRUE)) !== FALSE) {
+								$require_reload = true;
+								if (($key = array_search($fullpath, $list, true)) !== false) {
 									unset($list[$key]);
 								}
 								break;
 							case IN_MODIFY:
-								$require_reload = TRUE;
+								$require_reload = true;
 								break;
 						}
 					}
 					if ($require_reload) {
 						//延时0.5s
-						if ($reload_timer !== NULL) {
+						if ($reload_timer !== null) {
 							swoole_timer_clear($reload_timer);
-							$reload_timer = NULL;
+							$reload_timer = null;
 						}
 						$reload_timer = swoole_timer_after(500, function() use (&$pid, &$reload_timer) {
-							$reload_timer = NULL;
+							$reload_timer = null;
 							\Swoole\Process::kill($pid, SIGUSR1);
 						});
 					}
@@ -153,7 +153,7 @@ class Server {
 					$worker->exit();
 				}
 			});
-		}, FALSE);
+		}, false);
 		$watcher_process->start();
 		\Swoole\Process::signal(SIGCHLD, function($sig) {
 			//必须为false，非阻塞模式

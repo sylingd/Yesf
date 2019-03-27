@@ -16,7 +16,7 @@ use Yesf\Yesf;
 class Request {
 	private $sw_request;
 	private $extra_infos = [];
-	public $extension = NULL;
+	public $extension = null;
 	public $param = [];
 	public $request_uri = '';
 	public function __construct($sw_request) {
@@ -32,7 +32,7 @@ class Request {
 		if (isset($this->sw_request->{$name})) {
 			return $this->sw_request->{$name};
 		 }
-		 return NULL;
+		 return null;
 	}
 	public function __isset($name) {
 		return isset($this->extra_infos[$name]) || isset($this->sw_request->{$name});
@@ -44,6 +44,6 @@ class Request {
 		unset($this->extra_infos[$name]);
 	}
 	public function __destruct() {
-		$this->sw_request = NULL;
+		$this->sw_request = null;
 	}
 }

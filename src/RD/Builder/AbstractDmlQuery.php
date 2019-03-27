@@ -110,7 +110,7 @@ abstract class AbstractDmlQuery extends AbstractQuery
     protected function setCol($col, $value)
     {
         if ($value === null) {
-            $value = 'NULL';
+            $value = 'null';
         }
 
         $key = $this->quoter->quoteName($col);

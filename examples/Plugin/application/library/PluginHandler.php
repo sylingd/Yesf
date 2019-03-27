@@ -26,7 +26,7 @@ class PluginHandler {
 			];
 		}
 		// Normal URL, Parse by default
-		return NULL;
+		return null;
 	}
 	public static function onWorkerStart() {
 		// Worker start
@@ -41,7 +41,7 @@ class PluginHandler {
 			if (!$request->cookie['password'] || $request->cookie['password'] !== 'password') {
 				$response->write('Forbidden');
 				// End the default distribution
-				return TRUE;
+				return true;
 			}
 		}
 		// If method is POST, check the csrf_token
@@ -49,15 +49,15 @@ class PluginHandler {
 			if (!isset($request->post['_csrf_token']) || empty($request->post['_csrf_token']) || $request->post['_csrf_token'] !== $request->cookie['_csrf_token']) {
 				$response->write('Forbidden');
 				// End the default distribution
-				return TRUE;
+				return true;
 			}
 		}
 		// Continue the default distribution
-		return NULL;
+		return null;
 	}
-	public static function onDispatchFailed($module, $controller, $action, $request, $response, $exception = NULL) {
+	public static function onDispatchFailed($module, $controller, $action, $request, $response, $exception = null) {
 		// If an exception occurs during distribution
-		if ($exception !== NULL) {
+		if ($exception !== null) {
 			Logger::error($exception->getMessage());
 			$response->write('Something is wrong');
 		} else {
@@ -65,7 +65,7 @@ class PluginHandler {
 			$response->write('404 Not Found');
 		}
 		// I've dealt with it myself
-		return TRUE;
+		return true;
 	}
 	public static function onAfterDispatcher($module, $controller, $action, $request, $response, $result) {
 		// After dispatcher

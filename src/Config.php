@@ -29,7 +29,7 @@ class Config {
 	protected $conf;
 	//替换掉已有的配置，最高优先级
 	protected $replaceConf = [];
-	public function __construct($conf, $appName = NULL) {
+	public function __construct($conf, $appName = null) {
 		$this->appName = $appName;
 		$this->environment = Yesf::app()->getEnvironment();
 		if (is_array($conf)) {
@@ -42,7 +42,7 @@ class Config {
 		} elseif (is_file($conf)) {
 			if (extension_loaded('Yaf')) {
 				$this->type = self::TYPE_YAF;
-				if (class_exists('\\Yaf_Config_Ini', FALSE)) {
+				if (class_exists('\\Yaf_Config_Ini', false)) {
 					$this->conf = new \Yaf_Config_Ini($conf, $this->environment);
 				} else {
 					$this->conf = new \Yaf\Config\Ini($conf, $this->environment);
@@ -60,14 +60,14 @@ class Config {
 	 * 支持配置继承，但不支持多级继承
 	 */
 	protected function parseIniConfig($conf) {
-		$conf = parse_ini_file($conf, TRUE);
-		$mresult = NULL;
+		$conf = parse_ini_file($conf, true);
+		$mresult = null;
 		$result = [];
 		//有继承的情况
 		if (!isset($conf[$this->environment])) {
 			$environments = array_keys($conf);
 			foreach ($environments as $one) {
-				if (strpos($one, ':') === FALSE) {
+				if (strpos($one, ':') === false) {
 					continue;
 				}
 				list($child, $parent) = explode(':', $one);
@@ -78,7 +78,7 @@ class Config {
 					$mresult = array_merge($conf[$parent], $conf[$one]);
 				}
 			}
-			if ($mresult === NULL) {
+			if ($mresult === null) {
 				return [];
 			}
 		} else {
@@ -86,7 +86,7 @@ class Config {
 		}
 		//将“.”作为分隔符，分割为多维数组
 		foreach ($mresult as $k => $v) {
-			if (strpos($k, '.') === FALSE) {
+			if (strpos($k, '.') === false) {
 				$result[$k] = $v;
 				continue;
 			}
@@ -125,14 +125,14 @@ class Config {
 			case self::TYPE_FILE:
 				return $this->getByConf($key);
 		}
-		return NULL;
+		return null;
 	}
 	public function getByYaconf($key) {
 		$key = $this->environment . '.' . $key;
 		if (!empty($this->appName)) {
 			$key = $this->appName . '.' . $key;
 		}
-		return Yaconf::has($key) ? Yaconf::get($key) : NULL;
+		return Yaconf::has($key) ? Yaconf::get($key) : null;
 	}
 	public function getByQconf($key) {
 		$key = '/' . $this->environment . '.' . $key;
@@ -156,7 +156,7 @@ class Config {
 			if (isset($conf[$v])) {
 				$conf = $conf[$v];
 			} else {
-				return NULL;
+				return null;
 			}
 		}
 		return $conf;
@@ -171,7 +171,7 @@ class Config {
 		$this->replaceConf[$key] = $val;
 	}
 	public function has($key) {
-		return $this->get($key) !== NULL;
+		return $this->get($key) !== null;
 	}
 	/**
 	 * 魔术方法，方便调用

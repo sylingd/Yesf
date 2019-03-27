@@ -51,7 +51,7 @@ EOT;
 	} else {
 		$path = realpath('./application');
 	}
-	if ($path === FALSE) {
+	if ($path === false) {
 		echo "Application path not found";
 		exit;
 	}
@@ -104,7 +104,7 @@ EOT;
 			default:
 				$config = realpath($config);
 		}
-		if ($config === FALSE) {
+		if ($config === false) {
 			echo "Config is invalid";
 			exit;
 		}

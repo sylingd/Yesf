@@ -24,21 +24,21 @@ class Logger implements LoggerAwareInterface {
 		'alert' => 6,
 		'emergency' => 7
 	];
-	private $logger = NULL;
+	private $logger = null;
 	public static function should($level) {
-		static $level = NULL;
-		if ($level === NULL) {
+		static $level = null;
+		if ($level === null) {
 			$level = Yesf::app()->getConfig('logger.level');
 			if ($level === 'none') {
-				return FALSE;
+				return false;
 			}
 			$level = ($level && isset(self::LOG_LEVEL[$level])) ? self::LOG_LEVEL[$level] : 3;
 		}
 		return isset(self::LOG_LEVEL[$type]) && self::LOG_LEVEL[$type] >= $level;
 	}
 	public static function getLogName() {
-		static $name = NULL;
-		if ($name === NULL) {
+		static $name = null;
+		if ($name === null) {
 			if (Yesf::app()->getConfig('logger.name')) {
 				$name = Yesf::app()->getConfig('logger.name');
 			} else {

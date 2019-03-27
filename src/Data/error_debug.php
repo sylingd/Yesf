@@ -98,7 +98,7 @@
 			<tr><td class="name">action</td><td><?=htmlspecialchars($action)?></td></tr>
 			<tr><td class="name">request_uri</td><td><?=htmlspecialchars($req->request_uri)?></td></tr>
 			<tr><td class="name">extension</td><td><?=htmlspecialchars($req->extension)?></td></tr>
-			<tr><td class="name">param</td><td><?=htmlspecialchars(var_export($req->param, TRUE))?></td></tr>
+			<tr><td class="name">param</td><td><?=htmlspecialchars(var_export($req->param, true))?></td></tr>
 		</table>
 		<div class="title">Server</div>
 		<table>

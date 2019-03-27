@@ -14,17 +14,17 @@ class ConfigTest extends TestCase {
 			$config = new Config(Config::YACONF, self::AppName);
 			$this->assertEquals('MyTest', $config->get('test'));
 			$this->assertEquals('127.0.0.1', $config->get('MySQL.host'));
-			$this->assertEquals(NULL, $config->get('a_null_key'));
+			$this->assertEquals(null, $config->get('a_null_key'));
 		}
 		//test ini
 		$config = new Config(YESF_TEST_DATA . 'config_sample.ini', self::AppName);
 		$this->assertEquals('utf-8', $config->get('application.charset'));
 		$this->assertEquals('map', $config->get('application.router.type'));
-		$this->assertEquals(NULL, $config->get('a_null_key'));
+		$this->assertEquals(null, $config->get('a_null_key'));
 		//test php
 		$config = new Config(require(YESF_TEST_DATA . 'config_sample.php'), self::AppName);
 		$this->assertEquals('MyTest', $config->get('test'));
 		$this->assertEquals('127.0.0.1', $config->get('MySQL.host'));
-		$this->assertEquals(NULL, $config->get('a_null_key'));
+		$this->assertEquals(null, $config->get('a_null_key'));
 	}
 }

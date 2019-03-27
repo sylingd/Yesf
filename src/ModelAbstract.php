@@ -62,7 +62,7 @@ abstract class ModelAbstract implements ModelInterface {
 	 * @return array
 	 */
 	public static function executeBuilder($builder) {
-		list($st, $vals) = $builder->getStatementAndValues(TRUE);
+		list($st, $vals) = $builder->getStatementAndValues(true);
 		return static::execute($st, $vals);
 	}
 	/**
@@ -71,7 +71,7 @@ abstract class ModelAbstract implements ModelInterface {
 	 * @param mixed $filter 当$filter为array时，则为多条条件，否则为主键
 	 * @param array $cols 需要查询出的列
 	 */
-	public static function get($filter, $cols = NULL) {
+	public static function get($filter, $cols = null) {
 		$query = static::select();
 		if (is_array($cols)) {
 			$query->cols($cols);
@@ -94,7 +94,7 @@ abstract class ModelAbstract implements ModelInterface {
 		}
 		$query->limit(1);
 		$result = static::executeBuilder($query);
-		return count($result) > 0 ? current($result) : NULL;
+		return count($result) > 0 ? current($result) : null;
 	}
 	/**
 	 * 查询多条数据
@@ -105,7 +105,7 @@ abstract class ModelAbstract implements ModelInterface {
 	 * @param array $cols 需要查询出的列
 	 * @return array
 	 */
-	public static function list($filter = [], $num = 30, $offset = 0, $cols = NULL) {
+	public static function list($filter = [], $num = 30, $offset = 0, $cols = null) {
 		$query = static::select();
 		if (is_array($cols)) {
 			$query->cols($cols);
@@ -135,20 +135,20 @@ abstract class ModelAbstract implements ModelInterface {
 	 * @param array $filter
 	 * @return int
 	 */
-	public static function set($set, $cols, $filter = NULL) {
-		if ($filter === NULL) {
+	public static function set($set, $cols, $filter = null) {
+		if ($filter === null) {
 			$filter = &$cols;
 		} else {
 			//筛选$set列
 			foreach ($set as $k => $v) {
-				if (!in_array($k, $cols, TRUE)) {
+				if (!in_array($k, $cols, true)) {
 					unset($set[$k]);
 				}
 			}
 		}
 		$query = static::update();
 		$query->cols($set);
-		if ($filter !== TRUE) {
+		if ($filter !== true) {
 			if (is_string($filter) || is_numeric($filter)) {
 				$query->where(static::$_primary_key . ' = :' . static::$_primary_key, [
 					static::$_primary_key => $filter
@@ -181,7 +181,7 @@ abstract class ModelAbstract implements ModelInterface {
 	 */
 	public static function del($filter) {
 		$query = static::delete();
-		if ($filter !== TRUE) {
+		if ($filter !== true) {
 			if (is_string($filter) || is_numeric($filter)) {
 				$query->where(static::$_primary_key . ' = :' . static::$_primary_key, [
 					static::$_primary_key => $filter
@@ -214,11 +214,11 @@ abstract class ModelAbstract implements ModelInterface {
 	 * @param array $cols
 	 * @return int/null
 	 */
-	public static function add(array $data, $cols = NULL) {
+	public static function add(array $data, $cols = null) {
 		if (is_array($cols)) {
 			//筛选$data列
 			foreach ($data as $k => $v) {
-				if (!in_array($k, $cols, TRUE)) {
+				if (!in_array($k, $cols, true)) {
 					unset($data[$k]);
 				}
 			}
@@ -228,7 +228,7 @@ abstract class ModelAbstract implements ModelInterface {
 		if (!empty(static::$_primary_key)) {
 			return intval($result['_insert_id']);
 		} else {
-			return NULL;
+			return null;
 		}
 	}
 }

@@ -43,7 +43,7 @@ class Pool {
 	public static function getMax($name) {
 		return isset(self::$pool_config[$name]) ? self::$pool_config[$name]['max'] : self::$pool_config['default']['max'];
 	}
-	public function get($config = NULL) {
+	public function get($config = null) {
 		//
 	}
 }

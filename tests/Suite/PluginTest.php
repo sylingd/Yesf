@@ -6,7 +6,7 @@ class PluginTest extends TestCase {
 	public static $isTrigger = 0;
 	public static function callback1($data) {
 		self::$isTrigger = 1;
-		return NULL;
+		return null;
 	}
 	public static function callback2($data) {
 		return '_t_' . $data;
@@ -18,7 +18,7 @@ class PluginTest extends TestCase {
 		Plugin::clear('test');
 		Plugin::register('test', [__CLASS__, 'callback2']);
 		$this->assertEquals('_t__test_data_', Plugin::trigger('test', ['_test_data_']));
-		$this->assertEquals(NULL, Plugin::trigger('none', ['_test_data_']));
+		$this->assertEquals(null, Plugin::trigger('none', ['_test_data_']));
 	}
 	public function testSeveralPlugin() {
 		Plugin::clear('test');
@@ -37,10 +37,10 @@ class PluginTest extends TestCase {
 		Plugin::register('test', [__CLASS__, 'callback1']);
 		$this->assertEquals('_t__test_data_', Plugin::trigger('test', ['_test_data_']));
 		Plugin::clear();
-		$this->assertEquals(NULL, Plugin::trigger('test', ['_test_data_']));
+		$this->assertEquals(null, Plugin::trigger('test', ['_test_data_']));
 		Plugin::register('test', [__CLASS__, 'callback2']);
 		$this->assertEquals('_t__test_data_', Plugin::trigger('test', ['_test_data_']));
 		Plugin::clear('test');
-		$this->assertEquals(NULL, Plugin::trigger('test', ['_test_data_']));
+		$this->assertEquals(null, Plugin::trigger('test', ['_test_data_']));
 	}
 }

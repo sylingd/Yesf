@@ -21,7 +21,7 @@ class Database {
 	private static $db = [];
 	private static $custom_driver = [];
 	private static $pool_config = [];
-	private static $default_type = NULL;
+	private static $default_type = null;
 	/**
 	 * 通过读取配置，获取数据库操作类
 	 * 
@@ -29,9 +29,9 @@ class Database {
 	 * @param string $type 类型
 	 * @return object(DatabaseAbstract)
 	 */
-	public static function get($type = NULL) {
+	public static function get($type = null) {
 		$config = Yesf::app()->getConfig();
-		if ($type === NULL) {
+		if ($type === null) {
 			$type = self::$default_type;
 		}
 		if (isset(self::$db[$type])) {
@@ -73,9 +73,9 @@ class Database {
 	 * @param string $type
 	 * @return object(QueryFactory)
 	 */
-	public static function getBuilder($type = NULL) {
+	public static function getBuilder($type = null) {
 		static $builders = [];
-		if ($type === NULL) {
+		if ($type === null) {
 			$type = Yesf::app()->getConfig('database.type');
 		}
 		if (!isset($builders[$type])) {
@@ -90,7 +90,7 @@ class Database {
 	 * @param string $type
 	 * @param string $clazz 类名
 	 */
-	public static function registerDriver(string $type, $clazz = NULL) {
+	public static function registerDriver(string $type, $clazz = null) {
 		if (!class_exists($clazz)) {
 			throw new Exception('Driver ' . $type . ' not found');
 		}

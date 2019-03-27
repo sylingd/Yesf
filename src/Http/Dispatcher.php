@@ -23,7 +23,7 @@ class Dispatcher {
 	const ROUTE_ERR_CONTROLLER = 2;
 	const ROUTE_ERR_ACTION = 3;
 
-	private static $modules = NULL;
+	private static $modules = null;
 	private static $default_module = 'index';
 	private static $default_action = 'index';
 	private static $default_controller = 'index';
@@ -61,7 +61,7 @@ class Dispatcher {
 	 * @return int
 	 */
 	public static function isValid($module, $controller, $action) {
-		if (!in_array($module, self::$modules, TRUE)) {
+		if (!in_array($module, self::$modules, true)) {
 			return self::ROUTE_ERR_MODULE;
 		}
 		$className = GetEntryUtil::controller($module, $controller);
@@ -93,19 +93,19 @@ class Dispatcher {
 	 * @return mixed
 	 */
 	public static function dispatch($routeInfo, $request, $res) {
-		$result = NULL;
+		$result = null;
 		list($module, $controller, $action) = self::getRouteInfo($routeInfo);
 		$viewDir = APP_PATH . 'Modules/' . $module . '/View/';
 		$response = new Response($res, $controller . '/' . $action, $viewDir);
 		if (!empty($request->extension)) {
 			$response->mimeType($request->extension);
 		}
-		$result = NULL;
+		$result = null;
 		try {
 			//触发beforeDispatcher事件
 			$arr = [$module, $controller, $action, $request, $response];
 			$is_continue = Plugin::trigger('beforeDispatcher', $arr);
-			if ($is_continue === NULL) {
+			if ($is_continue === null) {
 				$code = self::isValid($module, $controller, $action);
 				if ($code === self::ROUTE_VALID) {
 					$className = GetEntryUtil::controller($module, $controller);
@@ -129,7 +129,7 @@ class Dispatcher {
 	}
 	private static function handleNotFound($module, $controller, $action, $request, $response) {
 		$arr = [$module, $controller, $action, $request, $yesf_response];
-		if (Plugin::trigger('dispatchFailed', $arr) === NULL) {
+		if (Plugin::trigger('dispatchFailed', $arr) === null) {
 			$response->status(404);
 			$response->disableView();
 			$response->setCurrentTemplateEngine(Template::class);
@@ -139,9 +139,9 @@ class Dispatcher {
 				$response->assign('action', $action);
 				$response->assign('code', $code);
 				$response->assign('req', $request);
-				$response->display(YESF_ROOT . 'Data/error_404_debug.php', TRUE);
+				$response->display(YESF_ROOT . 'Data/error_404_debug.php', true);
 			} else {
-				$response->display(YESF_ROOT . 'Data/error_404.php', TRUE);
+				$response->display(YESF_ROOT . 'Data/error_404.php', true);
 			}
 		}
 	}
@@ -150,7 +150,7 @@ class Dispatcher {
 		Logger::error('Uncaught exception: ' . $e->getMessage() . '. Trace: ' . $e->getTraceAsString());
 		//触发失败事件
 		$arr = [$module, $controller, $action, $request, $response, $e];
-		if (Plugin::trigger('dispatchFailed', $arr) === NULL) {
+		if (Plugin::trigger('dispatchFailed', $arr) === null) {
 			//如果用户没有自行处理，输出默认模板
 			$response->disableView();
 			$response->setCurrentTemplateEngine(Template::class);
@@ -160,9 +160,9 @@ class Dispatcher {
 				$response->assign('action', $action);
 				$response->assign('e', $e);
 				$response->assign('req', $request);
-				$response->display(YESF_ROOT . 'Data/error_debug.php', TRUE);
+				$response->display(YESF_ROOT . 'Data/error_debug.php', true);
 			} else {
-				$response->display(YESF_ROOT . 'Data/error.php', TRUE);
+				$response->display(YESF_ROOT . 'Data/error.php', true);
 			}
 		}
 		//触发afterDispatcher事件

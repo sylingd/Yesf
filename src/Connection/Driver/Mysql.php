@@ -18,7 +18,7 @@ use Swoole\Coroutine as co;
 
 class Mysql {
 	use PoolTrait;
-	protected $config = NULL;
+	protected $config = null;
 	public function getMinClient() {
 		return Database::getMinClientCount(get_class($this));
 	}
@@ -45,7 +45,7 @@ class Mysql {
 			'timeout' => 3,
 			'charset' => 'utf8'
 		]);
-		if ($r === FALSE) {
+		if ($r === false) {
 			throw new ConnectionException('Can not connect to database server');
 		}
 		return $connection;

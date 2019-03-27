@@ -24,9 +24,9 @@ class Swoole {
 	const LISTEN_TCP6 = SWOOLE_TCP6;
 	const LISTEN_UDP6 = SWOOLE_UDP6;
 	//当前是否为task进程，在workerStart后才有效
-	public static $isTaskWorker = FALSE;
+	public static $isTaskWorker = false;
 	//Swoole实例类
-	protected static $server = NULL;
+	protected static $server = null;
 	/**
 	 * 初始化
 	 * 
@@ -52,7 +52,7 @@ class Swoole {
 			if (!isset($config['ssl_cert_file'])) {
 				throw new NotFoundException('Certfile not found');
 			}
-			$config['open_http2_protocol'] = TRUE;
+			$config['open_http2_protocol'] = true;
 		}
 		self::$server->set($config);
 		//是否启用热更新
@@ -88,7 +88,7 @@ class Swoole {
 	 * @access public
 	 * @param boolean $task 是否重载Task进程
 	 */
-	public static function reload($task = TRUE) {
+	public static function reload($task = true) {
 		self::$server->reload($task);
 	}
 	/**
@@ -116,20 +116,20 @@ class Swoole {
 			$addr = $config['sock'];
 			$port = 0;
 			if (empty($addr)) {
-				return FALSE;
+				return false;
 			}
 			if (isset(Server::$_listener[$addr])) {
-				return FALSE;
+				return false;
 			}
 			Server::$_listener[$addr] = $callback;
 		} else {
 			$addr = isset($config['ip']) ? $config['ip'] : Yesf::getServerConfig('ip');
 			if (!isset($config['port'])) {
-				return FALSE;
+				return false;
 			}
 			$port = $config['port'];
 			if (isset(Server::$_listener[$port])) {
-				return FALSE;
+				return false;
 			}
 			Server::$_listener[$port] = $callback;
 		}
@@ -160,7 +160,7 @@ class Swoole {
 				Server::eventPacket($callback_key, $data, $client_info);
 			});
 		}
-		return TRUE;
+		return true;
 	}
 	/**
 	 * 投递Task
@@ -170,8 +170,8 @@ class Swoole {
 	 * @param int $worker_id 投递到的task进程ID
 	 * @param callable $callback 回调函数
 	 */
-	public static function task($data, $worker_id = -1, $callback = NULL) {
-		if ($callback === TRUE) {
+	public static function task($data, $worker_id = -1, $callback = null) {
+		if ($callback === true) {
 			return self::$server->taskCo([$data]);
 		} elseif (is_callable($callback)) {
 			self::$server->task($data, $worker_id, $callback);
@@ -191,7 +191,7 @@ class Swoole {
 	 * @param boolean/callable $callback 回调函数
 	 */
 	public static function taskMulit($data, $callback) {
-		if ($callback === TRUE) {
+		if ($callback === true) {
 			return self::$server->taskCo($data);
 		} elseif (is_callable($callback)) {
 			$result = [];

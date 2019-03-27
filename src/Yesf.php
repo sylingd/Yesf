@@ -38,17 +38,17 @@ class Yesf {
 	 */
 	protected static $_base_uri = '/';
 	//缓存namespace
-	protected static $_app_namespace = NULL;
+	protected static $_app_namespace = null;
 	//单例化
-	protected static $_instance = NULL;
+	protected static $_instance = null;
 	//运行环境，需要与配置文件中同名
 	protected $_environment = 'product';
 	//配置
-	protected static $_config_project = NULL;
+	protected static $_config_project = null;
 	protected static $_config_project_hash = '';
-	protected static $_config_server = NULL;
-	protected $_config = NULL;
-	protected $_config_raw = NULL;
+	protected static $_config_server = null;
+	protected $_config = null;
+	protected $_config_raw = null;
 	/**
 	 * 获取单例类
 	 * 
@@ -56,7 +56,7 @@ class Yesf {
 	 * @return object(Yesf)
 	 */
 	public static function app(): Yesf {
-		if (self::$_instance === NULL) {
+		if (self::$_instance === null) {
 			throw new StartException('Yesf have not been construct yet');
 		}
 		return self::$_instance;
@@ -108,7 +108,7 @@ class Yesf {
 	 */
 	private static function addAppToLoader() {
 		$namespace = self::$_config_project['namespace'];
-		if (strpos('\\', $namespace) === FALSE) {
+		if (strpos('\\', $namespace) === false) {
 			$namespace .= '\\';
 		}
 		self::getLoader()->addPsr4($namespace, APP_PATH);
@@ -120,8 +120,8 @@ class Yesf {
 	 * @return object(ClassLoader)
 	 */
 	public static function getLoader() {
-		static $loader = NULL;
-		if ($loader === NULL) {
+		static $loader = null;
+		if ($loader === null) {
 			$classes = get_declared_classes();
 			foreach ($classes as $clazz) {
 				if (strpos($clazz, 'ComposerAutoloaderInit') === 0 && method_exists($clazz, 'getLoader')) {
@@ -129,7 +129,7 @@ class Yesf {
 					break;
 				}
 			}
-			if ($loader === NULL) {
+			if ($loader === null) {
 				throw new RequirementException('Composer loader not found');
 			}
 		}
@@ -140,11 +140,11 @@ class Yesf {
 	 * 
 	 * @access public
 	 */
-	public static function getProjectConfig($key = NULL) {
-		if ($key === NULL) {
+	public static function getProjectConfig($key = null) {
+		if ($key === null) {
 			return self::$_config_project;
 		} else {
-			return isset(self::$_config_project[$key]) ? self::$_config_project[$key] : NULL;
+			return isset(self::$_config_project[$key]) ? self::$_config_project[$key] : null;
 		}
 	}
 	public static function reloadProjectConfig() {
@@ -158,15 +158,15 @@ class Yesf {
 		Dispatcher::init();
 		Response::init();
 	}
-	public static function getServerConfig($key = NULL) {
-		if ($key === NULL) {
+	public static function getServerConfig($key = null) {
+		if ($key === null) {
 			return self::$_config_server;
 		} else {
-			return isset(self::$_config_server[$key]) ? self::$_config_server[$key] : NULL;
+			return isset(self::$_config_server[$key]) ? self::$_config_server[$key] : null;
 		}
 	}
-	public function getConfig($key = NULL) {
-		if ($key === NULL) {
+	public function getConfig($key = null) {
+		if ($key === null) {
 			return $this->_config;
 		} else {
 			return $this->_config->get($key);

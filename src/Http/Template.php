@@ -23,7 +23,7 @@ class Template implements TemplateInterface {
 	}
 	public function render(string $_full_path): string {
 		extract($this->vars, EXTR_SKIP);
-		ob_implicit_flush(FALSE);
+		ob_implicit_flush(false);
 		ob_start();
 		if (is_file($_full_path)) {
 			include($_full_path);

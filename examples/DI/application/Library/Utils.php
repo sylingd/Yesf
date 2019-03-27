@@ -7,7 +7,7 @@ use Yesf\Plugin;
 use Yesf\Logger;
 
 class Utils {
-	private $init_time = NULL;
+	private $init_time = null;
 	/**
 	 * Constructor
 	 * @Autowired time DateTime

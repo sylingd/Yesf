@@ -28,7 +28,7 @@ interface DatabaseInterface {
 	 * @param array $data 参数预绑定
 	 * @return array
 	 */
-	public function query(string $sql, $data = NULL);
+	public function query(string $sql, $data = null);
 	/**
 	 * 执行查询并返回一条结果
 	 * 
@@ -37,7 +37,7 @@ interface DatabaseInterface {
 	 * @param array $data 参数预绑定
 	 * @return array
 	 */
-	public function get(string $sql, $data = NULL);
+	public function get(string $sql, $data = null);
 	/**
 	 * 执行查询并返回一条结果中的一列
 	 * 可以只传入前两个参数，而不传入$column，此时$data将会当做$column处理
@@ -48,5 +48,5 @@ interface DatabaseInterface {
 	 * @param string $column 列名
 	 * @return array
 	 */
-	public function getColumn(string $sql, $data = NULL, $column = NULL);
+	public function getColumn(string $sql, $data = null, $column = null);
 }

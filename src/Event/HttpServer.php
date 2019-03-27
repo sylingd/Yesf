@@ -18,7 +18,7 @@ use Yesf\Http\Router;
 use Yesf\Http\Dispatcher;
 
 class HttpServer {
-	protected static $router = NULL;
+	protected static $router = null;
 	protected static $module = 'index';
 	public static function init() {
 		self::$module = Yesf::getProjectConfig('index');
@@ -30,7 +30,7 @@ class HttpServer {
 		$baseUriLen = strlen($baseUri);
 		//路由解析
 		$uri = $request->server['request_uri'];
-		if (strpos('?', $uri) !== FALSE) {
+		if (strpos('?', $uri) !== false) {
 			$uri = substr($uri, 0, strpos($uri, '?'));
 		}
 		//去除开头的baseUri
@@ -54,7 +54,7 @@ class HttpServer {
 				//扩展名自动处理
 				if (self::$router['extension']) {
 					$hasPoint = strrpos($uri, '.');
-					if ($hasPoint !== FALSE) {
+					if ($hasPoint !== false) {
 						$yesfRequest->extension = substr($uri, $hasPoint + 1);
 						$uri = substr($uri, 0, $hasPoint);
 					}

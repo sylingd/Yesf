@@ -70,7 +70,7 @@ class Router {
 		if (isset($param)) {
 			return [$param, $dispatch];
 		} else {
-			return NULL;
+			return null;
 		}
 	}
 	/**
@@ -116,7 +116,7 @@ class Router {
 		if (isset($param)) {
 			return [$param, $dispatch];
 		} else {
-			return NULL;
+			return null;
 		}
 	}
 	/**

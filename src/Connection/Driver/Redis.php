@@ -20,7 +20,7 @@ use Swoole\Coroutine as co;
 class Redis {
 	use PoolTrait;
 	private $options = [];
-	protected $config = NULL;
+	protected $config = null;
 	public function getMinClient() {
 		return Database::getMinClientCount(get_class($this));
 	}
@@ -39,18 +39,18 @@ class Redis {
 	protected function connect() {
 		$connection = new co\Redis();
 		$r = $connection->connect($this->config['host'], $this->config['port']);
-		if ($r === FALSE) {
+		if ($r === false) {
 			throw new DBException('Can not connect to database server, ' . $connection->errMsg, $connection->errCode);
 		}
 		if (!empty($this->config['password'])) {
 			$r = $connection->auth($this->config['password']);
-			if ($r === FALSE) {
+			if ($r === false) {
 				throw new ConnectionException('Authenticate failed, ' . $connection->errMsg, $connection->errCode);
 			}
 		}
 		if (!empty($this->config['name'])) {
 			$r = $connection->select($this->config['name']);
-			if ($r === FALSE) {
+			if ($r === false) {
 				throw new ConnectionException('Select database failed, ' . $connection->errMsg, $connection->errCode);
 			}
 		}
@@ -73,14 +73,14 @@ class Redis {
 			$this->freeConnection($connection);
 			throw new Exception('Method ' . $name . ' not exists');
 		}
-		$tryAgain = TRUE;
+		$tryAgain = true;
 REDIS_START_EXECUTE:
 		$result = $connection->$name(...$arguments);
 		//发生了错误
 		if ($connection->errCode !== 0) {
 			if (!$connection->connected && $tryAgain) {
 				@$connection->close();
-				$tryAgain = FALSE;
+				$tryAgain = false;
 				$connection = $this->connect();
 				goto REDIS_START_EXECUTE;
 			} else {

@@ -25,9 +25,9 @@ class Container implements ContainerInterface {
 	private $alias = [];
 	private $multi = [];
 	private $creating = [];
-	private static $_instance = NULL;
+	private static $_instance = null;
 	public static function getInstance() {
-		if (self::$_instance === NULL) {
+		if (self::$_instance === null) {
 			self::$_instance = new self;
 		}
 		return self::$_instance;
@@ -51,12 +51,12 @@ class Container implements ContainerInterface {
 			$id = $this->alias[$id];
 		}
 		if (isset($this->instance[$id])) {
-			return TRUE;
+			return true;
 		}
 		if (class_exists($id)) {
-			return TRUE;
+			return true;
 		}
-		return FALSE;
+		return false;
 	}
 	/**
 	 * Get
@@ -81,14 +81,14 @@ class Container implements ContainerInterface {
 		if (isset($this->creating[$id])) {
 			throw new CyclicDependencyException("Found cyclic dependency of $id");
 		}
-		$this->creating[$id] = TRUE;
+		$this->creating[$id] = true;
 		$ref = new ReflectionClass($id);
 		if (!$ref->isInstantiable()) {
 			throw new InvalidClassException("Can not create instance of $id");
 		}
 		// constructor
 		$constructor = $ref->getConstructor();
-		if ($constructor !== NULL) {
+		if ($constructor !== null) {
 			// Read comment for alias
 			$comment = $constructor->getDocComment();
 			$is_autowire = preg_match_all('/@Autowired\s+([\w\\\\]+)\s+([\w\\\\]+)\s+/', $comment, $autowire_matches);
@@ -114,15 +114,15 @@ class Container implements ContainerInterface {
 						$typeName = $type->__toString();
 					}
 					if ($type->isBuiltin()) {
-						$value = NULL;
+						$value = null;
 						settype($value, $typeName);
 						$init_params[] = $value;
 					} else {
 						$from[] = $typeName;
-						$init_params[] = $this->get($typeName, FALSE, $from);
+						$init_params[] = $this->get($typeName, false, $from);
 					}
 				} else {
-					$init_params[] = NULL;
+					$init_params[] = null;
 				}
 			}
 			$instance = $ref->newInstance(...$init_params);
@@ -143,19 +143,19 @@ class Container implements ContainerInterface {
 				$setter = 'set' . ucfirst($propertyName);
 				$getter = 'get' . ucfirst($propertyName);
 				if (method_exists($instance, $setter) && method_exists($instance, $getter)) {
-					if ($instance->$getter() === NULL) {
+					if ($instance->$getter() === null) {
 						$instance->$setter($this->get($autowire[1]));
 					}
 				} else {
 					$is_public = $property->isPublic();
 					if (!$is_public) {
-						$property->setAccessible(TRUE);
+						$property->setAccessible(true);
 					}
-					if ($property->getValue($instance) === NULL) {
+					if ($property->getValue($instance) === null) {
 						$property->setValue($instance, $this->get($autowire[1]));
 					}
 					if (!$is_public) {
-						$property->setAccessible(FALSE);
+						$property->setAccessible(false);
 					}
 				}
 			}

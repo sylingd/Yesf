@@ -30,7 +30,7 @@ class ResponseTest extends TestCase {
 		$response->disableView();
 		$id = uniqid();
 		$response->assign('id', $id);
-		$response->display(APP_PATH . 'View/Index.phtml', TRUE);
+		$response->display(APP_PATH . 'View/Index.phtml', true);
 		unset($response);
 		$expected_result = "<p>$id</p>";
 		$this->assertEquals($expected_result, $resp->content);
@@ -56,7 +56,7 @@ class ResponseTest extends TestCase {
 		$response = new Response($resp);
 		$response->sendfile($path, $start_offset, $send_size);
 		unset($response);
-		$expected_result = file_get_contents($path, FALSE, NULL, $start_offset, $send_size);
+		$expected_result = file_get_contents($path, false, null, $start_offset, $send_size);
 		$this->assertEquals($expected_result, $resp->content);
 	}
 	public function testHeader() {

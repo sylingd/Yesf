@@ -6,12 +6,12 @@ return [
 	'bootstrap' => 'Bootstrap',
 	'router' => [
 		'type' => 'map',
-		'extension' => TRUE
+		'extension' => true
 	],
 	'modules' => ['index', 'admin'],
 	'module' => 'index',
 	'view' => [
-		'auto' => FALSE,
+		'auto' => false,
 		'extension' => 'phtml'
 	]
 ];

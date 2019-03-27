@@ -18,7 +18,7 @@ class FakeResponse {
 		// Do nothing
 	}
 	public function sendfile($file, $offset, $length) {
-		$this->content = file_get_contents($file, FALSE, NULL, $offset, $length);
+		$this->content = file_get_contents($file, false, null, $offset, $length);
 	}
 	public function end() {
 		// Do nothing
