@@ -1,11 +1,17 @@
 <?php
-namespace YesfApp\Modules\Index\Controller;
+namespace YesfApp\Module\Index\Controller;
 
 use Yesf\ControllerInterface;
 use Yesf\ControllerAbstract;
 
 class Index extends ControllerAbstract implements ControllerInterface {
+	/**
+	 * You can aslo using DI with those comment:
+	 * @Autowired YesfApp\Utils
+	 */
+	private $utils;
+
 	public function IndexAction($request, $response) {
-		$response->assign('message', 'Hello, Yesf!');
+		$response->write($this->utils->getTime());
 	}
 }

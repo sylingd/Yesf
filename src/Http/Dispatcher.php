@@ -95,7 +95,7 @@ class Dispatcher {
 	public static function dispatch($routeInfo, $request, $res) {
 		$result = null;
 		list($module, $controller, $action) = self::getRouteInfo($routeInfo);
-		$viewDir = APP_PATH . 'Modules/' . $module . '/View/';
+		$viewDir = APP_PATH . 'Module/' . $module . '/View/';
 		$response = new Response($res, $controller . '/' . $action, $viewDir);
 		if (!empty($request->extension)) {
 			$response->mimeType($request->extension);

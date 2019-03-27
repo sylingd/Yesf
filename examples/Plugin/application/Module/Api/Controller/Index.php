@@ -1,5 +1,5 @@
 <?php
-namespace YesfApp\Modules\Api\Controller;
+namespace YesfApp\Module\Api\Controller;
 
 use Yesf\ControllerInterface;
 use Yesf\ControllerAbstract;
