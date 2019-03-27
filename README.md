@@ -2,6 +2,7 @@
 
 [![Build Status](
 https://img.shields.io/travis/sylingd/Yesf/master.svg?style=flat-square)](https://travis-ci.org/sylingd/Yesf)
+![Coveralls github](https://img.shields.io/coveralls/github/sylingd/Yesf.svg?style=flat-square)
 [![Packagist](https://img.shields.io/packagist/v/sylingd/yesf-framework.svg?style=flat-square)](https://packagist.org/packages/sylingd/yesf-framework)
 [![GitHub stars](https://img.shields.io/github/stars/sylingd/Yesf.svg?style=flat-square&logo=github&label=Stars)](https://github.com/sylingd/Yesf)
 [![star](https://gitee.com/sy/Yesf/badge/star.svg?theme=dark)](https://gitee.com/sy/Yesf/stargazers)
