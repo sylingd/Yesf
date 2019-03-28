@@ -9,7 +9,7 @@ main() {
 	# Install hiredis
 	wget https://github.com/redis/hiredis/archive/v${hiredis_ver}.tar.gz
 	tar -zxf v${hiredis_ver}.tar.gz
-	cd hiredis-${swoole_ver}
+	cd hiredis-${hiredis_ver}
 	sudo make -j4
 	sudo make install
 	sudo ldconfig
