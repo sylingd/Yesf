@@ -12,9 +12,11 @@
 namespace Yesf\Connection;
 
 use Yesf\Yesf;
+use Yesf\Exception\ConnectionException;
 
 class Pool {
 	public static $config;
+	private static $pool = [];
 	/**
 	 * init阶段，读取基本配置
 	 * 
@@ -42,8 +44,24 @@ class Pool {
 	public static function getMax($name) {
 		return isset(self::$config[$name]) ? self::$config[$name]['max'] : self::$config['default']['max'];
 	}
-	public function get($config = null) {
-		//
-		self::$default_type = $config->get('database.type');
+	public static function get($type, $config = null) {
+		$className = __NAMESPACE__ . '\\Driver\\' . ucfirst($type);
+		if ($config === null) {
+			$config = Yesf::app()->getConfig('connection.' . $type);
+		}
+		if (!isset(self::$pool[$type])) {
+			self::$pool[$type] = [];
+		}
+		if (!isset($config['host']) || !isset($config['port'])) {
+			throw new ConnectionException("Host and Port is required");
+		}
+		$hash = md5($config['host'] . ':' . $config['port']);
+		if (!isset(self::$pool[$type][$hash])) {
+			$instance = new $className($config);
+			self::$pool[$type][$hash] = $instance;
+			return $instance;
+		} else {
+			return self::$pool[$type][$hash];
+		}
 	}
 }

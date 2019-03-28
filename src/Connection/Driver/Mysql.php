@@ -36,6 +36,9 @@ class Mysql {
 	 */
 	protected function connect() {
 		$connection = new co\MySQL();
+		return $this->reconnect($connection);
+	}
+	public function reconnect($connection) {
 		$r = $connection->connect([
 			'host' => $this->config['host'],
 			'user' => $this->config['user'],

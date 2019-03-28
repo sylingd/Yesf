@@ -14,12 +14,17 @@ namespace Yesf\Database\Adapter;
 
 use Yesf\Yesf;
 use Yesf\Exception\DBException;
+use Yesf\Connection\Pool;
 use Yesf\Connection\Mysql as MysqlConnection;
 use Yesf\Database\Database;
 use Yesf\Database\DatabaseInterface;
 use Swoole\Coroutine as co;
 
-class Mysql extends MysqlConnection implements DatabaseInterface {
+class Mysql implements DatabaseInterface {
+	private $pool;
+	public function __construct($config = null) {
+		$this->pool = Pool::get('mysql', $config); // MysqlConnection
+	}
 	/**
 	 * 执行查询并返回结果
 	 * 
@@ -29,7 +34,7 @@ class Mysql extends MysqlConnection implements DatabaseInterface {
 	 * @return array
 	 */
 	public function query(string $sql, $data = null) {
-		$connection = $this->getConnection();
+		$connection = $this->pool->getConnection();
 		$result = null;
 		$tryAgain = true;
 SQL_START_EXECUTE:
@@ -65,20 +70,12 @@ SQL_START_EXECUTE:
 SQL_TRY_AGAIN:
 		if (($connection->errno === 2006 || $connection->errno === 2013) && $tryAgain) {
 			$tryAgain = false;
-			$connection->connect([
-				'host' => $this->config['host'],
-				'user' => $this->config['user'],
-				'password' => $this->config['password'],
-				'database' => $this->config['database'],
-				'port' => $this->config['port'],
-				'timeout' => 3,
-				'charset' => 'utf8'
-			]);
+			$connection = $this->pool->reconnect($connection);
 			goto SQL_START_EXECUTE;
 		} else {
 			$error = $connection->error;
 			$errno = $connection->errno;
-			$this->freeConnection($connection);
+			$this->pool->freeConnection($connection);
 			throw new DBException($error, $errno);
 		}
 SQL_SUCCESS_RETURN:
@@ -90,7 +87,7 @@ SQL_SUCCESS_RETURN:
 				$result['_insert_id'] = $connection->insert_id;
 			}
 		}
-		$this->freeConnection($connection);
+		$this->pool->freeConnection($connection);
 		return $result;
 	}
 	/**

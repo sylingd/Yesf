@@ -81,7 +81,7 @@ REDIS_START_EXECUTE:
 			if (!$connection->connected && $tryAgain) {
 				@$connection->close();
 				$tryAgain = false;
-				$connection = $this->connect();
+				$connection = $this->reconnect($connection);
 				goto REDIS_START_EXECUTE;
 			} else {
 				$error = $connection->errMsg;

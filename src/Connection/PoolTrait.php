@@ -100,4 +100,14 @@ trait PoolTrait {
 	 */
 	protected function connect() {
 	}
+	/**
+	 * Reconnect
+	 * 
+	 * @access public
+	 * @param $connection
+	 */
+	public function reconnect($connection) {
+		$this->close();
+		return $this->connect();
+	}
 }
