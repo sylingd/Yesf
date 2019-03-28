@@ -85,7 +85,7 @@ class Yesf {
 		}
 		//其他各项配置
 		self::$config_server = require(APP_PATH . 'Config/Server.php');
-		self::reloadProjectConfig();
+		self::loadProjectConfig();
 		//将APP的namespace添加到Autoload
 		self::addAppToLoader();
 		//编码相关
