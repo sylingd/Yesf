@@ -15,15 +15,14 @@ namespace Yesf\Database\Adapter;
 use Yesf\Yesf;
 use Yesf\Exception\DBException;
 use Yesf\Connection\Pool;
-use Yesf\Connection\Mysql as MysqlConnection;
 use Yesf\Database\Database;
-use Yesf\Database\DatabaseInterface;
+use Yesf\Database\AdapterInterface;
 use Swoole\Coroutine as co;
 
-class Mysql implements DatabaseInterface {
+class Mysql implements AdapterInterface {
 	private $pool;
-	public function __construct($config = null) {
-		$this->pool = Pool::get('mysql', $config); // MysqlConnection
+	public function __construct($pool) {
+		$this->pool = $pool;
 	}
 	/**
 	 * 执行查询并返回结果

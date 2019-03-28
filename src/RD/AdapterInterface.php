@@ -12,7 +12,7 @@
 
 namespace Yesf\Database;
 
-interface DatabaseInterface {
+interface AdapterInterface {
 	/**
 	 * 实例化
 	 * 

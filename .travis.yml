@@ -1,9 +1,14 @@
-sudo: false
+sudo: true
 language: php
+dist: trusty
 php:
   - '7.1'
   - '7.2'
   - '7.3'
+
+services:
+  - mysql
+  - redis-server
 
 notifications:
   email: false
@@ -12,8 +17,15 @@ cache:
   directories:
     - $HOME/.composer/cache/files
 
+before_install:
+  - phpenv config-rm xdebug.ini
+  - bash ci/install.sh
+
 install:
   - composer install
+
+before_script:
+  - bash ci/init-mysql.sh
 
 script:
   - mkdir -p build/coverage

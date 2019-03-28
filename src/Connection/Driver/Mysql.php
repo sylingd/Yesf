@@ -13,10 +13,11 @@
 namespace Yesf\Connection\Driver;
 
 use Yesf\Yesf;
+use Yesf\Connection\PoolInterface;
 use Yesf\Exception\ConnectionException;
 use Swoole\Coroutine as co;
 
-class Mysql {
+class Mysql implements PoolInterface {
 	use PoolTrait;
 	protected $config = null;
 	public function getMinClient() {

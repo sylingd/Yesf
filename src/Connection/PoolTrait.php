@@ -79,9 +79,9 @@ trait PoolTrait {
 	/**
 	 * 断开一个连接
 	 * 
-	 * @access protected
+	 * @access public
 	 */
-	protected function close() {
+	public function close() {
 		$this->connection_count--;
 	}
 	/**
