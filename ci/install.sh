@@ -26,7 +26,7 @@ main() {
 	echo "extension = swoole.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 
 	cd $TRAVIS_BUILD_DIR
-	rm -rf $stage
+	sudo rm -rf $stage
 }
 
 main
