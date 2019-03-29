@@ -13,20 +13,19 @@
 namespace Yesf\Cache\Adapter;
 
 use Psr\SimpleCache\CacheInterface;
-
-use Yesf\Connection\Pool;
+use Yesf\Connection\PoolInterface;
 
 class Redis implements CacheInterface {
 	private $pool;
-	public function __construct() {
-		$this->pool = Pool::get('redis'); // Redis
+	public function __construct(PoolInterface $pool) {
+		$this->pool = $pool;
 	}
 	public function get($key, $default = null) {
 		$result = $this->pool->get($key);
-		return $result === false ? $default : $result;
+		return $result === false ? $default : unserialize($result);
 	}
 	public function set($key, $value, $ttl = null) {
-		return $this->pool->set($key, $value, $ttl);
+		return $this->pool->set($key, serialize($value), $ttl);
 	}
 	public function delete($key) {
 		return $this->pool->delete($key);
@@ -36,16 +35,23 @@ class Redis implements CacheInterface {
 	}
 	public function getMultiple($keys, $default = null) {
 		$result = $this->pool->mGet($keys);
-		if ($default !== null) {
-			foreach ($result as $k => $v) {
-				if ($v === false) {
+		foreach ($result as $k => $v) {
+			if ($v === false) {
+				if (is_array($default) && isset($default[$k])) {
 					$result[$k] = $default[$k];
+				} else {
+					$result[$k] = $default;
 				}
+			} else {
+				$result[$k] = unserialize($v);
 			}
 		}
 		return $result;
 	}
 	public function setMultiple($values, $ttl = null) {
+		foreach ($values as $k => $v) {
+			$values[$k] = serialize($v);
+		}
 		$redis->mSet($values);
 		// TODO: ttl
 	}

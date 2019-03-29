@@ -64,7 +64,7 @@ class ContainerTest extends TestCase {
 	public function testClosure() {
 		$time = time();
 		Container::getInstance()->set('MyTime', function() use ($time) {
-			return new DateTime($time);
+			return new DateTime('@' . $time);
 		});
 		$it = Container::getInstance()->get(DITest\TestClosure::class);
 		$this->assertSame($it->time->getTimestamp(), $time);
