@@ -67,8 +67,11 @@ class Yesf {
 	public function __construct() {
 		self::$instance = $this;
 		//swoole检查
-		if (!extension_loaded('swoole') && !defined('YESF_UNIT')) {
+		if (!extension_loaded('swoole')) {
 			throw new RequirementException('Extension "Swoole" is required');
+		}
+		if (version_compare(SWOOLE_VERSION, '4.0.0', '<')) {
+			throw new RequirementException('Yesf require Swoole 4.0 or later');
 		}
 		//环境
 		if (defined('APP_ENV')) {
@@ -93,10 +96,7 @@ class Yesf {
 		if (function_exists('mb_internal_encoding')) {
 			mb_internal_encoding(self::$config_project['charset']);
 		}
-		if (extension_loaded('swoole')) {
-			if (version_compare(SWOOLE_VERSION, '4.0.0', '<')) {
-				throw new RequirementException('Yesf require Swoole 4.0 or later');
-			}
+		if (!defined('YESF_UNIT')) {
 			Swoole::init();
 		}
 	}
