@@ -17,9 +17,10 @@ use Yesf\Exception\InvalidClassException;
 
 class Pool {
 	protected static $connection_default;
-	protected static $pool = [];
 	protected static $driver = [];
+	protected static $created_driver = [];
 	protected static $adapter = [];
+	protected static $created_adapter = [];
 	/**
 	 * init阶段，读取基本配置
 	 * 
@@ -65,17 +66,17 @@ class Pool {
 		}
 		$type = $config['driver'];
 		$hash = md5($type . ':' . $config['host'] . ':' . $config['port']);
-		if (!isset(self::$pool[$hash])) {
+		if (!isset(self::$created_driver[$hash])) {
 			if (isset(self::$driver[$type])) {
 				$className = self::$driver[$type];
 			} else {
 				$className = __NAMESPACE__ . '\\Driver\\' . ucfirst($type);
 			}
 			$instance = new $className($config);
-			self::$pool[$hash] = $instance;
+			self::$created_driver[$hash] = $instance;
 			return $instance;
 		} else {
-			return self::$pool[$hash];
+			return self::$created_driver[$hash];
 		}
 	}
 	/**
@@ -97,17 +98,17 @@ class Pool {
 		// Get connection
 		$connection = Pool::get($config);
 		$hash = spl_object_hash($connection);
-		if (!isset(self::$db[$hash])) {
+		if (!isset(self::$created_adapter[$hash])) {
 			if (isset(self::$adapter[$type])) {
 				$className = self::$adapter[$type];
 			} else {
 				throw new ConnectionException("Unknown adapter");
 			}
 			$instance = new $className($connection);
-			self::$db[$hash] = $instance;
+			self::$created_adapter[$hash] = $instance;
 			return $instance;
 		} else {
-			return self::$db[$hash];
+			return self::$created_adapter[$hash];
 		}
 	}
 	public static function getRD() {
