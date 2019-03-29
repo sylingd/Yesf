@@ -28,9 +28,4 @@ before_script:
   - bash ci/init-mysql.sh
 
 script:
-  - mkdir -p build/coverage
   - composer test
-
-after_success:
-  - composer require --dev php-coveralls/php-coveralls
-  - travis_retry php vendor/bin/php-coveralls

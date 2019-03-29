@@ -1,7 +1,6 @@
 # Yesf
 
 [![Build Status](https://travis-ci.org/sylingd/Yesf.svg?branch=master)](https://travis-ci.org/sylingd/Yesf)
-[![Coverage Status](https://coveralls.io/repos/github/sylingd/Yesf/badge.svg?branch=master)](https://coveralls.io/github/sylingd/Yesf?branch=master)
 [![Packagist](https://img.shields.io/packagist/v/sylingd/yesf-framework.svg)](https://packagist.org/packages/sylingd/yesf-framework)
 [![GitHub stars](https://img.shields.io/github/stars/sylingd/Yesf.svg?logo=github&label=Stars)](https://github.com/sylingd/Yesf)
 [![Gitee stars](https://gitee.com/sy/Yesf/badge/star.svg?theme=dark)](https://gitee.com/sy/Yesf)
