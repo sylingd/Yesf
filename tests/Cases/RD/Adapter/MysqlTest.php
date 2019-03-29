@@ -38,7 +38,7 @@ class MysqlTest extends TestCase {
 	public function testInsert() {
 		$name = uniqid();
 		$password = uniqid();
-		$password_hashed = password_hash(PASSWORD_DEFAULT, uniqid());
+		$password_hashed = password_hash($password, PASSWORD_DEFAULT);
 		$r1 = self::getAdapter()->query('INSERT INTO `user` (`name`, `password`) VALUES
 		(?, ?)', [$name, $password_hashed]);
 		$this->assertEquals(1, $r1['_affected_rows']);
@@ -51,7 +51,7 @@ class MysqlTest extends TestCase {
 		$record = self::$pdo->query('SELECT * FROM `user` ORDER BY id DESC LIMIT 0,1')->fetch(PDO::FETCH_ASSOC);
 		$res = self::getAdapter()->query('DELETE FROM `user` WHERE id = ?', [$record['id']]);
 		$this->assertEquals(1, $res['_affected_rows']);
-		$selected = self::$pdo->query('SELECT * FROM `user` WHERE id = ' . $record['id']);
-		$this->assertEquals(0, $selected->columnCount());
+		$selected = self::$pdo->query('SELECT count(*) as n FROM `user` WHERE id = ' . $record['id'])->fetchColumn();
+		$this->assertEquals(0, intval($selected));
 	}
 }
