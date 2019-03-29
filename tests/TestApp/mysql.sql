@@ -3,7 +3,7 @@ CREATE DATABASE IF NOT EXISTS `test`;
 CREATE TABLE `test`.`user` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `name` varchar(60) DEFAULT NULL,
-  `password` varchar(255) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `test`.`user` (`id`, `name`, `password`) VALUES
