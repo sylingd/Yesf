@@ -3,12 +3,15 @@ namespace YesfTest\RD\Adapter;
 
 use PDO;
 use Swoole\Event;
+use Swoole\Process;
 use Swoole\Coroutine as co;
 use PHPUnit\Framework\TestCase;
 use Yesf\Yesf;
 use Yesf\Connection\Pool;
+use YesfTest\CoTrait;
 
 class MysqlTest extends TestCase {
+	use CoTrait;
 	private $adapter;
 	private $pdo;
 	public function setUp() {
@@ -33,12 +36,11 @@ class MysqlTest extends TestCase {
 	*/
 	public function testGetColumn() {
 		$that = $this;
-		go(function() use ($that) {
+		$that->ut(function() use ($that) {
 			$r1 = $that->getAdapter()->getColumn('SELECT count(*) as n FROM `user`', 'n');
 			$r2 = $that->pdo->query('SELECT count(*) as n FROM `user`')->fetch(PDO::FETCH_ASSOC);
 			$that->assertSame($r1, $r2['n']);
 		});
-		Event::wait();
 	}
 	/*
 	public function testSelect() {
