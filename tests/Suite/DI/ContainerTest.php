@@ -60,4 +60,12 @@ class ContainerTest extends TestCase {
 		$obj2 = Container::getInstance()->get(DITest\MultiWithNew::class);
 		$this->assertNotSame($obj1->id, $obj2->id);
 	}
+	public function testClosure() {
+		$time = time();
+		Container::getInstance()->set('MyTime', function() use ($time) {
+			return new DateTime($time);
+		});
+		$it = Container::getInstance()->get(DITest\TestClosure::class);
+		$this->assertSame($it->time->getTimestamp(), $time);
+	}
 }
