@@ -12,7 +12,7 @@
 namespace Yesf\Event;
 
 use Yesf\Yesf;
-use Yesf\Logger;
+use Yesf\Log\Logger;
 use Yesf\Http\Dispatcher;
 use Yesf\Http\Response;
 use Yesf\Connection\Pool;
