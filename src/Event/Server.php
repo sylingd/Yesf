@@ -30,7 +30,7 @@ class Server {
 	 * @access public
 	 * @param object $serv
 	 */
-	public static function eventStart($serv) {
+	public static function onStart($serv) {
 		self::setProcessName(Yesf::getProjectConfig('name') . ' master');
 		$pidPath = rtrim(Yesf::getServerConfig('pid'), '/') . '/';
 		try {
@@ -45,7 +45,7 @@ class Server {
 	 * @access public
 	 * @param object $serv
 	 */
-	public static function eventShutdown($serv) {
+	public static function onShutdown($serv) {
 		$pidPath = rtrim(Yesf::getServerConfig('pid'), '/') . '/';
 		@unlink($pidPath . Yesf::getProjectConfig('name') . '_master.pid');
 		@unlink($pidPath . Yesf::getProjectConfig('name') . '_manager.pid');
@@ -55,10 +55,10 @@ class Server {
 	 * @access public
 	 * @param object $serv
 	 */
-	public static function eventManagerStart($serv) {
+	public static function onManagerStart($serv) {
 		self::setProcessName(Yesf::getProjectConfig('name') . ' manager');
 	}
-	public static function eventManagerStop() {
+	public static function onManagerStop() {
 	}
 	/**
 	 * 启动热更新功能
@@ -167,7 +167,7 @@ class Server {
 	 * @param object $serv
 	 * @param int $worker_id
 	 */
-	public static function eventWorkerStart($serv, $worker_id) {
+	public static function onWorkerStart($serv, $worker_id) {
 		Yesf::app()->initInWorker();
 		//根据类型，设置不同的进程名
 		if ($serv->taskworker) {
@@ -194,7 +194,7 @@ class Server {
 	 * @param int $worker_pid
 	 * @param int $exit_code
 	 */
-	public static function eventWorkerError($serv, $worker_id, $worker_pid, $exit_code) {
+	public static function onWorkerError($serv, $worker_id, $worker_pid, $exit_code) {
 	}
 	/**
 	 * 普通事件：接收到task
@@ -204,13 +204,13 @@ class Server {
 	 * @param int $worker_id
 	 * @param mixed $data
 	 */
-	public static function eventTask($serv, $task_id, $worker_id, $data) {
+	public static function onTask($serv, $task_id, $worker_id, $data) {
 		$rs = Plugin::trigger('taskStart', [$task_id, $worker_id, $data]);
 		if (is_string($rs)) {
 			return $rs;
 		}
 	}
-	public static function eventFinish($serv, int $task_id, string $data) {
+	public static function onFinish($serv, int $task_id, string $data) {
 		Plugin::trigger('taskEnd', [$task_id, $data]);
 	}
 	/**
@@ -219,24 +219,24 @@ class Server {
 	 * @param int $from
 	 * @param string $message
 	 */
-	public static function eventPipeMessage($serv, $from, $message) {
+	public static function onPipeMessage($serv, $from, $message) {
 		Plugin::trigger('pipeMessage', [$from, $message]);
 	}
 	/**
 	 * TCP事件
 	 * 注意：dispatch_mode=1/3时，底层会屏蔽onConnect/onClose事件
 	 */
-	public static function eventConnect($callback_key, $fd, $from_id) {
+	public static function onConnect($callback_key, $fd, $from_id) {
 		if (isset(self::$_listener[$callback_key])) {
 			call_user_func(self::$_listener[$callback_key], 'connect', $fd, $from_id);
 		}
 	}
-	public static function eventClose($callback_key, $fd, $from_id) {
+	public static function onClose($callback_key, $fd, $from_id) {
 		if (isset(self::$_listener[$callback_key])) {
 			call_user_func(self::$_listener[$callback_key], 'close', $fd, $from_id);
 		}
 	}
-	public static function eventReceive($callback_key, $fd, $from_id, string $data) {
+	public static function onReceive($callback_key, $fd, $from_id, string $data) {
 		if (isset(self::$_listener[$callback_key])) {
 			call_user_func(self::$_listener[$callback_key], 'receive', $fd, $from_id, $data);
 		}
@@ -244,7 +244,7 @@ class Server {
 	/**
 	 * UDP事件
 	 */
-	public static function eventPacket($callback_key, string $data, array $client_info) {
+	public static function onPacket($callback_key, string $data, array $client_info) {
 		if (is_numeric($callback_key)) {
 			$fd = unpack('L', pack('N', ip2long($client_info['address'])))[1];
 			$from_id = ($client_info['server_socket'] << 16) + $client_info['port'];

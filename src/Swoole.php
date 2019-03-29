@@ -14,6 +14,7 @@ namespace Yesf;
 use Swoole\Http\Server as SwServer;
 use Yesf\Yesf;
 use Yesf\Event\Server;
+use Yesf\Event\HttpServer;
 use Yesf\Exception\NotFoundException;
 
 class Swoole {
@@ -58,17 +59,17 @@ class Swoole {
 		//是否启用热更新
 		Server::prepareHotReload();
 		//基本事件
-		self::$server->on('Start', __NAMESPACE__ . '\\event\\Server::eventStart');
-		self::$server->on('Shutdown', __NAMESPACE__ . '\\event\\Server::eventShutdown');
-		self::$server->on('ManagerStart', __NAMESPACE__ . '\\event\\Server::eventManagerStart');
-		self::$server->on('ManagerStop', __NAMESPACE__ . '\\event\\Server::eventManagerStop');
-		self::$server->on('WorkerStart', __NAMESPACE__ . '\\event\\Server::eventWorkerStart');
-		self::$server->on('WorkerError', __NAMESPACE__ . '\\event\\Server::eventWorkerError');
-		self::$server->on('Finish', __NAMESPACE__ . '\\event\\Server::eventFinish');
-		self::$server->on('PipeMessage', __NAMESPACE__ . '\\event\\Server::eventPipeMessage');
-		self::$server->on('Task', __NAMESPACE__ . '\\event\\Server::eventTask');
+		self::$server->on('Start', [Server::class, 'onStart']);
+		self::$server->on('Shutdown', [Server::class, 'onShutdown']);
+		self::$server->on('ManagerStart', [Server::class, 'onManagerStart']);
+		self::$server->on('ManagerStop', [Server::class, 'onManagerStop']);
+		self::$server->on('WorkerStart', [Server::class, 'onWorkerStart']);
+		self::$server->on('WorkerError', [Server::class, 'onWorkerError']);
+		self::$server->on('Task', [Server::class, 'onTask']);
+		self::$server->on('Finish', [Server::class, 'onFinish']);
+		self::$server->on('PipeMessage', [Server::class, 'onPipeMessage']);
 		//HTTP事件
-		self::$server->on('Request', __NAMESPACE__ . '\\event\\HttpServer::eventRequest');
+		self::$server->on('Request', [HttpServer::class, 'onRequest']);
 	}
 	public static function start() {
 		self::$server->start();
@@ -141,13 +142,13 @@ class Swoole {
 			}
 			$callback_key = ($type === self::LISTEN_UNIX ? $addr : $port);
 			$service->on('Receive', function($server, $fd, $from_id, $data) use ($callback_key) {
-				Server::eventReceive($callback_key, $fd, $from_id, $data);
+				Server::onReceive($callback_key, $fd, $from_id, $data);
 			});
 			$service->on('Connect', function($server, $fd, $from_id) use ($callback_key) {
-				Server::eventConnect($callback_key, $fd, $from_id);
+				Server::onConnect($callback_key, $fd, $from_id);
 			});
 			$service->on('Close', function($server, $fd, $from_id) use ($callback_key) {
-				Server::eventClose($callback_key, $fd, $from_id);
+				Server::onClose($callback_key, $fd, $from_id);
 			});
 		} elseif ($type === self::LISTEN_UDP || $type === self::LISTEN_UDP6 || $type === self::LISTEN_UNIX_DGRAM) {
 			//Unix dgram或UDP
@@ -157,7 +158,7 @@ class Swoole {
 			}
 			$callback_key = ($type === self::LISTEN_UNIX_DGRAM ? $addr : $port);
 			$service->on('Packet', function($server, string $data, array $client_info) use ($callback_key) {
-				Server::eventPacket($callback_key, $data, $client_info);
+				Server::onPacket($callback_key, $data, $client_info);
 			});
 		}
 		return true;

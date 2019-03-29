@@ -25,7 +25,7 @@ class HttpServer {
 		self::$router = Yesf::getProjectConfig('router');
 	}
 	//HTTP事件：收到请求
-	public static function eventRequest($request, $response) {
+	public static function onRequest($request, $response) {
 		$baseUri = Yesf::getBaseUri();
 		$baseUriLen = strlen($baseUri);
 		//路由解析
