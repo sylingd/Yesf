@@ -27,5 +27,5 @@ interface ConfigInterface {
 	 * @param string $key 形似a.b.c的key
 	 * @return bool
 	 */
-	public function has();
+	public function has($key);
 }
