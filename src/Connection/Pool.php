@@ -16,28 +16,26 @@ use Yesf\Exception\ConnectionException;
 use Yesf\Exception\InvalidClassException;
 
 class Pool {
-	public static $config;
-	private static $pool = [];
-	private static $driver = [];
-	private static $adapter = [];
+	protected static $connection_default;
+	protected static $pool = [];
+	protected static $driver = [];
+	protected static $adapter = [];
 	/**
 	 * init阶段，读取基本配置
 	 * 
 	 * @access public
 	 */
 	public static function init() {
-		$config = Yesf::app()->getConfig();
-		$c = $config->get('pool');
-		foreach ($c as $k => $v) {
-			self::$config[$k] = [
-				'min' => isset($v['min']) ? intval($v['min']) : 1,
-				'max' => isset($v['max']) ? intval($v['max']) : 1,
-			];
-		}
-		if (!isset(self::$config['default'])) {
-			self::$config['default'] = [
+		$c = Yesf::app()->getConfig('connection.default');
+		if ($c === null) {
+			self::$connection_default = [
 				'min' => 1,
 				'max' => 3,
+			];
+		} else {
+			self::$connection_default = [
+				'min' => isset($c['min']) ? intval($c['min']) : 1,
+				'max' => isset($c['max']) ? intval($c['max']) : 1,
 			];
 		}
 		// 注册默认Driver和Adapter
@@ -46,11 +44,11 @@ class Pool {
 		self::setAdapter('mysql', Yesf\RD\Adapter\Mysql::class);
 		self::setAdapter('redis', Yesf\Cache\Adapter\Redis::class);
 	}
-	public static function getMin($name) {
-		return isset(self::$config[$name]) ? self::$config[$name]['min'] : self::$config['default']['min'];
+	public static function getMin() {
+		return self::$connection_default['min'];
 	}
-	public static function getMax($name) {
-		return isset(self::$config[$name]) ? self::$config[$name]['max'] : self::$config['default']['max'];
+	public static function getMax() {
+		return self::$connection_default['max'];
 	}
 	/**
 	 * Get a connection

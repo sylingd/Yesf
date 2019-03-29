@@ -23,15 +23,9 @@ class Redis implements PoolInterface {
 	use PoolTrait;
 	private $options = [];
 	protected $config = null;
-	public function getMinClient() {
-		return Database::getMinClientCount(get_class($this));
-	}
-	public function getMaxClient() {
-		return Database::getMaxClientCount(get_class($this));
-	}
 	public function __construct(array $config) {
 		$this->config = $config;
-		$this->initPool();
+		$this->initPool($config);
 	}
 	/**
 	 * 根据配置连接到数据库

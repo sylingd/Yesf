@@ -12,27 +12,42 @@
 namespace Yesf\Connection;
 
 use SplQueue;
-use Yesf\Swoole;
-use Yesf\Exception\NotFoundException;
 use Swoole\Coroutine as co;
+use Yesf\Swoole;
+use Yesf\Connection\Pool;
+use Yesf\Exception\NotFoundException;
 
 trait PoolTrait {
 	protected $connection = null;
 	protected $connection_count = 0;
 	protected $last_run_out_time = null;
 	protected $wait = null;
-	public function initPool() {
+	protected $min_client = PHP_INT_MAX;
+	protected $max_client = PHP_INT_MAX;
+	public function initPool($config) {
 		if (!method_exists($this, 'getMinClient') || !method_exists($this, 'getMaxClient')) {
 			throw new NotFoundException("Method getMinClient or getMaxClient not found");
 		}
 		$this->wait = new SplQueue;
 		$this->connection = new SplQueue;
 		$this->last_run_out_time = time();
+		if (isset($config['min'])) {
+			$this->min_client = intval($config['min']);
+		}
+		if (isset($config['max'])) {
+			$this->max_client = intval($config['max']);
+		}
 		//建立最小连接
 		$count = $this->getMinClient();
 		while ($count--) {
 			$this->createConnection();
 		}
+	}
+	protected function getMinClient() {
+		return $this->min_client === PHP_INT_MAX ? Pool::getMin() : $this->min_client;
+	}
+	protected function getMaxClient() {
+		return $this->max_client === PHP_INT_MAX ? Pool::getMax() : $this->max_client;
 	}
 	/**
 	 * 获取一个可用连接

@@ -12,7 +12,7 @@
 namespace Yesf\Connection;
 
 interface PoolInterface {
-	public function initPool();
+	public function initPool($config);
 	public function getConnection();
 	public function freeConnection($connection);
 	public function close();
