@@ -2,7 +2,6 @@
 namespace YesfTest\RD\Adapter;
 
 use PDO;
-use Swoole\Coroutine as co;
 use PHPUnit\Framework\TestCase;
 use Yesf\Yesf;
 use Yesf\Connection\Pool;
@@ -34,10 +33,6 @@ class MysqlTest extends TestCase {
 	public function testGetColumn() {
 		$that = $this;
 		go(function() use ($that) {
-			// Wait while connection
-			while ($that->adapter === null) {
-				co::sleep(1);
-			}
 			$r1 = $that->adapter->get('SELECT count(*) as n FROM `user`', 'n');
 			$r2 = $that->pdo->query('SELECT count(*) as n FROM `user`')->fetch(PDO::FETCH_ASSOC);
 			$that->assertSame($r1, $r2['n']);

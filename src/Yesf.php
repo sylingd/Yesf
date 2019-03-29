@@ -136,9 +136,12 @@ class Yesf {
 	 * 
 	 * @access public
 	 */
-	public function loadEnvConfig() {
-		if ((is_string($this->config_raw) && is_file($this->config_raw)) || is_array($this->config_raw)) {
-			$this->config = new Config($this->config_raw);
+	public function loadEnvConfig($config = null) {
+		if ($config === null) {
+			$config = $this->config_raw;
+		}
+		if ((is_string($config) && is_file($config)) || is_array($config)) {
+			$this->config = new Config($config);
 		} else {
 			throw new NotFoundException('Config can not be recognised');
 		}

@@ -10,5 +10,6 @@ define('YESF_TEST', __DIR__ . '/');
 require(PROJECT_PATH . '/vendor/autoload.php');
 $app = new Yesf();
 
+$app->loadEnvConfig(TEST_APP . 'Config/env.ini');
 Yesf::getLoader()->addPsr4('YesfTest\\', TEST_SRC);
 Yesf::getLoader()->addPsr4('TestApp\\', TEST_APP);
