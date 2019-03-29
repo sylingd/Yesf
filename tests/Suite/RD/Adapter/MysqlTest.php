@@ -2,6 +2,7 @@
 namespace YesfTest\RD\Adapter;
 
 use PDO;
+use Swoole\Event;
 use Swoole\Coroutine as co;
 use PHPUnit\Framework\TestCase;
 use Yesf\Yesf;
@@ -21,7 +22,7 @@ class MysqlTest extends TestCase {
 		go(function() use ($that) {
 			$that->adapter = Pool::getAdapter('my');
 		});
-		Swoole\Event::wait();
+		Event::wait();
 	}
 	/*
 	public function testGet() {
@@ -38,7 +39,7 @@ class MysqlTest extends TestCase {
 			$r2 = $that->pdo->query('SELECT count(*) as n FROM `user`')->fetch(PDO::FETCH_ASSOC);
 			$that->assertSame($r1, $r2['n']);
 		});
-		Swoole\Event::wait();
+		Event::wait();
 	}
 	/*
 	public function testSelect() {
