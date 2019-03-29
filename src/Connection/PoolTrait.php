@@ -66,7 +66,7 @@ trait PoolTrait {
 	 */
 	public function freeConnection($connection) {
 		$this->connection->push($connection);
-		if (count($this->wait) > 0) {
+		if ($this->wait->count() > 0) {
 			$id = $this->wait->pop();
 			co::resume($id);
 		} else {

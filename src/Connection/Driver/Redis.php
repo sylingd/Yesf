@@ -13,6 +13,7 @@
 namespace Yesf\Connection\Driver;
 
 use Yesf\Yesf;
+use Yesf\Connection\PoolTrait;
 use Yesf\Connection\PoolInterface;
 use Yesf\Exception\Exception;
 use Yesf\Exception\ConnectionException;
