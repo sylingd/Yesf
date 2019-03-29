@@ -149,10 +149,10 @@ class Yesf {
 				throw new NotFoundException('Config can not be recognised');
 			}
 			$this->config = $config;
-		} elseif (is_string($config) && is_file($config)) {
-			$this->config = Arr::fromIniFile($config);
-		} elseif (is_array($config)) {
-			$this->config = new Arr($config);
+		} elseif (is_string($this->config_raw) && is_file($this->config_raw)) {
+			$this->config = Arr::fromIniFile($this->config_raw);
+		} elseif (is_array($this->config_raw)) {
+			$this->config = new Arr($this->config_raw);
 		} else {
 			throw new NotFoundException('Config can not be recognised');
 		}
