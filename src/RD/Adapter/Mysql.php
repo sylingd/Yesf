@@ -12,12 +12,11 @@
  */
 namespace Yesf\Database\Adapter;
 
+use Swoole\Coroutine as co;
 use Yesf\Yesf;
 use Yesf\Exception\DBException;
 use Yesf\Connection\Pool;
-use Yesf\Database\Database;
-use Yesf\Database\AdapterInterface;
-use Swoole\Coroutine as co;
+use Yesf\RD\AdapterInterface;
 
 class Mysql implements AdapterInterface {
 	private $pool;
