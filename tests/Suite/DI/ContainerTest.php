@@ -12,7 +12,7 @@ use TestApp\DI as DITest;
 class ContainerTest extends TestCase {
 	public function setUp() {
 		// Set alias
-		Container::getInstance()->setAlias('ClassOneAlias', DITest\ClassOne::class);
+		Container::getInstance()->set('ClassOneAlias', DITest\ClassOne::class);
 	}
 	public function testNotFoundError() {
 		$this->expectException(NotFoundException::class);
