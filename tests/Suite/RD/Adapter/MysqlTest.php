@@ -3,6 +3,7 @@ namespace YesfTest\RD\Adapter;
 
 use PDO;
 use PHPUnit\Framework\TestCase;
+use Yesf\Yesf;
 use Yesf\Connection\Pool;
 
 class MysqlTest extends TestCase {
