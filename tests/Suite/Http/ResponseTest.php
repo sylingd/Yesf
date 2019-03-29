@@ -1,4 +1,6 @@
 <?php
+namespace YesfTest\Http;
+
 use PHPUnit\Framework\TestCase;
 use Yesf\Yesf;
 use Yesf\Http\Response;

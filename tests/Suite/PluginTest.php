@@ -1,4 +1,6 @@
 <?php
+namespace YesfTest;
+
 use PHPUnit\Framework\TestCase;
 use Yesf\Plugin;
 

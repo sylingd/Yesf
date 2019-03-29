@@ -1,4 +1,6 @@
 <?php
+namespace YesfTest\DI;
+
 use PHPUnit\Framework\TestCase;
 use Yesf\Yesf;
 use Yesf\DI\Container;

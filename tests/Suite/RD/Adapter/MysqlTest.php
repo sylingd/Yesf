@@ -1,14 +1,15 @@
 <?php
-use PHPUnit\Framework\TestCase;
+namespace YesfTest\RD\Adapter;
 
-// use PDO;
+use PDO;
+use PHPUnit\Framework\TestCase;
 use Yesf\Connection\Pool;
 
 class MysqlTest extends TestCase {
 	private $adapter;
 	private $pdo;
 	public function setUp() {
-		$dsn = sorintf(
+		$dsn = sprintf(
 			'mysql:host=%s;port=%s;dbname=%s;charset=utf8',
 			Yesf::app()->getConfig('connection.my.host'),
 			Yesf::app()->getConfig('connection.my.port'),
