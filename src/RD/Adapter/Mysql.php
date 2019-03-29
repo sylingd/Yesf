@@ -16,11 +16,12 @@ use Swoole\Coroutine as co;
 use Yesf\Yesf;
 use Yesf\Exception\DBException;
 use Yesf\Connection\Pool;
+use Yesf\Connection\PoolInterface;
 use Yesf\RD\AdapterInterface;
 
 class Mysql implements AdapterInterface {
 	private $pool;
-	public function __construct($pool) {
+	public function __construct(PoolInterface $pool) {
 		$this->pool = $pool;
 	}
 	/**

@@ -18,6 +18,10 @@ class MysqlTest extends TestCase {
 			Yesf::app()->getConfig('connection.my.database')
 		);
 		$this->pdo = new PDO($dsn, Yesf::app()->getConfig('connection.my.user'), Yesf::app()->getConfig('connection.my.password'));
+		go(function() use ($that) {
+			$that->adapter = Pool::getAdapter('my');
+		});
+		Swoole\Event::wait();
 	}
 	/*
 	public function testGet() {
@@ -30,11 +34,11 @@ class MysqlTest extends TestCase {
 	public function testGetColumn() {
 		$that = $this;
 		go(function() use ($that) {
-			$adapter = Pool::getAdapter('my');
-			$r1 = $adapter->get('SELECT count(*) as n FROM `user`', 'n');
+			$r1 = $that->adapter->get('SELECT count(*) as n FROM `user`', 'n');
 			$r2 = $that->pdo->query('SELECT count(*) as n FROM `user`')->fetch(PDO::FETCH_ASSOC);
 			$that->assertSame($r1, $r2['n']);
 		});
+		Swoole\Event::wait();
 	}
 	/*
 	public function testSelect() {

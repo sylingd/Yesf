@@ -13,13 +13,6 @@ namespace Yesf\RD;
 
 interface AdapterInterface {
 	/**
-	 * 实例化
-	 * 
-	 * @access public
-	 * @param array $config
-	 */
-	public function __construct(array $config);
-	/**
 	 * 执行查询并返回结果
 	 * 
 	 * @access public
