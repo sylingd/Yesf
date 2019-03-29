@@ -4,6 +4,7 @@ namespace YesfTest;
 use PHPUnit\Framework\TestCase;
 use Yesf\Config;
 
+/*
 class ConfigTest extends TestCase {
 	const AppName = 'MyApplication';
 	const YafDir = '/web/yaconf';
@@ -30,3 +31,4 @@ class ConfigTest extends TestCase {
 		$this->assertEquals(null, $config->get('a_null_key'));
 	}
 }
+*/

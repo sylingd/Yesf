@@ -90,7 +90,7 @@ class Arr implements ConfigInterface {
 			}
 			// Add childrens into queue
 			foreach ($environments as $one) {
-				if (!isset($all[$one]) && strpos($one, ':') === false) {
+				if (!isset($all[$one]) && strpos($one, ':') !== false) {
 					$one_parse = explode(':', $one, 2);
 					if ($one_parse[1] === $child) {
 						$queue->push($one);
@@ -100,16 +100,16 @@ class Arr implements ConfigInterface {
 		}
 		$result = [];
 		//将“.”作为分隔符，分割为多维数组
-		foreach ($result as $it) {
-			$result[$it] = [];
+		foreach ($all as $env => $it) {
+			$result[$env] = [];
 			foreach ($it as $k => $v) {
 				if (strpos($k, '.') === false) {
-					$result[$it][$k] = $v;
+					$result[$env][$k] = $v;
 					continue;
 				}
 				$keys = explode('.', $k);
 				$total = count($keys) - 1;
-				$parent = &$result[$it];
+				$parent = &$result[$env];
 				foreach ($keys as $kk => $vv) {
 					if ($total === $kk) {
 						$parent[$vv] = $v;
