@@ -20,7 +20,7 @@ main() {
 	tar -zxf v${swoole_ver}.tar.gz
 	cd swoole-src-${swoole_ver}
 	phpize
-	./configure --enable-async-redis --enable-sockets=yes --enable-openssl=yes --enable-mysqlnd=yes
+	./configure --enable-sockets=yes --enable-openssl=yes --enable-mysqlnd=yes
 	sudo make -j4
 	sudo make install
 	echo "extension = swoole.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
