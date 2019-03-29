@@ -7,11 +7,12 @@ use Yesf\DI\Container;
 use Yesf\Exception\NotFoundException;
 use Yesf\Exception\InvalidClassException;
 use Yesf\Exception\CyclicDependencyException;
+use TestApp\DI as DITest;
 
 class ContainerTest extends TestCase {
 	public function setUp() {
 		// Set alias
-		Container::getInstance()->setAlias('ClassOneAlias', TestApp\DI\ClassOne::class);
+		Container::getInstance()->setAlias('ClassOneAlias', DITest\ClassOne::class);
 	}
 	public function testNotFoundError() {
 		$this->expectException(NotFoundException::class);
@@ -19,15 +20,15 @@ class ContainerTest extends TestCase {
 	}
 	public function testInvalidError() {
 		$this->expectException(InvalidClassException::class);
-		Container::getInstance()->get(\TestApp\DI\InvalidClass::class);
+		Container::getInstance()->get(DITest\InvalidClass::class);
 	}
 	public function testCyclicDependencyError() {
 		$this->expectException(CyclicDependencyException::class);
-		Container::getInstance()->get(\TestApp\DI\CyclicOne::class);
+		Container::getInstance()->get(DITest\CyclicOne::class);
 	}
 	public function testGet() {
-		$clazz = Container::getInstance()->get(\TestApp\DI\TestClass::class);
-		$this->assertNull(\TestApp\DI\TestClass::$static_one);
+		$clazz = Container::getInstance()->get(DITest\TestClass::class);
+		$this->assertNull(DITest\TestClass::$static_one);
 		$this->assertEquals('one', $clazz->getOneResult());
 		$this->assertEquals('two', $clazz->getTwo()->getName());
 		$this->assertEquals('one', $clazz->one_alias->getName());
@@ -39,24 +40,24 @@ class ContainerTest extends TestCase {
 	}
 	public function testHas() {
 		$this->assertTrue(Container::getInstance()->has('ClassOneAlias'));
-		$this->assertTrue(Container::getInstance()->has(\TestApp\DI\TestClass::class));
-		$this->assertTrue(Container::getInstance()->has(\TestApp\DI\UnloadedClass::class));
+		$this->assertTrue(Container::getInstance()->has(DITest\TestClass::class));
+		$this->assertTrue(Container::getInstance()->has(DITest\UnloadedClass::class));
 		$this->assertFalse(Container::getInstance()->has('A\\Not\\Exists\\Clazz'));
 	}
 	public function testMulti() {
-		Container::getInstance()->setMulti(\TestApp\DI\MultiWithClone::class, Container::MULTI_CLONE);
-		$obj1 = Container::getInstance()->get(\TestApp\DI\MultiWithClone::class);
-		$obj2 = Container::getInstance()->get(\TestApp\DI\MultiWithClone::class);
-		$obj3 = Container::getInstance()->get(\TestApp\DI\MultiWithClone::class);
+		Container::getInstance()->setMulti(DITest\MultiWithClone::class, Container::MULTI_CLONE);
+		$obj1 = Container::getInstance()->get(DITest\MultiWithClone::class);
+		$obj2 = Container::getInstance()->get(DITest\MultiWithClone::class);
+		$obj3 = Container::getInstance()->get(DITest\MultiWithClone::class);
 		// The first one is not cloned from others
 		$this->assertFalse($obj1->cloned);
 		$this->assertTrue($obj2->cloned);
 		$this->assertTrue($obj3->cloned);
 		$this->assertNotSame($obj1->id, $obj2->id);
 		$this->assertNotSame($obj1->id, $obj3->id);
-		Container::getInstance()->setMulti(\TestApp\DI\MultiWithNew::class, Container::MULTI_NEW);
-		$obj1 = Container::getInstance()->get(\TestApp\DI\MultiWithNew::class);
-		$obj2 = Container::getInstance()->get(\TestApp\DI\MultiWithNew::class);
+		Container::getInstance()->setMulti(DITest\MultiWithNew::class, Container::MULTI_NEW);
+		$obj1 = Container::getInstance()->get(DITest\MultiWithNew::class);
+		$obj2 = Container::getInstance()->get(DITest\MultiWithNew::class);
 		$this->assertNotSame($obj1->id, $obj2->id);
 	}
 }
