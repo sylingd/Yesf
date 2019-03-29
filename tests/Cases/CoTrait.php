@@ -1,4 +1,6 @@
 <?php
+namespace YesfTest;
+
 trait CoTrait {
 	public function ut($func) {
         $process = new \Swoole\Process(function(\Swoole\Process $process) use ($func) {
