@@ -111,14 +111,6 @@ class Pool {
 			return self::$created_adapter[$hash];
 		}
 	}
-	public static function getRD() {
-		$default = Yesf::app()->getConfig('database');
-		return self::getAdapter($default);
-	}
-	public static function getCache() {
-		$default = Yesf::app()->getConfig('cache');
-		return self::getAdapter($default);
-	}
 	/**
 	 * 注册自定义Driver
 	 * 

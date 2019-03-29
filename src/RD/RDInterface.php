@@ -11,7 +11,7 @@
  */
 namespace Yesf\RD;
 
-interface AdapterInterface {
+interface RDInterface {
 	/**
 	 * 执行查询并返回结果
 	 * 

@@ -38,7 +38,7 @@ class MysqlTest extends TestCase {
 			$r2 = $that->pdo->query('SELECT count(*) as n FROM `user`')->fetch(PDO::FETCH_ASSOC);
 			$that->assertSame($r1, $r2['n']);
 		});
-		// Event::wait();
+		Event::wait();
 	}
 	/*
 	public function testSelect() {

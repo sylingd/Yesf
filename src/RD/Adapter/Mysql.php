@@ -17,9 +17,9 @@ use Yesf\Yesf;
 use Yesf\Exception\DBException;
 use Yesf\Connection\Pool;
 use Yesf\Connection\PoolInterface;
-use Yesf\RD\AdapterInterface;
+use Yesf\RD\RDInterface;
 
-class Mysql implements AdapterInterface {
+class Mysql implements RDInterface {
 	private $pool;
 	public function __construct(PoolInterface $pool) {
 		$this->pool = $pool;

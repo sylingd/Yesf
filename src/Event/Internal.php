@@ -12,6 +12,7 @@
 namespace Yesf\Event;
 
 use Yesf\Yesf;
+use Yesf\Helper;
 use Yesf\Log\Logger;
 use Yesf\Http\Dispatcher;
 use Yesf\Http\Response;
@@ -26,5 +27,7 @@ class Internal {
 		Response::init();
 		Response::initInWorker();
 		Pool::init();
+		Helper::setRDAlias();
+		Helper::setCacheAlias();
 	}
 }
