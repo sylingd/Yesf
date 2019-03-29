@@ -3,7 +3,7 @@ use Yesf\Yesf;
 use Yesf\Event\Internal;
 define('PROJECT_PATH', realpath(__DIR__ . '/..') . '/');
 define('APP_PATH', __DIR__ . '/TestApp/');
-define('TEST_SRC', __DIR__ . '/Suite/');
+define('TEST_SRC', __DIR__ . '/Cases/');
 define('TEST_APP', __DIR__ . '/TestApp/');
 define('YESF_ROOT', PROJECT_PATH . 'src/');
 define('YESF_UNIT', 1);
