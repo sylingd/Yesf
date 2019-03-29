@@ -30,13 +30,28 @@ class MysqlTest extends TestCase {
 		$r2 = self::$pdo->query('SELECT count(*) as n FROM `user`')->fetch(PDO::FETCH_ASSOC);
 		$this->assertSame($r1, $r2['n']);
 	}
-	/*
 	public function testSelect() {
-		$r1 = self::getAdapter()->get('SELECT * FROM `user` ORDER BY id ASC');
-		$r2 = self::$pdo->query('SELECT * FROM `user` ORDER BY id ASC')->fetch(PDO::FETCH_ASSOC);
+		$r1 = self::getAdapter()->query('SELECT * FROM `user` ORDER BY id ASC');
+		$r2 = self::$pdo->query('SELECT * FROM `user` ORDER BY id ASC')->fetchAll(PDO::FETCH_ASSOC);
 		$this->assertSame($r1, $r2);
 	}
 	public function testInsert() {
+		$name = uniqid();
+		$password = uniqid();
+		$password_hashed = password_hash(PASSWORD_DEFAULT, uniqid());
+		$r1 = self::getAdapter()->query('INSERT INTO `user` (`name`, `password`) VALUES
+		(?, ?)', [$name, $password_hashed]);
+		$this->assertEquals(1, $r1['_affected_rows']);
+		$this->assertTrue(isset($r1['_insert_id']));
+		$selected = self::$pdo->query('SELECT * FROM `user` WHERE id = ' . $r1['_insert_id'])->fetch(PDO::FETCH_ASSOC);
+		$this->assertSame($name, $selected['name']);
+		$this->assertTrue(password_verify($password, $selected['password']));
 	}
-	*/
+	public function testDelete() {
+		$record = self::$pdo->query('SELECT * FROM `user` ORDER BY id DESC LIMIT 0,1')->fetch(PDO::FETCH_ASSOC);
+		$res = self::getAdapter()->query('DELETE FROM `user` WHERE id = ?', [$record['id']]);
+		$this->assertEquals(1, $res['_affected_rows']);
+		$selected = self::$pdo->query('SELECT * FROM `user` WHERE id = ' . $record['id']);
+		$this->assertEquals(0, $selected->columnCount());
+	}
 }
