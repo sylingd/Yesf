@@ -33,8 +33,9 @@ class Arr implements ConfigInterface {
 	 * @return mixed
 	 */
 	public function get($key, $default = null) {
+		$keys = explode('.', $key);
 		$conf = $this->conf[$this->environment];
-		foreach ($key as $v) {
+		foreach ($keys as $v) {
 			if (isset($conf[$v])) {
 				$conf = $conf[$v];
 			} else {
@@ -50,8 +51,9 @@ class Arr implements ConfigInterface {
 	 * @return bool
 	 */
 	public function has($key) {
+		$keys = explode('.', $key);
 		$conf = $this->conf[$this->environment];
-		foreach ($key as $v) {
+		foreach ($keys as $v) {
 			if (isset($conf[$v])) {
 				$conf = $conf[$v];
 			} else {
