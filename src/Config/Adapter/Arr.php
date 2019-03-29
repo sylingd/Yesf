@@ -63,8 +63,11 @@ class Arr implements ConfigInterface {
 		return true;
 	}
 	/**
-	 * 当不存在Yaf时，进行配置的解析
-	 * 支持配置继承，但不支持多级继承
+	 * 从INI文件解析配置，支持多级继承
+	 * 
+	 * @access public
+	 * @param string $file 文件路径
+	 * @return object
 	 */
 	public static function fromIniFile($file) {
 		if (!is_file($file)) {
