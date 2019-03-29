@@ -101,7 +101,7 @@ class Pool {
 			if (isset(self::$adapter[$type])) {
 				$className = self::$adapter[$type];
 			} else {
-				$className = __NAMESPACE__ . '\\Adapter\\' . ucfirst($type);
+				throw new ConnectionException("Unknown adapter");
 			}
 			$instance = new $className($connection);
 			self::$db[$hash] = $instance;

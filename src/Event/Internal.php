@@ -20,7 +20,7 @@ use Yesf\Connection\Pool;
 class Internal {
 	public static function onWorkerStart() {
 		Yesf::app()->loadEnvConfig();
-		Yesf::app()->loadProjectConfig();
+		Yesf::loadProjectConfig();
 		Logger::init();
 		Dispatcher::init();
 		Response::init();

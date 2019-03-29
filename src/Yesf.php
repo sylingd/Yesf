@@ -140,6 +140,9 @@ class Yesf {
 		if ($config === null) {
 			$config = $this->config_raw;
 		}
+		if ($config === null) {
+			$config = APP_PATH . 'Config/env.ini';
+		}
 		if ((is_string($config) && is_file($config)) || is_array($config)) {
 			$this->config = new Config($config);
 		} else {
@@ -211,7 +214,7 @@ class Yesf {
 	 * 
 	 * @access public
 	 */
-	public function run($config) {
+	public function run($config = null) {
 		$this->config_raw = $config;
 		Swoole::start();
 	}

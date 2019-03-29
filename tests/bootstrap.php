@@ -1,5 +1,6 @@
 <?php
 use Yesf\Yesf;
+use Yesf\Event\Internal;
 define('PROJECT_PATH', realpath(__DIR__ . '/..') . '/');
 define('APP_PATH', __DIR__ . '/TestApp/');
 define('TEST_SRC', __DIR__ . '/Suite/');
@@ -10,6 +11,7 @@ define('YESF_TEST', __DIR__ . '/');
 require(PROJECT_PATH . '/vendor/autoload.php');
 $app = new Yesf();
 
-$app->loadEnvConfig(TEST_APP . 'Config/env.ini');
 Yesf::getLoader()->addPsr4('YesfTest\\', TEST_SRC);
 Yesf::getLoader()->addPsr4('TestApp\\', TEST_APP);
+
+Internal::onWorkerStart();
