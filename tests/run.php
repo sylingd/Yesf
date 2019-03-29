@@ -1,7 +1,7 @@
 <?php
 $exit_status = 0;
-go(function () use (&$exit_status) {
-	global $argc, $argv;
+go(function () {
+	global $argc, $argv, $exit_status;
 	try {
 		require __DIR__ . '/../vendor/phpunit/phpunit/phpunit';
 	} catch (\Swoole\ExitException $e) {
@@ -14,5 +14,5 @@ go(function () use (&$exit_status) {
 	}
 });
 
-\Swoole\Event::wait();
+// \Swoole\Event::wait();
 exit($exit_status);
