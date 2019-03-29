@@ -11,7 +11,7 @@ use Yesf\Exception\CyclicDependencyException;
 use TestApp\DI as DITest;
 
 class ContainerTest extends TestCase {
-	public function setUp() {
+	public static function setUpBeforeClass() {
 		// Set alias
 		Container::getInstance()->set('ClassOneAlias', DITest\ClassOne::class);
 	}

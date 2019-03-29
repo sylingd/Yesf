@@ -98,7 +98,7 @@ SQL_SUCCESS_RETURN:
 	 * @return array
 	 */
 	public function get(string $sql, $data = null) {
-		if (!preg_match('/limit ([0-9,]+)$/i', $sql)) {
+		if (stripos($sql, 'limit') === false) {
 			$sql .= ' LIMIT 0,1';
 		}
 		$r = $this->query($sql, $data);

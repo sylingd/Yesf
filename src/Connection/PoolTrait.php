@@ -64,6 +64,7 @@ trait PoolTrait {
 				return $this->connect();
 			}
 			//wait
+			$uid = co::getUid();
 			$this->wait->push($uid);
 			co::suspend();
 			return $this->connection->pop();
@@ -82,8 +83,8 @@ trait PoolTrait {
 	public function freeConnection($connection) {
 		$this->connection->push($connection);
 		if ($this->wait->count() > 0) {
-			$id = $this->wait->pop();
-			co::resume($id);
+			$uid = $this->wait->pop();
+			co::resume($uid);
 		} else {
 			//有连接处于空闲状态超过15秒，关闭一个连接
 			if ($this->connection_count > $this->getMinClient() && time() - $this->last_run_out_time > 15) {

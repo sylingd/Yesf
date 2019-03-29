@@ -21,6 +21,6 @@
 		}
 	},
 	"scripts": {
-		"test": "phpunit -c phpunit.xml"
+		"test": "php tests/run.php -c phpunit.xml"
 	}
 }

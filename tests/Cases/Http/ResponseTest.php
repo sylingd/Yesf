@@ -8,14 +8,14 @@ use YesfApp\Http\CustomEngine;
 use YesfApp\Http\FakeResponse;
 
 class ResponseTest extends TestCase {
-	private $fake_resp;
-	public function setUp() {
-		$this->fake_resp = new FakeResponse;
+	private static $fake_resp;
+	public static function setUpBeforeClass() {
+		self::$fake_resp = new FakeResponse;
 		Response::init();
 		// Response::initInWorker();
 	}
 	public function testDefaultTemplate() {
-		$resp = clone $this->fake_resp;
+		$resp = clone self::$fake_resp;
 		$response = new Response($resp, 'Index');
 		$id1 = uniqid();
 		$response->assign('id', $id1);
@@ -27,7 +27,7 @@ class ResponseTest extends TestCase {
 		$this->assertEquals($expected_result, $resp->content);
 	}
 	public function testAbsTemplate() {
-		$resp = clone $this->fake_resp;
+		$resp = clone self::$fake_resp;
 		$response = new Response($resp, 'Other');
 		$response->disableView();
 		$id = uniqid();
@@ -38,7 +38,7 @@ class ResponseTest extends TestCase {
 		$this->assertEquals($expected_result, $resp->content);
 	}
 	public function testCustomEngine() {
-		$resp = clone $this->fake_resp;
+		$resp = clone self::$fake_resp;
 		$response = new Response($resp, 'Custom');
 		$response->setCurrentTemplateEngine(CustomEngine::class);
 		$prefix = uniqid();
@@ -54,7 +54,7 @@ class ResponseTest extends TestCase {
 		$send_size = 1024; //1KB
 		$max_offset = filesize($path) - $send_size;
 		$start_offset = rand(0, $max_offset);
-		$resp = clone $this->fake_resp;
+		$resp = clone self::$fake_resp;
 		$response = new Response($resp);
 		$response->sendfile($path, $start_offset, $send_size);
 		unset($response);
@@ -62,7 +62,7 @@ class ResponseTest extends TestCase {
 		$this->assertEquals($expected_result, $resp->content);
 	}
 	public function testHeader() {
-		$resp = clone $this->fake_resp;
+		$resp = clone self::$fake_resp;
 		$response = new Response($resp);
 		$response->disableView();
 		$location_to = '/' . uniqid() . '.html';

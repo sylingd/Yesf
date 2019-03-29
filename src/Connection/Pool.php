@@ -72,11 +72,43 @@ class Pool {
 			} else {
 				$className = __NAMESPACE__ . '\\Driver\\' . ucfirst($type);
 			}
-			$instance = new $className($config);
-			self::$created_driver[$hash] = $instance;
-			return $instance;
+			self::$created_driver[$hash] = new $className($config);
+		}
+		return self::$created_driver[$hash];
+	}
+	/**
+	 * Close connections
+	 * 
+	 * @access public
+	 */
+	public static function close($config = null) {
+		if ($config === null) {
+			// Close all
+			foreach (self::$created_driver as $k => $v) {
+				$hash = spl_object_hash($v);
+				if (isset(self::$created_adapter[$hash])) {
+					unset(self::$created_adapter[$hash]);
+				}
+				unset(self::$created_driver[$k]);
+			}
 		} else {
-			return self::$created_driver[$hash];
+			if (is_string($config)) {
+				$config = Yesf::app()->getConfig('connection.' . $config);
+			}
+			if (!isset($config['driver'])) {
+				throw new ConnectionException("Unknown driver");
+			}
+			if (!isset($config['host']) || !isset($config['port'])) {
+				throw new ConnectionException("Host and Port is required");
+			}
+			$hash = md5($config['driver'] . ':' . $config['host'] . ':' . $config['port']);
+			if (isset(self::$created_driver[$hash])) {
+				$adapter_hash = spl_object_hash(self::$created_driver[$hash]);
+				if (isset(self::$created_adapter[$adapter_hash])) {
+					unset(self::$created_adapter[$adapter_hash]);
+				}
+				unset(self::$created_driver[$hash]);
+			}
 		}
 	}
 	/**

@@ -7,12 +7,12 @@ use Yesf\Http\Request;
 use YesfApp\Http\FakeRequest;
 
 class RequestTest extends TestCase {
-	private $fake_req;
-	public function setUp() {
-		$this->fake_req = new FakeRequest;
+	private static $fake_req;
+	public static function setUpBeforeClass() {
+		self::$fake_req = new FakeRequest;
 	}
 	public function testRequest() {
-		$req = clone $this->fake_req;
+		$req = clone self::$fake_req;
 		$req->raw_content = uniqid();
 		$request = new Request($req);
 		$this->assertSame($req->raw_content, $request->rawContent());
