@@ -11,6 +11,7 @@
  */
 namespace Yesf\Log;
 use Yesf\Yesf;
+use Psr\Log\LoggerInterface;
 use Psr\Log\LoggerAwareInterface;
 
 class Logger implements LoggerAwareInterface {
