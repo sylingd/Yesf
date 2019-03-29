@@ -12,8 +12,9 @@
 
 namespace Yesf;
 use Yesf\Swoole;
-use Yesf\Config;
 use Yesf\DI\Container;
+use Yesf\Config\ConfigInterface;
+use Yesf\Config\Adapter\Arr;
 use Yesf\Exception\StartException;
 use Yesf\Exception\NotFoundException;
 use Yesf\Exception\RequirementException;
@@ -136,15 +137,22 @@ class Yesf {
 	 * 
 	 * @access public
 	 */
-	public function loadEnvConfig($config = null) {
-		if ($config === null) {
-			$config = $this->config_raw;
-		}
-		if ($config === null) {
-			$config = APP_PATH . 'Config/env.ini';
-		}
-		if ((is_string($config) && is_file($config)) || is_array($config)) {
-			$this->config = new Config($config);
+	public function setEnvConfig($raw) {
+		$this->config_raw = $raw;
+	}
+	public function loadEnvConfig() {
+		if ($this->config_raw instanceof ConfigInterface) {
+			$this->config = $this->config_raw;
+		} elseif ($this->config_raw instanceof \Closure) {
+			$config = $this->config_raw();
+			if (!$config instanceof ConfigInterface) {
+				throw new NotFoundException('Config can not be recognised');
+			}
+			$this->config = $config;
+		} elseif (is_string($config) && is_file($config)) {
+			$this->config = Arr::fromIniFile($config);
+		} elseif (is_array($config)) {
+			$this->config = new Arr($config);
 		} else {
 			throw new NotFoundException('Config can not be recognised');
 		}
@@ -215,7 +223,7 @@ class Yesf {
 	 * @access public
 	 */
 	public function run($config = null) {
-		$this->config_raw = $config;
+		if ($config !== null) $this->setEnvConfig($config);
 		Swoole::start();
 	}
 }

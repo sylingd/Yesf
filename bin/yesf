@@ -1,6 +1,5 @@
 #!/usr/bin/env php
 <?php
-use Yesf\Config;
 //Composer
 require(__DIR__ . '/../vendor/autoload.php');
 
@@ -92,14 +91,14 @@ EOT;
 		} elseif (isset($opt['c'])) {
 			$config = $opt['c'];
 		} else {
-			$config = './application/config/env.ini';
+			$config = './application/Config/env.ini';
 		}
 		switch ($config) {
 			case 'CONFIG_YACONF':
-				$config = Config::TYPE_YACONF;
+				$config = new Yesf\Config\Adapter\Yaconf();
 				break;
 			case 'CONFIG_QCONF':
-				$config = Config::TYPE_QCONF;
+				$config = new Yesf\Config\Adapter\QConf();
 				break;
 			default:
 				$config = realpath($config);
@@ -114,6 +113,7 @@ EOT;
 		
 		//初始化
 		$app = new Yesf\Yesf();
-		$app->bootstrap()->run($config);
+		$app->setEnvConfig($config);
+		$app->bootstrap()->run();
 	}
 }
