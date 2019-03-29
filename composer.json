@@ -19,8 +19,5 @@
 		"psr-4": {
 			"Yesf\\": "src/"
 		}
-	},
-	"scripts": {
-		"test": "php tests/run.php -c phpunit.xml"
 	}
 }

@@ -28,4 +28,4 @@ before_script:
   - bash ci/init-mysql.sh
 
 script:
-  - composer test
+  - php tests/run.php -c phpunit.xml

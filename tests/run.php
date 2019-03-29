@@ -14,5 +14,5 @@ go(function () {
 	}
 });
 
-// \Swoole\Event::wait();
+\Swoole\Event::wait();
 exit($exit_status);
