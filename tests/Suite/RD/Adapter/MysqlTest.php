@@ -1,7 +1,7 @@
 <?php
 use PHPUnit\Framework\TestCase;
 
-use PDO;
+// use PDO;
 use Yesf\Connection\Pool;
 
 class MysqlTest extends TestCase {
