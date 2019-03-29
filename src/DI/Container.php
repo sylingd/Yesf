@@ -22,7 +22,7 @@ class Container implements ContainerInterface {
 	const MULTI_NEW = 2;
 
 	private $instance = [];
-	private $alias = [];
+	private $getter = [];
 	private $multi = [];
 	private $creating = [];
 	private static $_instance = null;
@@ -35,8 +35,8 @@ class Container implements ContainerInterface {
 	private function __construct() {
 		// Do nothing
 	}
-	public function setAlias($id1, $id2) {
-		$this->alias[$id1] = $id2;
+	public function set($id1, $id2) {
+		$this->getter[$id1] = $id2;
 	}
 	public function setMulti($id, $type = self::MULTI_CLONE) {
 		$this->multi[$id] = $type;
@@ -47,16 +47,25 @@ class Container implements ContainerInterface {
 	 * @return bool
 	 */
 	public function has($id) {
-		while (isset($this->alias[$id])) {
-			$id = $this->alias[$id];
+		$source = $id;
+		while (is_string($source) && isset($this->getter[$source])) {
+			$source = $this->getter[$source];
 		}
-		if (isset($this->instance[$id])) {
-			return true;
+		if (!is_string($source)) {
+			if ($source instanceof \Closure) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			if (isset($this->instance[$source])) {
+				return true;
+			}
+			if (class_exists($source)) {
+				return true;
+			}
+			return false;
 		}
-		if (class_exists($id)) {
-			return true;
-		}
-		return false;
 	}
 	/**
 	 * Get
@@ -64,38 +73,47 @@ class Container implements ContainerInterface {
      * @return object
 	 */
 	public function get($id) {
-		while (isset($this->alias[$id])) {
-			$id = $this->alias[$id];
+		$source = $id;
+		while (is_string($source) && isset($this->getter[$source])) {
+			$source = $this->getter[$source];
 		}
-		if (isset($this->instance[$id])) {
-			if (!isset($this->multi[$id])) {
-				return $this->instance[$id];
-			} elseif ($this->multi[$id] === self::MULTI_CLONE) {
-				return clone $this->instance[$id];
+		if (!is_string($source)) {
+			if ($source instanceof \Closure) {
+				$source->bindTo($this);
+				return $source();
+			} else {
+				throw new NotFoundException("Class $id not found");
 			}
 		}
-		if (!class_exists($id)) {
+		if (isset($this->instance[$source])) {
+			if (!isset($this->multi[$source])) {
+				return $this->instance[$source];
+			} elseif ($this->multi[$source] === self::MULTI_CLONE) {
+				return clone $this->instance[$source];
+			}
+		}
+		if (!class_exists($source)) {
 			throw new NotFoundException("Class $id not found");
 		}
 		// Check cyclic dependency
-		if (isset($this->creating[$id])) {
+		if (isset($this->creating[$source])) {
 			throw new CyclicDependencyException("Found cyclic dependency of $id");
 		}
-		$this->creating[$id] = true;
-		$ref = new ReflectionClass($id);
+		$this->creating[$source] = true;
+		$ref = new ReflectionClass($source);
 		if (!$ref->isInstantiable()) {
 			throw new InvalidClassException("Can not create instance of $id");
 		}
 		// constructor
 		$constructor = $ref->getConstructor();
 		if ($constructor !== null) {
-			// Read comment for alias
+			// Read comment for getter
 			$comment = $constructor->getDocComment();
 			$is_autowire = preg_match_all('/@Autowired\s+([\w\\\\]+)\s+([\w\\\\]+)\s+/', $comment, $autowire_matches);
-			$alias = [];
+			$getter = [];
 			if ($is_autowire && count($autowire_matches[1]) > 0) {
 				foreach ($autowire_matches[1] as $k => $v) {
-					$alias[$v] = $autowire_matches[2][$k];
+					$getter[$v] = $autowire_matches[2][$k];
 				}
 			}
 			$params = $constructor->getParameters();
@@ -103,8 +121,8 @@ class Container implements ContainerInterface {
 			foreach ($params as $param) {
 				if ($param->isOptional()) {
 					$init_params[] = $param->getDefaultValue();
-				} elseif (isset($alias[$param->getName()])) {
-					$typeName = $alias[$param->getName()];
+				} elseif (isset($getter[$param->getName()])) {
+					$typeName = $getter[$param->getName()];
 					$init_params[] = $this->get($typeName);
 				} elseif ($param->hasType()) {
 					$type = $param->getType();
@@ -161,10 +179,10 @@ class Container implements ContainerInterface {
 			}
 		}
 		// put into instance
-		if (!isset($this->multi[$id]) || $this->multi[$id] === self::MULTI_CLONE) {
-			$this->instance[$id] = $instance;
+		if (!isset($this->multi[$source]) || $this->multi[$source] === self::MULTI_CLONE) {
+			$this->instance[$source] = $instance;
 		}
-		unset($this->creating[$id]);
+		unset($this->creating[$source]);
 		return $instance;
 	}
 }
