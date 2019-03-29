@@ -19,6 +19,7 @@ class MysqlTest extends TestCase {
 			Yesf::app()->getConfig('connection.my.database')
 		);
 		$this->pdo = new PDO($dsn, Yesf::app()->getConfig('connection.my.user'), Yesf::app()->getConfig('connection.my.password'));
+		$that = $this;
 		go(function() use ($that) {
 			$that->adapter = Pool::getAdapter('my');
 		});
