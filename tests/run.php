@@ -15,7 +15,7 @@ $buf = "";
 Process::signal(SIGCHLD, function($sig) use (&$buf) {
 	while($ret =  Process::wait(false)) {
 		// Process exited
-		if (strpos($buf, 'OK (') !== false) {
+		if (strpos($buf, 'OK') !== false) {
 			exit(0);
 		} else {
 			exit(1);
