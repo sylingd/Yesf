@@ -1,7 +1,6 @@
 <?php
 /**
  * Redis封装类
- * 在某些环境下，可能需要用户使用co::create手动创建协程环境
  * 
  * @author ShuangYa
  * @package Yesf

@@ -1,6 +1,6 @@
 <?php
 /**
- * MySQL封装类
+ * TCP封装类
  * 
  * @author ShuangYa
  * @package Yesf
@@ -17,34 +17,21 @@ use Yesf\Connection\PoolInterface;
 use Yesf\Exception\ConnectionException;
 use Swoole\Coroutine as co;
 
-class Mysql implements PoolInterface {
+class TcpClient implements PoolInterface {
 	use PoolTrait;
 	protected $config = null;
 	public function __construct(array $config) {
 		$this->config = $config;
 		$this->initPool($config);
 	}
-	/**
-	 * 根据配置连接到数据库
-	 * 
-	 * @access protected
-	 */
 	protected function connect() {
-		$connection = new co\MySQL();
+		$connection = new co\Client(SWOOLE_SOCK_TCP);
 		return $this->reconnect($connection);
 	}
 	public function reconnect($connection) {
-		$r = $connection->connect([
-			'host' => $this->config['host'],
-			'user' => $this->config['user'],
-			'password' => $this->config['password'],
-			'database' => $this->config['database'],
-			'port' => $this->config['port'],
-			'timeout' => 3,
-			'charset' => 'utf8'
-		]);
+		$r = $connection->connect($this->config['host'], $this->config['port'], 3);
 		if ($r === false) {
-			throw new ConnectionException('Can not connect to database server');
+			throw new ConnectionException(sprintf('Can not connect to %s:%s', $this->config['host'], $this->config['port']));
 		}
 		return $connection;
 	}

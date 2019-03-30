@@ -42,6 +42,7 @@ class Pool {
 		// 注册默认Driver和Adapter
 		self::setDriver('mysql', \Yesf\Connection\Driver\Mysql::class);
 		self::setDriver('redis', \Yesf\Connection\Driver\Redis::class);
+		self::setDriver('tcp', \Yesf\Connection\Driver\TcpClient::class);
 		self::setAdapter('mysql', \Yesf\RD\Adapter\Mysql::class);
 		self::setAdapter('redis', \Yesf\Cache\Adapter\Redis::class);
 	}
