@@ -3,15 +3,12 @@ namespace YesfTest\Cache\Adapter;
 
 use PHPUnit\Framework\TestCase;
 use Yesf\Yesf;
-use Yesf\Cache\Adapter\Yac as YesfYac;
+use Yesf\Cache\Adapter\File as YesfFile;
 use YesfTest\Cache\TestUtils;
 
-class YacTest extends TestCase {
-	/**
-	 * @requires extension yac
-	 */
-	public function testYac() {
-		$handler = new YesfYac();
+class FileTest extends TestCase {
+	public function testFile() {
+		$handler = new YesfFile();
 		TestUtils::single($this, $handler);
 		TestUtils::multi($this, $handler);
 	}

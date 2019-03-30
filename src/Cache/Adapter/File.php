@@ -25,7 +25,7 @@ class File implements CacheInterface {
 			$this->path = APP_PATH . substr($this->path, 5);
 		}
 		if (!is_dir($this->path)) {
-			mkdir($this->path);
+			mkdir($this->path, 0777, true);
 		}
 		if (substr($this->path, -1) !== '/') {
 			$this->path .= '/';
