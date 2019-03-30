@@ -21,7 +21,7 @@ class YacTest extends TestCase {
 		self::$handler->delete($key);
 		$this->assertNull(self::$handler->get($key));
 	}
-	public function testGetMulti() {
+	public function testMulti() {
 		$arr = [
 			'key1' => 123,
 			'key2' => "string",
