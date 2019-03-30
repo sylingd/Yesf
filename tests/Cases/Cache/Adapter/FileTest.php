@@ -11,5 +11,6 @@ class FileTest extends TestCase {
 		$handler = new YesfFile();
 		TestUtils::single($this, $handler);
 		TestUtils::multi($this, $handler);
+		TestUtils::clear($this, $handler);
 	}
 }

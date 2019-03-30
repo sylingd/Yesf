@@ -14,5 +14,6 @@ class YacTest extends TestCase {
 		$handler = new YesfYac();
 		TestUtils::single($this, $handler);
 		TestUtils::multi($this, $handler);
+		TestUtils::clear($this, $handler);
 	}
 }

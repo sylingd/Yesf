@@ -28,9 +28,27 @@ class TestUtils {
 		$handler->set('key1', $arr['key1']);
 		$that->assertSame($arr, $handler->getMultiple(array_keys($arr)));
 		$that->assertSame([
-			'not_exists' => 0,
+			'not_exists' => -1,
 			'key1' => $arr['key1'],
-			'not_exists_2' => 0
-		], $handler->getMultiple(['not_exists', 'key1', 'not_exists_2'], 0));
+			'not_exists_2' => -1
+		], $handler->getMultiple(['not_exists', 'key1', 'not_exists_2'], -1));
+		$handler->deleteMultiple(['key1', 'key2']);
+		$that->assertSame([
+			'key1' => -1,
+			'key2' => -1,
+			'key3' => $arr['key3']
+		], $handler->getMultiple(['key1', 'key2', 'key3'], -1));
+	}
+	public static function clear($that, $handler) {
+		$arr = [
+			'key1' => 123,
+			'key2' => "string",
+			'key3' => [1, 2, 3]
+		];
+		$handler->setMultiple($arr);
+		$handler->clear();
+		$that->assertNull($handler->get('key1'));
+		$that->assertNull($handler->get('key2'));
+		$that->assertNull($handler->get('key3'));
 	}
 }

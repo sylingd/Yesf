@@ -11,5 +11,6 @@ class RedisTest extends TestCase {
 		$handler = Pool::getAdapter('redis');
 		TestUtils::single($this, $handler);
 		TestUtils::multi($this, $handler);
+		TestUtils::clear($this, $handler);
 	}
 }
