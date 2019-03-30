@@ -52,7 +52,7 @@ class Redis implements CacheInterface {
 		foreach ($values as $k => $v) {
 			$values[$k] = serialize($v);
 		}
-		$redis->mSet($values);
+		$this->pool->mSet($values);
 		// TODO: ttl
 	}
 	public function deleteMultiple($keys) {

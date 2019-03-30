@@ -19,13 +19,13 @@ use Yesf\Connection\Pool;
 
 class Helper {
 	public static function setRDAlias() {
-		$default = Yesf::app()->getConfig('database');
+		$default = Yesf::app()->getConfig('database.default');
 		Container::getInstance()->set(RDInterface::class, function() use ($default) {
 			return Pool::getAdapter($default);
 		});
 	}
 	public static function setCacheAlias() {
-		$default = Yesf::app()->getConfig('cache');
+		$default = Yesf::app()->getConfig('cache.default');
 		if ($default === 'file') {
 			Container::getInstance()->set(CacheInterface::class, File::class);
 		} else {
