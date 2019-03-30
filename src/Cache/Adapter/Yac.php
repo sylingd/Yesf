@@ -57,8 +57,12 @@ class Yac implements CacheInterface {
 		$result = $this->handler->get($keys);
 		foreach ($result as $k => $v) {
 			if ($v === false) {
-				if (is_array($default) && isset($default[$k])) {
-					$result[$k] = $default[$k];
+				if (is_array($default)) {
+					if (isset($default[$k])) {
+						$result[$k] = $default[$k];
+					} else {
+						$result[$k] = null;
+					}
 				} else {
 					$result[$k] = $default;
 				}

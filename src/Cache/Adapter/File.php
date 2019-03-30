@@ -84,10 +84,14 @@ class File implements CacheInterface {
 		foreach ($keys as $k => $v) {
 			$res = $this->get($v);
 			if ($res === null) {
-				if (is_array($default) && isset($default[$k])) {
-					$result[] = $default[$k];
+				if (is_array($default)) {
+					if (isset($default[$k])) {
+						$result[$k] = $default[$k];
+					} else {
+						$result[$k] = null;
+					}
 				} else {
-					$result[] = $default;
+					$result[$k] = $default;
 				}
 			} else {
 				$result[] = $res;
