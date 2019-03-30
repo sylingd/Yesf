@@ -27,17 +27,20 @@ main() {
 	echo "extension = swoole.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 
 	# Install Yac
-	cd $stage
-	wget -O yac.tar.gz https://github.com/laruence/yac/archive/yac-${yac_ver}.tar.gz
-	tar -zxf yac.tar.gz
-	cd yac-yac-${yac_ver}
-	phpize
-	./configure
-	make -j4
-	sudo make install
-	echo "extension = yac.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-	echo "yac.enable = On" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-	echo "yac.enable_cli = On" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+	can_install_yac=$(php -r "echo version_compare(PHP_VERSION, '7.3');")
+	if [ "$can_install_yac" -eq "-1" ]; then
+		cd $stage
+		wget -O yac.tar.gz https://github.com/laruence/yac/archive/yac-${yac_ver}.tar.gz
+		tar -zxf yac.tar.gz
+		cd yac-yac-${yac_ver}
+		phpize
+		./configure
+		make -j4
+		sudo make install
+		echo "extension = yac.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+		echo "yac.enable = On" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+		echo "yac.enable_cli = On" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+	fi
 
 	cd $TRAVIS_BUILD_DIR
 	sudo rm -rf $stage

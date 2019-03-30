@@ -18,13 +18,4 @@
 			<directory>./tests/Cases</directory>
 		</testsuite>
 	</testsuites>
-	<filter>
-		<whitelist>
-			<directory suffix=".php">src/</directory>
-			<exclude>
-				<directory suffix=".php">src/Data/</directory>
-				<directory suffix=".php">src/RD/Builder</directory>
-			</exclude>
-		</whitelist>
-	</filter>
 </phpunit>

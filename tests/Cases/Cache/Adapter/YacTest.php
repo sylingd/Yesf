@@ -10,6 +10,9 @@ class YacTest extends TestCase {
 	public static function setUpBeforeClass() {
 		self::$handler = new YesfYac();
 	}
+	/**
+	 * @requires extension yac
+	 */
 	public function testSingle() {
 		$arr = [1, 2, 3];
 		$key = uniqid();
@@ -21,6 +24,9 @@ class YacTest extends TestCase {
 		self::$handler->delete($key);
 		$this->assertNull(self::$handler->get($key));
 	}
+	/**
+	 * @requires extension yac
+	 */
 	public function testMulti() {
 		$arr = [
 			'key1' => 123,
