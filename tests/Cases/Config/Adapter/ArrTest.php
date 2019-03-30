@@ -2,6 +2,7 @@
 namespace YesfTest\Config\Adapter;
 
 use PHPUnit\Framework\TestCase;
+use Yesf\Yesf;
 use Yesf\Config\Adapter\Arr;
 
 class ArrTest extends TestCase {
