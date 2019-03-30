@@ -12,6 +12,7 @@
 namespace Yesf\Cache\Adapter;
 
 use Psr\SimpleCache\CacheInterface;
+use Yesf\Yesf;
 use Swoole\Coroutine as co;
 
 class File implements CacheInterface {
