@@ -20,6 +20,7 @@ cache:
 before_install:
   - phpenv config-rm xdebug.ini
   - bash ci/install.sh
+  - php -r "echo SWOOLE_VERSION;"
 
 install:
   - composer install

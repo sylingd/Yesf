@@ -10,7 +10,7 @@ main() {
 	wget https://github.com/redis/hiredis/archive/v${hiredis_ver}.tar.gz
 	tar -zxf v${hiredis_ver}.tar.gz
 	cd hiredis-${hiredis_ver}
-	sudo make -j4
+	make -j4
 	sudo make install
 	sudo ldconfig
 
@@ -21,7 +21,7 @@ main() {
 	cd swoole-src-${swoole_ver}
 	phpize
 	./configure --enable-sockets=yes --enable-openssl=yes --enable-mysqlnd=yes
-	sudo make -j4
+	make -j4
 	sudo make install
 	echo "extension = swoole.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 
