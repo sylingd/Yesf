@@ -22,7 +22,7 @@ class Redis implements CacheInterface {
 	}
 	public function get($key, $default = null) {
 		$result = $this->pool->get($key);
-		return $result === false ? $default : unserialize($result);
+		return ($result === false || $result === null) ? $default : unserialize($result);
 	}
 	public function set($key, $value, $ttl = null) {
 		return $this->pool->set($key, serialize($value), $ttl);
@@ -31,12 +31,12 @@ class Redis implements CacheInterface {
 		return $this->pool->delete($key);
 	}
 	public function clear() {
-		// TODO
+		$this->pool->flushDb();
 	}
 	public function getMultiple($keys, $default = null) {
 		$result = $this->pool->mGet($keys);
 		foreach ($result as $k => $v) {
-			if ($v === false) {
+			if ($v === false || $v === null) {
 				$result[$k] = $default;
 			} else {
 				$result[$k] = unserialize($v);
@@ -49,7 +49,11 @@ class Redis implements CacheInterface {
 			$values[$k] = serialize($v);
 		}
 		$this->pool->mSet($values);
-		// TODO: ttl
+		if ($ttl !== null) {
+			foreach ($values as $k => $v) {
+				$this->pool->expire($k, $ttl);
+			}
+		}
 	}
 	public function deleteMultiple($keys) {
 		return $this->pool->delete($keys);
