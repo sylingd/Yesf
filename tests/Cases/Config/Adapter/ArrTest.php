@@ -14,7 +14,12 @@ class ArrTest extends TestCase {
 		$this->assertEquals('gce', $config->get('connection.my.user'));
 		$this->assertEquals('/product', $config->get('path2'));
 		$this->assertEquals('/base', $config->get('path'));
-		$this->assertEquals(['user' => 'gce', 'password' => 'gce'], $config->get('connection.my'));
+		$this->assertEquals([
+			'host' => 'localhost',
+			'port' => '3306',
+			'user' => 'gce',
+			'password' => 'gce'
+		], $config->get('connection.my'));
 		$this->assertEquals('localhost', $config->get('connection.my.host'));
 		// Finish
 		Yesf::app()->setEnvironment($env);

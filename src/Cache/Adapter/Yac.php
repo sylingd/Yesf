@@ -12,6 +12,7 @@
 namespace Yesf\Cache\Adapter;
 
 use Psr\SimpleCache\CacheInterface;
+use Yesf\Yesf;
 use Yesf\Exception\Exception;
 use Yesf\Exception\RequirementException;
 
