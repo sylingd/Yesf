@@ -4,9 +4,9 @@ main() {
 	swoole_ver="4.2.13"
 	hiredis_ver="0.14.0"
 	stage=$(mktemp -d)
-	cd $stage
 
 	# Install hiredis
+	cd $stage
 	wget https://github.com/redis/hiredis/archive/v${hiredis_ver}.tar.gz
 	tar -zxf v${hiredis_ver}.tar.gz
 	cd hiredis-${hiredis_ver}
