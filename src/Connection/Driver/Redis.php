@@ -44,8 +44,8 @@ class Redis implements PoolInterface {
 				throw new ConnectionException('Authenticate failed, ' . $connection->errMsg, $connection->errCode);
 			}
 		}
-		if (!empty($this->config['name'])) {
-			$r = $connection->select($this->config['name']);
+		if (isset($this->config['index'])) {
+			$r = $connection->select(intval($this->config['index']));
 			if ($r === false) {
 				throw new ConnectionException('Select database failed, ' . $connection->errMsg, $connection->errCode);
 			}
