@@ -30,7 +30,7 @@ main() {
 	cd $stage
 	wget -O yac.tar.gz https://github.com/laruence/yac/archive/yac-${yac_ver}.tar.gz
 	tar -zxf yac.tar.gz
-	cd yac-${yac_ver}
+	cd yac-yac-${yac_ver}
 	phpize
 	./configure
 	make -j4

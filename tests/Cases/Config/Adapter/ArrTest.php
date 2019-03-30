@@ -7,8 +7,8 @@ use Yesf\Config\Adapter\Arr;
 
 class ArrTest extends TestCase {
 	public function testAll() {
-		$env = Yesf::getEnvironment();
-		Yesf::setEnvironment('gce');
+		$env = Yesf::app()->getEnvironment();
+		Yesf::app()->setEnvironment('gce');
 		// Load
 		$config = Arr::fromIniFile(APP_PATH . 'Config/TestFiles/config.ini');
 		$this->assertEquals('gce', $config->get('connection.my.user'));
@@ -17,6 +17,6 @@ class ArrTest extends TestCase {
 		$this->assertEquals(['user' => 'gce', 'password' => 'gce'], $config->get('connection.my'));
 		$this->assertEquals('localhost', $config->get('connection.my.host'));
 		// Finish
-		Yesf::setEnvironment($env);
+		Yesf::app()->setEnvironment($env);
 	}
 }
