@@ -37,20 +37,12 @@ class Redis implements CacheInterface {
 		$result = $this->pool->mGet($keys);
 		foreach ($result as $k => $v) {
 			if ($v === false) {
-				if (is_array($default)) {
-					if (isset($default[$k])) {
-						$result[$k] = $default[$k];
-					} else {
-						$result[$k] = null;
-					}
-				} else {
-					$result[$k] = $default;
-				}
+				$result[$k] = $default;
 			} else {
 				$result[$k] = unserialize($v);
 			}
 		}
-		return $result;
+		return array_combine($keys, $result);
 	}
 	public function setMultiple($values, $ttl = null) {
 		foreach ($values as $k => $v) {

@@ -81,20 +81,12 @@ class File implements CacheInterface {
 	}
 	public function getMultiple($keys, $default = null) {
 		$result = [];
-		foreach ($keys as $k => $v) {
+		foreach ($keys as $v) {
 			$res = $this->get($v);
 			if ($res === null) {
-				if (is_array($default)) {
-					if (isset($default[$k])) {
-						$result[$k] = $default[$k];
-					} else {
-						$result[$k] = null;
-					}
-				} else {
-					$result[$k] = $default;
-				}
+				$result[$v] = $default;
 			} else {
-				$result[] = $res;
+				$result[$v] = $res;
 			}
 		}
 		return $result;

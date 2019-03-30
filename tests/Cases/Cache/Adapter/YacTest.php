@@ -31,16 +31,14 @@ class YacTest extends TestCase {
 		$this->assertSame($arr['key1'], self::$handler->get('key1'));
 		$this->assertSame($arr['key2'], self::$handler->get('key2'));
 		$this->assertSame($arr['key3'], self::$handler->get('key3'));
-		$this->assertSame(array_values($arr), self::$handler->getMultiple(array_keys($arr)));
+		$this->assertSame($arr, self::$handler->getMultiple(array_keys($arr)));
 		$arr['key1'] = rand(1, 999);
 		self::$handler->set('key1', $arr['key1']);
-		$this->assertSame(array_values($arr), self::$handler->getMultiple(array_keys($arr)));
-		$this->assertSame(
-			[1, $arr['key1'], $arr['key2'], "str"],
-			self::$handler->getMultiple(['not_exists', 'key1', 'key2', 'not_exists_2'],
-				[1, 2, 3, "str"]));
-		$this->assertSame(
-			[0, $arr['key1'], 0],
-			self::$handler->getMultiple(['not_exists', 'key1', 'not_exists_2'], 0));
+		$this->assertSame($arr, self::$handler->getMultiple(array_keys($arr)));
+		$this->assertSame([
+			'not_exists' => 0,
+			'key1' => $arr['key1'],
+			'not_exists_2' => 0
+		], self::$handler->getMultiple(['not_exists', 'key1', 'not_exists_2'], 0));
 	}
 }

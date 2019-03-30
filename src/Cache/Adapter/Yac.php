@@ -52,23 +52,17 @@ class Yac implements CacheInterface {
 		$this->handler->flush();
 	}
 	public function getMultiple($keys, $default = null) {
-		foreach ($keys as $k => $v) {
-			$keys[$k] = $this->getKey($v);
+		$toGet = [];
+		foreach ($keys as $v) {
+			$toGet[] = $this->getKey($v);
 		}
-		$result = $this->handler->get($keys);
-		foreach ($result as $k => $v) {
-			if ($v === false) {
-				if (is_array($default)) {
-					if (isset($default[$k])) {
-						$result[$k] = $default[$k];
-					} else {
-						$result[$k] = null;
-					}
-				} else {
-					$result[$k] = $default;
-				}
+		$result = [];
+		$res = $this->handler->get($toGet);
+		foreach ($toGet as $k => $v) {
+			if ($res[$v] === false) {
+				$result[$keys[$k]] = $default;
 			} else {
-				$result[$k] = $v;
+				$result[$keys[$k]] = $res[$v];
 			}
 		}
 		return $result;
