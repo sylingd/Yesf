@@ -40,10 +40,10 @@ class Yac implements CacheInterface {
 		if ($res === false) {
 			return $default;
 		}
-		return unserialize($res);
+		return $res;
 	}
-	public function set($key, $value, $ttl = null) {
-		$this->handler->set($this->getKey($key), serialize($value), $ttl);
+	public function set($key, $value, $ttl = 0) {
+		$this->handler->set($this->getKey($key), $value, $ttl);
 	}
 	public function delete($key) {
 		$this->handler->delete($this->getKey($key));
@@ -68,15 +68,15 @@ class Yac implements CacheInterface {
 					$result[$k] = $default;
 				}
 			} else {
-				$result[$k] = unserialize($v);
+				$result[$k] = $v;
 			}
 		}
 		return $result;
 	}
-	public function setMultiple($values, $ttl = null) {
+	public function setMultiple($values, $ttl = 0) {
 		$toSet = [];
 		foreach ($values as $k => $v) {
-			$toSet[$this->getKey($k)] = serialize($v);
+			$toSet[$this->getKey($k)] = $v;
 		}
 		$this->handler->set($toSet, $ttl);
 	}
