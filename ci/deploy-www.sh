@@ -5,9 +5,9 @@ main() {
 		echo -e "Not push, exit deploy www\n"
 	fi
 	gitee_repo="sy/Yesf"
-	gitee_branch="osc_pages"
+	gitee_branch="osc-pages"
 	github_repo="sylingd/Yesf"
-	github_branch="gh_pages"
+	github_branch="gh-pages"
 
 	# Install node
 	node_ver="10.15.3"
