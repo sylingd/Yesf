@@ -7,7 +7,6 @@
 		"search-pro",
 		"-sharing",
 		"github-buttons",
-		"editlink",
 		"-highlight",
 		"prism",
 		"anchor-navigation-ex",
@@ -34,11 +33,6 @@
 				"size": "small",
 				"count": true
 			}]
-		},
-		"editlink": {
-			"base": "https://github.com/riskers/gitbook-template/blob/master",
-			"label": "Edit",
-			"multilingual": false
 		},
 		"prism": {
 			"ignore": [

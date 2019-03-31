@@ -28,7 +28,7 @@ main() {
 
 	# Install Yac
 	can_install_yac=$(php -r "echo version_compare(PHP_VERSION, '7.3');")
-	if [ "$can_install_yac" -eq "-1" ]; then
+	if [[ "$can_install_yac" != "-1" ]]; then
 		cd $stage
 		wget -O yac.tar.gz https://github.com/laruence/yac/archive/yac-${yac_ver}.tar.gz
 		tar -zxf yac.tar.gz

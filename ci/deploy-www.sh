@@ -1,9 +1,17 @@
 #!/bin/bash
 
 main() {
-	if [ "$TRAVIS_EVENT_TYPE" != "push" ];then
-		echo -e "Not push, exit deploy www\n"
+	# Only push
+	if [[ "$TRAVIS_EVENT_TYPE" != "push" ]];then
+		echo -e "Not push, skip deploy www\n"
+		return 0
 	fi
+	# Only first build job
+	if [[ "$TRAVIS_JOB_NUMBER" =~ \.1$ ]];then
+		echo -e "Not first build job, skip deploy www\n"
+		return 0
+	fi
+
 	gitee_repo="sy/Yesf"
 	gitee_branch="osc-pages"
 	github_repo="sylingd/Yesf"
