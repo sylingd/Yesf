@@ -38,6 +38,14 @@ class Mysql implements RDInterface {
 		$tryAgain = true;
 SQL_START_EXECUTE:
 		if (is_array($data) && count($data) > 0) {
+			if (strpos($sql, ':') !== false) {
+				$bind = [];
+				$sql = preg_replace_callback('/:(\w+)\b/', function ($matches) use (&$data, &$bind) {
+					$bind[] = $data[$matches[1]];
+					return '?';
+				}, $sql);
+				$data = &$bind;
+			}
 			try {
 				$st = $connection->prepare($sql);
 				if ($st === false) {

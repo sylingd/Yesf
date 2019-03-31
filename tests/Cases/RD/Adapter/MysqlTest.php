@@ -47,6 +47,15 @@ class MysqlTest extends TestCase {
 		$this->assertSame($name, $selected['name']);
 		$this->assertTrue(password_verify($password, $selected['password']));
 	}
+	public function testWhere() {
+		$record = self::$pdo->query('SELECT * FROM `user` ORDER BY id DESC LIMIT 0,1')->fetch(PDO::FETCH_ASSOC);
+		$r1 = self::getAdapter()->get('SELECT * FROM `user` WHERE id = ?', [$record['id']]);
+		$this->assertSame($record, $r1);
+		$r2 = self::getAdapter()->get('SELECT * FROM `user` WHERE id = :id', [
+			'id' => $record['id']
+		]);
+		$this->assertSame($record, $r2);
+	}
 	public function testDelete() {
 		$record = self::$pdo->query('SELECT * FROM `user` ORDER BY id DESC LIMIT 0,1')->fetch(PDO::FETCH_ASSOC);
 		$res = self::getAdapter()->query('DELETE FROM `user` WHERE id = ?', [$record['id']]);
