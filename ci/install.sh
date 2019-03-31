@@ -41,7 +41,7 @@ main() {
 		echo "yac.enable = On" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 		echo "yac.enable_cli = On" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 	else
-		echo "Skip install Yac\n"
+		echo -e "Skip install Yac\n"
 	fi
 
 	cd $TRAVIS_BUILD_DIR
