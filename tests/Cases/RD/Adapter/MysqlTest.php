@@ -48,13 +48,21 @@ class MysqlTest extends TestCase {
 		$this->assertTrue(password_verify($password, $selected['password']));
 	}
 	public function testWhere() {
-		$record = self::$pdo->query('SELECT * FROM `user` ORDER BY id DESC LIMIT 0,1')->fetch(PDO::FETCH_ASSOC);
-		$r1 = self::getAdapter()->get('SELECT * FROM `user` WHERE id = ?', [$record['id']]);
-		$this->assertSame($record, $r1);
-		$r2 = self::getAdapter()->get('SELECT * FROM `user` WHERE id = :id', [
+		$record = self::$pdo->query('SELECT id, name FROM `user` ORDER BY id DESC LIMIT 0,1')->fetch(PDO::FETCH_ASSOC);
+		// Test Question-mark parameter marker
+		$res1 = self::getAdapter()->get('SELECT name FROM `user` WHERE id = ?', [$record['id']]);
+		$this->assertSame($record['name'], $res1['name']);
+		$res2 = self::getAdapter()->getColumn('SELECT name FROM `user` WHERE id = ?', [$record['id']], 'name');
+		$this->assertSame($record['name'], $res2);
+		// Test Named parameter marker
+		$res3 = self::getAdapter()->get('SELECT name FROM `user` WHERE id = :id', [
 			'id' => $record['id']
 		]);
-		$this->assertSame($record, $r2);
+		$this->assertSame($record['name'], $res3['name']);
+		$res4 = self::getAdapter()->getColumn('SELECT name FROM `user` WHERE id = :id', [
+			'id' => $record['id']
+		], 'name');
+		$this->assertSame($record['name'], $res4);
 	}
 	public function testDelete() {
 		$record = self::$pdo->query('SELECT * FROM `user` ORDER BY id DESC LIMIT 0,1')->fetch(PDO::FETCH_ASSOC);
