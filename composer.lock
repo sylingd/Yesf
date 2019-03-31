@@ -4,8 +4,65 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b5c240bf6acb3ffa2b067e6eef42275d",
+    "content-hash": "e0ff8ff5421ef69b4b66f1b5d520164a",
     "packages": [
+        {
+            "name": "latitude/latitude",
+            "version": "3.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/shadowhand/latitude.git",
+                "reference": "8f8e6e42f81cbbad44bf550405d7444da6f09dc5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/shadowhand/latitude/zipball/8f8e6e42f81cbbad44bf550405d7444da6f09dc5",
+                "reference": "8f8e6e42f81cbbad44bf550405d7444da6f09dc5",
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://dl.laravel-china.org/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "eloquent/liberator": "^2.0",
+                "hoa/devtools": "^1.17",
+                "hoa/ruler": "2.17.05.16",
+                "phpstan/phpstan": "^0.9.1",
+                "phpunit/phpunit": "^6.0",
+                "vimeo/psalm": "^0.3.88"
+            },
+            "suggest": {
+                "hoa/ruler": "Adds support for creating criteria from strings"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/functions.php"
+                ],
+                "psr-4": {
+                    "Latitude\\QueryBuilder\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Woody Gilk",
+                    "email": "woody.gilk@gmail.com",
+                    "homepage": "https://github.com/shadowhand"
+                }
+            ],
+            "description": "A SQL query builder with zero dependencies",
+            "time": "2019-02-04T14:25:02+00:00"
+        },
         {
             "name": "psr/container",
             "version": "1.0.0",

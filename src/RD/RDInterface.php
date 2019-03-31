@@ -41,4 +41,11 @@ interface RDInterface {
 	 * @return array
 	 */
 	public function getColumn(string $sql, $data = null, $column = null);
+	/**
+	 * 获取Builder对象
+	 * 
+	 * @access public
+	 * @return string/object
+	 */
+	public static function getBuilder(): object;
 }

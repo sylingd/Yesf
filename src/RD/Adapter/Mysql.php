@@ -14,10 +14,13 @@ namespace Yesf\RD\Adapter;
 
 use Swoole\Coroutine as co;
 use Yesf\Yesf;
+use Yesf\DI\Container;
 use Yesf\Exception\DBException;
 use Yesf\Connection\Pool;
 use Yesf\Connection\PoolInterface;
 use Yesf\RD\RDInterface;
+use Latitude\QueryBuilder\QueryFactory;
+use Latitude\QueryBuilder\Engine\MySqlEngine;
 
 class Mysql implements RDInterface {
 	private $pool;
@@ -136,5 +139,14 @@ SQL_SUCCESS_RETURN:
 		} else {
 			return $result[$column];
 		}
+	}
+	/**
+	 * 获取Builder对象
+	 * 
+	 * @access public
+	 * @return object
+	 */
+	public static function getBuilder(): object {
+		return new QueryFactory(Container::getInstance()->get(MySqlEngine::class));
 	}
 }

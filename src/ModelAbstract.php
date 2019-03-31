@@ -12,48 +12,40 @@
 
 namespace Yesf;
 
-use Yesf\Database\Database;
+use function Latitude\QueryBuilder\field;
 use Yesf\Exception\Exception;
 use Yesf\Exception\DBException;
 
 abstract class ModelAbstract implements ModelInterface {
-	protected static $_table_name = '';
-	protected static $_primary_key = 'id';
-	public function __construct() {
+	protected $_table_name = '';
+	protected $_primary_key = 'id';
+	protected $driver;
+	public function __construct(RDInterface $driver) {
 		//检查table_name是否为空
-		if (empty(static::$_table_name)) {
+		if (empty($this->_table_name)) {
 			throw new Exception('Table name can not be empty');
 		}
+		$this->driver = $driver;
 	}
 	/**
 	 * 获取Builder实例类
 	 * @access public
 	 * @return object
 	 */
-	public static function builder() {
-		return Database::getBuilder();
+	public function getBuilder() {
+		return get_class($this->driver)::getBuilder();
 	}
-	public static function select() {
-		return static::builder()->newSelect()->from(static::$_table_name);
+	public function newSelect() {
+		return $this->getBuilder()->select()->from($this->_table_name);
 	}
-	public static function insert() {
-		return static::builder()->newInsert()->into(static::$_table_name);
+	public function newInsert() {
+		return $this->getBuilder()->insert($this->_table_name);
 	}
-	public static function update() {
-		return static::builder()->newUpdate()->table(static::$_table_name);
+	public function newUpdate() {
+		return $this->getBuilder()->update($this->_table_name);
 	}
-	public static function delete() {
-		return static::builder()->newDelete()->from(static::$_table_name);
-	}
-	/**
-	 * 执行一条SQL语句
-	 * @access public
-	 * @param string $sql
-	 * @param array $data
-	 * @return array
-	 */
-	public static function execute($sql, $data = []) {
-		return Database::get()->query($sql, $data);
+	public function newDelete() {
+		return $this->getBuilder()->delete($this->_table_name);
 	}
 	/**
 	 * 执行一条Builder的结果
@@ -61,9 +53,9 @@ abstract class ModelAbstract implements ModelInterface {
 	 * @param object $builder
 	 * @return array
 	 */
-	public static function executeBuilder($builder) {
-		list($st, $vals) = $builder->getStatementAndValues(true);
-		return static::execute($st, $vals);
+	public function execute($query) {
+		$query->compile();
+		return $this->driver->query($query->sql(), $query->params());
 	}
 	/**
 	 * 查询一条数据
@@ -71,29 +63,20 @@ abstract class ModelAbstract implements ModelInterface {
 	 * @param mixed $filter 当$filter为array时，则为多条条件，否则为主键
 	 * @param array $cols 需要查询出的列
 	 */
-	public static function get($filter, $cols = null) {
-		$query = static::select();
+	public function get($filter, $cols = null) {
+		$query = $this->newSelect();
 		if (is_array($cols)) {
-			$query->cols($cols);
+			$query->addColumns(...$cols);
 		}
 		if (!is_array($filter)) {
-			$key = static::$_primary_key;
-			$query->where($key . ' = :' . $key, [$key => $filter]);
+			$query->where(field($this->_primary_key)->eq($filter));
 		} else {
 			foreach ($filter as $k => $v) {
-				if (is_int($k)) {
-					if (is_array($v)) {
-						$query->where($v[0], $v[1]);
-					} else {
-						$query->where($v);
-					}
-				} else {
-					$query->where($k . ' = :' . $k, [$k => $v]);
-				}
+				$query->andWhere(field($k)->eq($v));
 			}
 		}
 		$query->limit(1);
-		$result = static::executeBuilder($query);
+		$result = $this->execute($query);
 		return count($result) > 0 ? current($result) : null;
 	}
 	/**
@@ -105,24 +88,16 @@ abstract class ModelAbstract implements ModelInterface {
 	 * @param array $cols 需要查询出的列
 	 * @return array
 	 */
-	public static function list($filter = [], $num = 30, $offset = 0, $cols = null) {
-		$query = static::select();
+	public function list($filter = [], $num = 30, $offset = 0, $cols = null) {
+		$query = $this->newSelect();
 		if (is_array($cols)) {
-			$query->cols($cols);
+			$query->addColumns(...$cols);
 		}
 		foreach ($filter as $k => $v) {
-			if (is_int($k)) {
-				if (is_array($v)) {
-					$query->where($v[0], $v[1]);
-				} else {
-					$query->where($v);
-				}
-			} else {
-				$query->where($k . ' = :' . $k, [$k => $v]);
-			}
+			$query->andWhere(field($k)->eq($v));
 		}
-		$query->limit($num)->offset($offset);
-		return static::executeBuilder($query);
+		$query->offset($offset)->limit($num);
+		return $this->execute($query);
 	}
 	/**
 	 * 修改一条或多条数据
@@ -135,7 +110,7 @@ abstract class ModelAbstract implements ModelInterface {
 	 * @param array $filter
 	 * @return int
 	 */
-	public static function set($set, $cols, $filter = null) {
+	public function set($set, $cols, $filter = null) {
 		if ($filter === null) {
 			$filter = &$cols;
 		} else {
@@ -146,30 +121,20 @@ abstract class ModelAbstract implements ModelInterface {
 				}
 			}
 		}
-		$query = static::update();
-		$query->cols($set);
+		$query = $this->newUpdate();
+		$query->set($set);
 		if ($filter !== true) {
 			if (is_string($filter) || is_numeric($filter)) {
-				$query->where(static::$_primary_key . ' = :' . static::$_primary_key, [
-					static::$_primary_key => $filter
-				]);
+				$query->where(field($this->_primary_key)->eq($filter));
 			} elseif (!is_array($filter) || count($filter) === 0) {
 				throw new DBException("Filter can not be empty");
 			} else {
 				foreach ($filter as $k => $v) {
-					if (is_int($k)) {
-						if (is_array($v)) {
-							$query->where($v[0], $v[1]);
-						} else {
-							$query->where($v);
-						}
-					} else {
-						$query->where($k . ' = :' . $k, [$k => $v]);
-					}
+					$query->andWhere(field($k)->eq($v));
 				}
 			}
 		}
-		$result = static::executeBuilder($query);
+		$result = $this->execute($query);
 		return intval($result['_affected_rows']);
 	}
 	/**
@@ -179,30 +144,20 @@ abstract class ModelAbstract implements ModelInterface {
 	 * @access public
 	 * @param array|string|int|boolean $filter
 	 */
-	public static function del($filter) {
-		$query = static::delete();
+	public function del($filter) {
+		$query = $this->newDelete();
 		if ($filter !== true) {
 			if (is_string($filter) || is_numeric($filter)) {
-				$query->where(static::$_primary_key . ' = :' . static::$_primary_key, [
-					static::$_primary_key => $filter
-				]);
+				$query->where(field($this->_primary_key)->eq($filter));
 			} elseif (!is_array($filter) || count($filter) === 0) {
 				throw new DBException("Filter can not be empty");
 			} else {
 				foreach ($filter as $k => $v) {
-					if (is_int($k)) {
-						if (is_array($v)) {
-							$query->where($v[0], $v[1]);
-						} else {
-							$query->where($v);
-						}
-					} else {
-						$query->where($k . ' = :' . $k, [$k => $v]);
-					}
+					$query->andWhere(field($k)->eq($v));
 				}
 			}
 		}
-		return static::executeBuilder($query);
+		return $this->execute($query);
 	}
 	/**
 	 * 添加数据
@@ -214,7 +169,7 @@ abstract class ModelAbstract implements ModelInterface {
 	 * @param array $cols
 	 * @return int/null
 	 */
-	public static function add(array $data, $cols = null) {
+	public function add(array $data, $cols = null) {
 		if (is_array($cols)) {
 			//筛选$data列
 			foreach ($data as $k => $v) {
@@ -223,9 +178,9 @@ abstract class ModelAbstract implements ModelInterface {
 				}
 			}
 		}
-		$query = static::insert()->cols($data);
-		$result = static::executeBuilder($query);
-		if (!empty(static::$_primary_key)) {
+		$query = $this->newInsert()->map($data);
+		$result = $this->execute($query);
+		if (!empty($this->_primary_key)) {
 			return intval($result['_insert_id']);
 		} else {
 			return null;
