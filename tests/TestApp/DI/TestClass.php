@@ -14,7 +14,6 @@ class TestClass {
 	/** @Autowired TestApp\DI\ClassOne */
 	private $one;
 
-	/** @Autowired TestApp\DI\ClassTwo */
 	private $two;
 
 	public $obj1_from_constructor;
@@ -40,7 +39,7 @@ class TestClass {
 		$this->plain_var_with_default = $plain_var_with_default;
 	}
 
-	public function setTwo($obj) {
+	public function setTwo(\TestApp\DI\ClassTwo $obj) {
 		$this->two = $obj;
 	}
 	public function getTwo() {
