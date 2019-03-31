@@ -24,7 +24,9 @@ main() {
 	nvm install $node_ver
 	nvm use $node_ver
 	nvm alias default $node_ver
+	npm install -g npm@latest
 	node --version
+	npm -v
 
 	cd $TRAVIS_BUILD_DIR
 	mkdir -p build/www
