@@ -137,7 +137,7 @@ class Container implements ContainerInterface {
 						$init_params[] = $value;
 					} else {
 						$from[] = $typeName;
-						$init_params[] = $this->get($typeName, false, $from);
+						$init_params[] = $this->get($typeName);
 					}
 				} else {
 					$init_params[] = null;
@@ -153,18 +153,34 @@ class Container implements ContainerInterface {
 			if ($property->isStatic()) {
 				continue;
 			}
-			$comment = $property->getDocComment();
-			$is_autowire = preg_match('/@Autowired\s+([\w\\\\]+)\s+/', $comment, $autowire);
-			if ($is_autowire) {
-				// Using getter and setter
-				$propertyName = $property->getName();
-				$setter = 'set' . ucfirst($propertyName);
-				$getter = 'get' . ucfirst($propertyName);
-				if (method_exists($instance, $setter) && method_exists($instance, $getter)) {
-					if ($instance->$getter() === null) {
+			// Using getter and setter
+			$propertyName = $property->getName();
+			$setter = 'set' . ucfirst($propertyName);
+			$getter = 'get' . ucfirst($propertyName);
+			if (method_exists($instance, $setter) && method_exists($instance, $getter)) {
+				if ($instance->$getter() === null) {
+					$setter_ref = $ref->getMethod($setter);
+					$is_autowire = preg_match('/@Autowired\s+([\w\\\\]+)\s+/', $setter_ref->getDocComment(), $autowire);
+					if ($is_autowire) {
 						$instance->$setter($this->get($autowire[1]));
+					} else {
+						$params = $setter_ref->getParameters();
+						$param = $params[0];
+						if ($param->hasType()) {
+							$type = $param->getType();
+							if (class_exists('ReflectionNamedType') && $type instanceof \ReflectionNamedType) {
+								$typeName = $type->getName();
+							} else {
+								$typeName = $type->__toString();
+							}
+							$instance->$setter($this->get($typeName));
+						}
 					}
-				} else {
+				}
+			} else {
+				$comment = $property->getDocComment();
+				$is_autowire = preg_match('/@Autowired\s+([\w\\\\]+)\s+/', $comment, $autowire);
+				if ($is_autowire) {
 					$is_public = $property->isPublic();
 					if (!$is_public) {
 						$property->setAccessible(true);
