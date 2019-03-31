@@ -10,8 +10,10 @@
  * @license https://yesf.sylibs.com/license
  */
 namespace Yesf\Log;
+
 use Yesf\Yesf;
 use Yesf\DI\Container;
+use Psr\Log\LoggerInterface;
 use Psr\Log\LoggerAwareInterface;
 
 class Logger implements LoggerAwareInterface {
