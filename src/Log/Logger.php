@@ -53,14 +53,21 @@ class Logger implements LoggerAwareInterface {
 		return $name;
 	}
 	public function __construct() {
+		$className = null;
 		switch (Yesf::app()->getConfig('logger.adapter')) {
 			case 'saeslog':
-				$this->setLogger(Container::getInstance()->get(\Yesf\Log\Adapter\SeasLog::class));
+				$className = \Yesf\Log\Adapter\SeasLog::class;
+				break;
+			case 'file':
+				$className = \Yesf\Log\Adapter\File::class;
 				break;
 			case 'syslog':
 			default:
-				$this->setLogger(Container::getInstance()->get(\Yesf\Log\Adapter\SeasLog::class));
+				$className = \Yesf\Log\Adapter\Syslog::class;
 				break;
+		}
+		if ($className !== null) {
+			$this->setLogger(Container::getInstance()->get($className));
 		}
 	}
 	public function setLogger(LoggerInterface $logger) {
