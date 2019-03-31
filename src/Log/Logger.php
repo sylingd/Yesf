@@ -11,33 +11,35 @@
  */
 namespace Yesf\Log;
 use Yesf\Yesf;
-use Psr\Log\LoggerInterface;
+use Yesf\DI\Container;
 use Psr\Log\LoggerAwareInterface;
 
 class Logger implements LoggerAwareInterface {
-	const LOG_LEVEL = [
-		'debug' => 0,
-		'info' => 1,
-		'notice' => 2,
-		'warning' => 3,
-		'error' => 4,
-		'critical' => 5,
-		'alert' => 6,
-		'emergency' => 7
-	];
+	const LOG_DEBUG = 0;
+	const LOG_INFO = 1;
+	const LOG_NOTICE = 2;
+	const LOG_WARNING = 3;
+	const LOG_ERROR = 4;
+	const LOG_CRITICAL = 5;
+	const LOG_ALERT = 6;
+	const LOG_EMERGENCY = 7;
 	private $logger = null;
-	public static function should($level) {
+	public static function check($check) {
 		static $level = null;
 		if ($level === null) {
 			$level = Yesf::app()->getConfig('logger.level');
 			if ($level === 'none') {
 				return false;
 			}
-			$level = ($level && isset(self::LOG_LEVEL[$level])) ? self::LOG_LEVEL[$level] : 3;
+			if (defined(self::class . '::LOG_' . strtoupper($level))) {
+				$level = constant(self::class . '::LOG_' . strtoupper($level));
+			} else {
+				$level = self::LOG_WARNING;
+			}
 		}
-		return isset(self::LOG_LEVEL[$type]) && self::LOG_LEVEL[$type] >= $level;
+		return $check >= $level;
 	}
-	public static function getLogName() {
+	public static function getName() {
 		static $name = null;
 		if ($name === null) {
 			if (Yesf::app()->getConfig('logger.name')) {
@@ -49,7 +51,15 @@ class Logger implements LoggerAwareInterface {
 		return $name;
 	}
 	public function __construct() {
-		//$logger
+		switch (Yesf::app()->getConfig('logger.adapter')) {
+			case 'saeslog':
+				$this->setLogger(Container::getInstance()->get(\Yesf\Log\Adapter\SeasLog::class));
+				break;
+			case 'syslog':
+			default:
+				$this->setLogger(Container::getInstance()->get(\Yesf\Log\Adapter\SeasLog::class));
+				break;
+		}
 	}
 	public function setLogger(LoggerInterface $logger) {
 		$this->logger = $logger;
@@ -60,6 +70,6 @@ class Logger implements LoggerAwareInterface {
 		}
 	}
 	public static function __callStatic($name, $arguments) {
-		//
+		Container::getInstance()->get(self::class)->$name(...$arguments);
 	}
 }
