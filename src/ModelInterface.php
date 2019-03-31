@@ -17,4 +17,5 @@ use Yesf\Exception\Exception;
 use Yesf\Exception\DBException;
 
 interface ModelInterface {
+	public function __construct(RDInterface $driver);
 }

@@ -146,7 +146,7 @@ SQL_SUCCESS_RETURN:
 	 * @access public
 	 * @return object
 	 */
-	public static function getBuilder(): object {
+	public static function getBuilder() {
 		return new QueryFactory(Container::getInstance()->get(MySqlEngine::class));
 	}
 }

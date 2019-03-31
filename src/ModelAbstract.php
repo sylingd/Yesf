@@ -13,10 +13,11 @@
 namespace Yesf;
 
 use function Latitude\QueryBuilder\field;
+use Yesf\RD\RDInterface;
 use Yesf\Exception\Exception;
 use Yesf\Exception\DBException;
 
-abstract class ModelAbstract implements ModelInterface {
+abstract class ModelAbstract {
 	protected $_table_name = '';
 	protected $_primary_key = 'id';
 	protected $driver;

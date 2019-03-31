@@ -47,5 +47,5 @@ interface RDInterface {
 	 * @access public
 	 * @return string/object
 	 */
-	public static function getBuilder(): object;
+	public static function getBuilder();
 }
