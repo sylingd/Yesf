@@ -227,7 +227,7 @@ b.light-color {
 .main-area .tips {
 	display: none;
 	width: 300px;
-	margin: 0 auto;
+	margin: 10px auto;
 	background: rgba(0, 0, 0, 0.4);
 	border-radius: 5px;
 	padding: 10px;

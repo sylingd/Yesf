@@ -7,7 +7,7 @@ main() {
 		return 0
 	fi
 	# Only first build job
-	if [[ "$TRAVIS_JOB_NUMBER" =~ \.1$ ]];then
+	if ! [[ "$TRAVIS_JOB_NUMBER" =~ \.1$ ]];then
 		echo -e "Not first build job, skip deploy www\n"
 		return 0
 	fi
