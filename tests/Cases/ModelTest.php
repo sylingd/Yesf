@@ -40,9 +40,8 @@ class ModelTest extends TestCase {
 			'name' => $name,
 			'password' => $password_hashed
 		]);
-		$this->assertEquals(1, $res['_affected_rows']);
-		$this->assertTrue(isset($res['_insert_id']));
-		$selected = self::$pdo->query('SELECT * FROM `user` WHERE id = ' . $res['_insert_id'])->fetch(PDO::FETCH_ASSOC);
+		$this->assertNotNull($res);
+		$selected = self::$pdo->query('SELECT * FROM `user` WHERE id = ' . $res)->fetch(PDO::FETCH_ASSOC);
 		$this->assertSame($name, $selected['name']);
 		$this->assertTrue(password_verify($password, $selected['password']));
 	}

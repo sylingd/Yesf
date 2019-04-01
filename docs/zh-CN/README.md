@@ -24,20 +24,35 @@ Yesf是基于Swoole 4.0+，主要针对网站而编写的框架。具有以下�
 目前Yesf命名规范如下：
 
 ### 类库命名
-1.所有类库均在`yesf\library`命名空间下
-2.所有类库均在`library`目录下
-3.类的命名都遵循大驼峰命名法
-4.方法的命名均为小驼峰命名法
+
+* 所有类库均在`Yesf\\`命名空间下
+
+* 遵循PSR-1，类的命名都遵循大驼峰命名法，方法的命名均为小驼峰命名法
 
 ### 变量命名
-1.大部分变量都遵循小驼峰命名法
-2.部分变量以“_”（下划线）开头时，会遵循以下划线分割的命名法则
+* 大部分变量都遵循小驼峰命名法
 
-### 常量命名
-1.框架的基本常量均以`YESF_`开头
-2.其他常量均位于`yesf\Constant`中，且基本遵循“模块\_类型\_描述”的命名法，例如“ROUTER_ERR_CONTROLLER”
+* 部分变量以“_”（下划线）开头时，会遵循以下划线分割的命名法则
 
 ### 其他特殊命名
-1.用于继承的抽象类，名称均为“名称 + Abstract”，例如`SimpleAbstract`
-2.用于规范的接口，名称均为“名称 + Interface”，例如`SimpleInterface`
 
+* 抽象类名称均为“名称 + Abstract”，例如`SimpleAbstract`
+
+* Trait名称均为“名称 + Trait”，例如`SimpleTrait`
+
+* 接口名称均为“名称 + Interface”，例如`SimpleInterface`
+
+# PSR规范
+
+目前遵循以下PSR规范：
+
+* [PSR-1: Basic Coding Standard](https://www.php-fig.org/psr/psr-1/)
+* [PSR-3: Logger Interface](https://www.php-fig.org/psr/psr-3/)
+* [PSR-4: Autoloader](https://www.php-fig.org/psr/psr-4/)
+* [PSR-11: Container interface](https://www.php-fig.org/psr/psr-11/)
+* [PSR-16: Simple Cache](https://www.php-fig.org/psr/psr-16/)
+
+已经确定不会遵循或不完全遵循的PSR规范有：
+
+* PSR-2: Coding Style Guide 与作者编码习惯有一些差别，不完全遵循
+* PSR-6: Caching Interface 过于繁琐
