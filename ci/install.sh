@@ -28,6 +28,8 @@ main() {
 	phpenv config-add $TRAVIS_BUILD_DIR/ci/config/swoole.ini
 
 	# Install SeasLog
+	mkdir -p /var/log/www
+	chmod -R 0777 /var/log/www
 	cd $stage
 	wget -O seaslog.tar.gz https://github.com/SeasX/SeasLog/archive/SeasLog-${seaslog_ver}.tar.gz
 	tar -zxf seaslog.tar.gz
