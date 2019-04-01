@@ -1,6 +1,7 @@
 <?php
 namespace YesfTest;
 
+use PDO;
 use PHPUnit\Framework\TestCase;
 use Yesf\Yesf;
 use Yesf\DI\Container;
