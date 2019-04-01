@@ -1,9 +1,4 @@
-/* ---------------------------------
-1. PRIMARY STYLES
---------------------------------- */
-
 html {
-	font-size: 100%;
 	height: 100%;
 	width: 100%;
 	overflow-x: hidden;
@@ -163,11 +158,6 @@ b.light-color {
 	box-sizing: inherit;
 }
 
-
-/* ---------------------------------
-2. COMMONS FOR PAGE DESIGN
---------------------------------- */
-
 .center-text {
 	text-align: center;
 }
@@ -213,15 +203,16 @@ b.light-color {
 
 .main-area .button {
 	margin: 5px;
-	padding: 13px 35px;
+	padding: 15px 25px;
 	border-radius: 50px;
-	border: 2px solid #F84982;
 	color: #fff;
 	background: #F84982;
+	min-width: 140px;
 }
 
 .main-area .button:hover {
-	background: none;
+	background: rgba(255, 255, 255, 0.9);
+	color: #F84982;
 }
 
 .main-area .tips {
@@ -236,7 +227,7 @@ b.light-color {
 
 .main-area .social-btn {
 	position: absolute;
-	bottom: 30px;
+	bottom: 20px;
 	width: 100%;
 	left: 50%;
 	transform: translateX(-50%);
@@ -257,5 +248,5 @@ b.light-color {
 }
 
 .main-area .social-btn>li>a:hover>i {
-	background: #fff !important;
+	background: rgba(255, 255, 255, 0.9);
 }
