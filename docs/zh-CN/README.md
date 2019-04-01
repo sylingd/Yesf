@@ -7,17 +7,17 @@
 [![Gitee stars](https://gitee.com/sy/Yesf/badge/star.svg?theme=dark)](https://gitee.com/sy/Yesf)
 [![license](https://img.shields.io/github/license/sylingd/Yesf.svg)](https://github.com/sylingd/Yesf/blob/master/LICENSE)
 
-Yesf是基于Swoole 4.0+，主要针对网站而编写的框架。具有以下优点：
-1.高性能
-2.灵活的自动加载
-3.灵活可扩展
-4.内建多种路由, 可以兼容目前常见的各种路由协议
-5.支持多种配置方式
-同时，Yesf基于Swoole，因此还支持TCP监听、UDP监听、异步任务等功能
+Yesf是基于Swoole 4.0+的框架。具有以下优点：
+
+* 高性能
+* 灵活、扩展能力强
+* 单元测试覆盖
+
+Yesf基于Swoole，因此还支持TCP监听、UDP监听、异步任务等功能
 
 # 文档说明
 
-本文档对应Yesf版本为`1.0.0-rc9`，如有错误请提交issue至[GitHub](https://github.com/sylingd/Yesf/issues/new)或[Gitee](https://gitee.com/sy/Yesf/issues/new)
+本文档对应Yesf版本为`2.0.0`，如有错误请提交issue至[GitHub](https://github.com/sylingd/Yesf/issues/new)或[Gitee](https://gitee.com/sy/Yesf/issues/new)
 
 # 命名规范
 
@@ -26,20 +26,17 @@ Yesf是基于Swoole 4.0+，主要针对网站而编写的框架。具有以下�
 ### 类库命名
 
 * 所有类库均在`Yesf\\`命名空间下
-
 * 遵循PSR-1，类的命名都遵循大驼峰命名法，方法的命名均为小驼峰命名法
 
 ### 变量命名
-* 大部分变量都遵循小驼峰命名法
 
+* 大部分变量都遵循小驼峰命名法
 * 部分变量以“_”（下划线）开头时，会遵循以下划线分割的命名法则
 
 ### 其他特殊命名
 
 * 抽象类名称均为“名称 + Abstract”，例如`SimpleAbstract`
-
 * Trait名称均为“名称 + Trait”，例如`SimpleTrait`
-
 * 接口名称均为“名称 + Interface”，例如`SimpleInterface`
 
 # PSR规范
