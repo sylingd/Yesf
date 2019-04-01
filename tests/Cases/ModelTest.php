@@ -2,6 +2,7 @@
 namespace YesfTest;
 
 use PHPUnit\Framework\TestCase;
+use Yesf\Yesf;
 use Yesf\DI\Container;
 use YesfApp\Model\User;
 
@@ -22,8 +23,6 @@ class ModelTest extends TestCase {
 		$user = self::$pdo->query('SELECT * FROM `user` LIMIT 0,1')->fetch(PDO::FETCH_ASSOC);
 		$res = self::$model->get($user['id']);
 		$this->assertSame($user['name'], $res['name']);
-	}
-	public function testList() {
 	}
 	public function testSet() {
 		$user = self::$pdo->query('SELECT * FROM `user` LIMIT 0,1')->fetch(PDO::FETCH_ASSOC);
