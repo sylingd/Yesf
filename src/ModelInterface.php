@@ -12,6 +12,7 @@
 
 namespace Yesf;
 
+use Yesf\RD\RDInterface;
 use Yesf\Database\Database;
 use Yesf\Exception\Exception;
 use Yesf\Exception\DBException;
