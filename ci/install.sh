@@ -4,6 +4,7 @@ main() {
 	swoole_ver="4.2.13"
 	hiredis_ver="0.14.0"
 	yac_ver="2.0.2"
+	seaslog_ver="2.0.2"
 	stage=$(mktemp -d)
 
 	# Install hiredis
@@ -24,7 +25,18 @@ main() {
 	./configure --enable-sockets=yes --enable-openssl=yes --enable-mysqlnd=yes
 	make -j4
 	sudo make install
-	echo "extension = swoole.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+	phpenv config-add $TRAVIS_BUILD_DIR/ci/config/swoole.ini
+
+	# Install SeasLog
+	cd $stage
+	wget -O seaslog.tar.gz https://github.com/SeasX/SeasLog/archive/SeasLog-${seaslog_ver}.tar.gz
+	tar -zxf seaslog.tar.gz
+	cd SeasLog-SeasLog-${seaslog_ver}
+	phpize
+	./configure
+	make -j4
+	sudo make install
+	phpenv config-add $TRAVIS_BUILD_DIR/ci/config/seaslog.ini
 
 	# Install Yac
 	can_install_yac=$(php -r "echo version_compare(PHP_VERSION, '7.3');")
@@ -37,9 +49,7 @@ main() {
 		./configure
 		make -j4
 		sudo make install
-		echo "extension = yac.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-		echo "yac.enable = On" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-		echo "yac.enable_cli = On" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+		phpenv config-add $TRAVIS_BUILD_DIR/ci/config/yac.ini
 	else
 		echo -e "Skip install Yac\n"
 	fi
