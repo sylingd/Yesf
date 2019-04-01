@@ -2,9 +2,11 @@
 
 目前自带以下缓存支持库：
 
-* Redis
-* Yac
-* 文件缓存
+* [Redis](redis.md)
+* [文件](file.md)
+* [Yac](yac.md)
+
+您也可以[自定义缓存支持库](custom.md)
 
 ## 配置默认缓存
 
