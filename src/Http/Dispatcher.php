@@ -23,34 +23,11 @@ class Dispatcher {
 	const ROUTE_ERR_CONTROLLER = 2;
 	const ROUTE_ERR_ACTION = 3;
 
-	private static $modules = null;
-	private static $default_module = 'index';
-	private static $default_action = 'index';
-	private static $default_controller = 'index';
-	public static function init() {
-		self::$modules = Yesf::getProjectConfig('modules');
-		self::setDefaultModule(Yesf::getProjectConfig('module'));
-	}
-	/**
-	 * 设置默认模块
-	 * @param string $module
-	 */
-	public static function setDefaultModule($module) {
-		self::$default_module = $module;
-	}
-	/**
-	 * 设置默认控制器
-	 * @param string $controller
-	 */
-	public static function setDefaultController($controller) {
-		self::$default_controller = $controller;
-	}
-	/**
-	 * 设置默认功能
-	 * @param string $action
-	 */
-	public static function setDefaultAction($action) {
-		self::$default_action = $action;
+	private $router;
+	private $modules;
+	public function __construct(Router $router) {
+		$this->router = $router;
+		$this->modules = Yesf::getProjectConfig('modules');
 	}
 	/**
 	 * 判断路由是否合法
@@ -60,8 +37,8 @@ class Dispatcher {
 	 * @param string $action
 	 * @return int
 	 */
-	public static function isValid($module, $controller, $action) {
-		if (!in_array($module, self::$modules, true)) {
+	public function isValid($module, $controller, $action) {
+		if (!in_array($module, $this->modules, true)) {
 			return self::ROUTE_ERR_MODULE;
 		}
 		$className = GetEntryUtil::controller($module, $controller);
@@ -75,98 +52,101 @@ class Dispatcher {
 		return self::ROUTE_VALID;
 	}
 	/**
-	 * Get module, controller and action
+	 * Set router
 	 */
-	private static function getRouteInfo($route) {
-		$module = empty($routeInfo['module']) ? self::$default_module : ucfirst($routeInfo['module']);
-		$controller = empty($routeInfo['controller']) ? self::$default_controller : ucfirst($routeInfo['controller']);
-		$action = empty($routeInfo['action']) ? self::$default_action : ucfirst($routeInfo['action']);
-		return [$module, $controller, $action];
+	public function setRouter(RouterInterface $router) {
+		$this->router = $router;
+	}
+	public function handleRequest(Request $req, Response $res) {
+		if (Plugin::trigger('beforeRoute', [$uri]) === null) {
+			$this->router->parse($req);
+		}
+		$result = null;
+		//触发beforeDispatcher事件
+		if (Plugin::trigger('beforeDispatch', [$request, $response]) === null) {
+			$result = $this->dispatch($req, $res);
+		}
+		//触发afterDispatcher事件
+		Plugin::trigger('afterDispatch', [$request, $response, $result]);
 	}
 	/**
 	 * 进行路由分发
 	 * @codeCoverageIgnore
 	 * @access public
 	 * @param array $routeInfo 路由信息
-	 * @param object $request 经过Yesf封装的请求内容
-	 * @param object $res 来自Swoole的响应对象
+	 * @param object $request 请求内容
+	 * @param object $response 响应对象
 	 * @return mixed
 	 */
-	public static function dispatch($routeInfo, $request, $res) {
+	public function dispatch(Request $request, Response $response) {
 		$result = null;
-		list($module, $controller, $action) = self::getRouteInfo($routeInfo);
-		$viewDir = APP_PATH . 'Module/' . $module . '/View/';
-		$response = new Response($res, $controller . '/' . $action, $viewDir);
+		$module = ucfirst($request->module);
+		$controller = ucfirst($request->controller);
+		$action = ucfirst($request->action);
+		$response->setTemplate($controller . '/' . $action);
+		$response->setTemplatePath(APP_PATH . 'Module/' . $module . '/View/');
 		if (!empty($request->extension)) {
 			$response->mimeType($request->extension);
 		}
 		$result = null;
 		try {
-			//触发beforeDispatcher事件
-			$arr = [$module, $controller, $action, $request, $response];
-			$is_continue = Plugin::trigger('beforeDispatcher', $arr);
-			if ($is_continue === null) {
-				$code = self::isValid($module, $controller, $action);
-				if ($code === self::ROUTE_VALID) {
-					$className = GetEntryUtil::controller($module, $controller);
-					if (!Container::getInstance()->has($className)) {
-						return self::ROUTE_ERR_CONTROLLER;
-					}
-					$clazz = Container::getInstance()->get($className);
-					$actionName = $action . 'Action';
-					$result = $clazz->$actionName($request, $response);
-				} else {
-					// Not found
-					self::handleNotFound($module, $controller, $action, $request, $response);
+			$code = self::isValid($module, $controller, $action);
+			if ($code === self::ROUTE_VALID) {
+				$className = GetEntryUtil::controller($module, $controller);
+				if (!Container::getInstance()->has($className)) {
+					return self::ROUTE_ERR_CONTROLLER;
 				}
+				$clazz = Container::getInstance()->get($className);
+				$actionName = $action . 'Action';
+				$result = $clazz->$actionName($request, $response);
+			} else {
+				// Not found
+				self::handleNotFound($request, $response);
 			}
 		} catch (\Throwable $e) {
-			$result = self::handleDispathException($module, $controller, $action, $request, $response, $e);
+			$result = self::handleDispathException($request, $response, $e);
 		}
 		$response->end();
-		unset($request, $response, $response);
+		unset($request, $response);
 		return $result;
 	}
-	private static function handleNotFound($module, $controller, $action, $request, $response) {
-		$arr = [$module, $controller, $action, $request, $yesf_response];
+	private static function handleNotFound($request, $response) {
+		$arr = [$request, $yesf_response];
 		if (Plugin::trigger('dispatchFailed', $arr) === null) {
 			$response->status(404);
 			$response->disableView();
 			$response->setCurrentTemplateEngine(Template::class);
 			if (Yesf::app()->getEnvironment() === 'develop') {
-				$response->assign('module', $module);
-				$response->assign('controller', $controller);
-				$response->assign('action', $action);
+				$response->assign('module', $request->module);
+				$response->assign('controller', $request->controller);
+				$response->assign('action', $request->action);
 				$response->assign('code', $code);
-				$response->assign('req', $request);
+				$response->assign('request', $request);
 				$response->display(YESF_ROOT . 'Data/error_404_debug.php', true);
 			} else {
 				$response->display(YESF_ROOT . 'Data/error_404.php', true);
 			}
 		}
 	}
-	private static function handleDispathException($module, $controller, $action, $request, $response, $e) {
+	private static function handleDispathException($request, $response, $exception) {
 		//日志记录
 		Logger::error('Uncaught exception: ' . $e->getMessage() . '. Trace: ' . $e->getTraceAsString());
 		//触发失败事件
-		$arr = [$module, $controller, $action, $request, $response, $e];
+		$arr = [$request, $response, $exception];
 		if (Plugin::trigger('dispatchFailed', $arr) === null) {
 			//如果用户没有自行处理，输出默认模板
 			$response->disableView();
 			$response->setCurrentTemplateEngine(Template::class);
 			if (Yesf::app()->getEnvironment() === 'develop') {
-				$response->assign('module', $module);
-				$response->assign('controller', $controller);
-				$response->assign('action', $action);
-				$response->assign('e', $e);
-				$response->assign('req', $request);
+				$response->assign('module', $request->module);
+				$response->assign('controller', $request->controller);
+				$response->assign('action', $request->action);
+				$response->assign('exception', $exception);
+				$response->assign('request', $request);
 				$response->display(YESF_ROOT . 'Data/error_debug.php', true);
 			} else {
 				$response->display(YESF_ROOT . 'Data/error.php', true);
 			}
 		}
-		//触发afterDispatcher事件
-		$arr = [$module, $controller, $action, $request, $response];
-		return Plugin::trigger('afterDispatcher', $arr);
 	}
 }

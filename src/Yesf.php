@@ -28,12 +28,6 @@ set_error_handler(function($errno, $errstr, $errfile, $errline, $errcontext) {
 }, E_WARNING | E_USER_ERROR | E_USER_WARNING | E_DEPRECATED | E_USER_DEPRECATED);
 
 class Yesf {
-	/**
-	 * 基本路径
-	 * 在进行路由解析时会忽略此前缀。默认为/，即根目录
-	 * 一般不会有此需要，仅当程序处于网站二级目录时会用到
-	 */
-	protected static $base_uri = '/';
 	//缓存namespace
 	protected static $app_namespace = null;
 	//单例化
@@ -192,12 +186,6 @@ class Yesf {
 	}
 	public function getEnvironment() {
 		return $this->environment;
-	}
-	public static function setBaseUri($uri) {
-		self::$base_uri = $uri;
-	}
-	public static function getBaseUri() {
-		return self::$base_uri;
 	}
 	public static function getAppNamespace() {
 		return self::$app_namespace;

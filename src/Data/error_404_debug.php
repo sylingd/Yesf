@@ -81,42 +81,43 @@ use Yesf\Http\Dispatcher;
 			<tr><td class="name">module</td><td><?=htmlspecialchars($module)?></td></tr>
 			<tr><td class="name">controller</td><td><?=htmlspecialchars($controller)?></td></tr>
 			<tr><td class="name">action</td><td><?=htmlspecialchars($action)?></td></tr>
-			<tr><td class="name">request_uri</td><td><?=htmlspecialchars($req->request_uri)?></td></tr>
-			<tr><td class="name">extension</td><td><?=htmlspecialchars($req->extension)?></td></tr>
-			<tr><td class="name">param</td><td><?=htmlspecialchars(var_export($req->param, true))?></td></tr>
+			<tr><td class="name">request_uri</td><td><?=htmlspecialchars($request->server['request_uri'])?></td></tr>
+			<tr><td class="name">uri</td><td><?=htmlspecialchars($request->uri)?></td></tr>
+			<tr><td class="name">extension</td><td><?=htmlspecialchars($request->extension)?></td></tr>
+			<tr><td class="name">param</td><td><?=htmlspecialchars(var_export($request->param, true))?></td></tr>
 		</table>
 		<div class="title">Server</div>
 		<table>
-			<?php foreach ($req->server as $k => $v) { ?>
+			<?php foreach ($request->server as $k => $v) { ?>
 			<tr><td class="name"><?=htmlspecialchars($k)?></td><td><?=htmlspecialchars($v)?></td></tr>
 			<?php } ?>
 		</table>
 		<div class="title">Header</div>
 		<table>
-			<?php foreach ($req->header as $k => $v) { ?>
+			<?php foreach ($request->header as $k => $v) { ?>
 			<tr><td class="name"><?=htmlspecialchars($k)?></td><td><?=htmlspecialchars($v)?></td></tr>
 			<?php } ?>
 		</table>
-		<?php if (is_array($req->get)) { ?>
+		<?php if (is_array($request->get)) { ?>
 		<div class="title">Get</div>
 		<table>
-			<?php foreach ($req->get as $k => $v) { ?>
+			<?php foreach ($request->get as $k => $v) { ?>
 			<tr><td class="name"><?=htmlspecialchars($k)?></td><td><?=htmlspecialchars($v)?></td></tr>
 			<?php } ?>
 		</table>
 		<?php } ?>
-		<?php if (is_array($req->post)) { ?>
+		<?php if (is_array($request->post)) { ?>
 		<div class="title">Post</div>
 		<table>
-			<?php foreach ($req->post as $k => $v) { ?>
+			<?php foreach ($request->post as $k => $v) { ?>
 			<tr><td class="name"><?=htmlspecialchars($k)?></td><td><?=htmlspecialchars($v)?></td></tr>
 			<?php } ?>
 		</table>
 		<?php } ?>
-		<?php if (is_array($req->cookie)) { ?>
+		<?php if (is_array($request->cookie)) { ?>
 		<div class="title">Cookie</div>
 		<table>
-			<?php foreach ($req->cookie as $k => $v) { ?>
+			<?php foreach ($request->cookie as $k => $v) { ?>
 			<tr><td class="name"><?=htmlspecialchars($k)?></td><td><?=htmlspecialchars($v)?></td></tr>
 			<?php } ?>
 		</table>

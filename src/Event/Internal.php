@@ -14,7 +14,6 @@ namespace Yesf\Event;
 use Yesf\Yesf;
 use Yesf\Helper;
 use Yesf\Log\Logger;
-use Yesf\Http\Dispatcher;
 use Yesf\Http\Response;
 use Yesf\Connection\Pool;
 
@@ -23,7 +22,6 @@ class Internal {
 		Yesf::app()->loadEnvConfig();
 		Yesf::loadProjectConfig();
 		Logger::init();
-		Dispatcher::init();
 		Response::init();
 		Response::initInWorker();
 		Pool::init();

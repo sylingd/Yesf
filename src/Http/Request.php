@@ -17,6 +17,9 @@ class Request {
 	private $sw_request;
 	private $extra_infos = [];
 	public $extension = null;
+	public $module = null;
+	public $controller = null;
+	public $action = null;
 	public $param = [];
 	public $request_uri = '';
 	public function __construct($sw_request) {
@@ -31,8 +34,8 @@ class Request {
 		}
 		if (isset($this->sw_request->{$name})) {
 			return $this->sw_request->{$name};
-		 }
-		 return null;
+		}
+		return null;
 	}
 	public function __isset($name) {
 		return isset($this->extra_infos[$name]) || isset($this->sw_request->{$name});

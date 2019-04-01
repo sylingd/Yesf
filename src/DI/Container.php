@@ -81,6 +81,8 @@ class Container implements ContainerInterface {
 			if ($source instanceof \Closure) {
 				$source->bindTo($this);
 				return $source();
+			} elseif (is_object($source)) {
+				return $source;
 			} else {
 				throw new NotFoundException("Class $id not found");
 			}

@@ -97,16 +97,17 @@ class Response {
 	 * 
 	 * @access public
 	 * @param object $response Swoole的Response
-	 * @param string $tpl_path 模板路径
 	 */
-	public function __construct($response, $tpl_default = null, $tpl_path = null) {
+	public function __construct($response) {
 		$this->sw_response = $response;
-		$this->tpl_default = $tpl_default;
-		if ($tpl_path === null) {
-			$tpl_path = APP_PATH . 'View/';
-		}
-		$this->tpl_path = $tpl_path;
+		$this->tpl_path = APP_PATH . 'View/';
 		$this->tpl_engine_obj = Container::getInstance()->get(self::$tpl_engine);
+	}
+	public function setTemplatePath($path) {
+		$this->tpl_path = $path;
+	}
+	public function setTemplate($name) {
+		$this->tpl_default = $name;
 	}
 	/**
 	 * 关闭模板自动渲染
@@ -123,7 +124,10 @@ class Response {
 	 * @param string $tpl 模板路径
 	 * @param boolean $is_abs_path 是否为绝对路径
 	 */
-	public function display($tpl, $is_abs_path = false) {
+	public function display($tpl = null, $is_abs_path = false) {
+		if ($tpl === null) {
+			$tpl = $this->tpl_default;
+		}
 		$data = $this->render($tpl, $is_abs_path);
 		if (!empty($data)) $this->write($data);
 	}
@@ -269,7 +273,7 @@ class Response {
 		$this->is_end = true;
 		if ($this->sw_response) {
 			if (($this->tpl_auto === null && self::$tpl_auto_config) || $this->tpl_auto) {
-				$this->display($this->tpl_default);
+				$this->display();
 			}
 			$this->sw_response->end();
 			$this->sw_response = null;

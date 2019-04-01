@@ -16,7 +16,8 @@ class ResponseTest extends TestCase {
 	}
 	public function testDefaultTemplate() {
 		$resp = clone self::$fake_resp;
-		$response = new Response($resp, 'Index');
+		$response = new Response($resp);
+		$response->setTemplate('Index');
 		$id1 = uniqid();
 		$response->assign('id', $id1);
 		$response->clearAssign();
@@ -28,7 +29,8 @@ class ResponseTest extends TestCase {
 	}
 	public function testAbsTemplate() {
 		$resp = clone self::$fake_resp;
-		$response = new Response($resp, 'Other');
+		$response = new Response($resp);
+		$response->setTemplate('Other');
 		$response->disableView();
 		$id = uniqid();
 		$response->assign('id', $id);
@@ -39,7 +41,8 @@ class ResponseTest extends TestCase {
 	}
 	public function testCustomEngine() {
 		$resp = clone self::$fake_resp;
-		$response = new Response($resp, 'Custom');
+		$response = new Response($resp);
+		$response->setTemplate('Custom');
 		$response->setCurrentTemplateEngine(CustomEngine::class);
 		$prefix = uniqid();
 		$response->getTemplate()->setPrefix($prefix);
