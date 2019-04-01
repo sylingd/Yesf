@@ -136,7 +136,6 @@ class Container implements ContainerInterface {
 						settype($value, $typeName);
 						$init_params[] = $value;
 					} else {
-						$from[] = $typeName;
 						$init_params[] = $this->get($typeName);
 					}
 				} else {
