@@ -55,7 +55,7 @@ abstract class ModelAbstract {
 	 * @return array
 	 */
 	public function execute($query) {
-		$query->compile();
+		$query = $query->compile();
 		return $this->driver->query($query->sql(), $query->params());
 	}
 	/**
