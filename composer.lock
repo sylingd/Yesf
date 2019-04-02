@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e0ff8ff5421ef69b4b66f1b5d520164a",
+    "content-hash": "f8a9fb3d21fb9f4b05de83f3d36d9794",
     "packages": [
         {
             "name": "latitude/latitude",
@@ -224,6 +224,61 @@
                 "simple-cache"
             ],
             "time": "2017-10-23T01:57:42+00:00"
+        },
+        {
+            "name": "tholu/php-cidr-match",
+            "version": "0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/tholu/php-cidr-match.git",
+                "reference": "2bfad4eaedb27825ee758537a6d157b2b215df7d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/tholu/php-cidr-match/zipball/2bfad4eaedb27825ee758537a6d157b2b215df7d",
+                "reference": "2bfad4eaedb27825ee758537a6d157b2b215df7d",
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://dl.laravel-china.org/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "require": {
+                "php": ">=5.3"
+            },
+            "require-dev": {
+                "composer/composer": "1.0.*@dev",
+                "phpunit/phpunit": ">=3.7,<4",
+                "squizlabs/php_codesniffer": "~1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "CIDRmatch\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Thomas Lutz",
+                    "email": "thomaslutz.de@gmail.com",
+                    "homepage": "https://github.com/tholu",
+                    "role": "Creator, Developer, Maintainer"
+                }
+            ],
+            "description": "CIDRmatch is a library to match an IP to an IP range in CIDR notation (IPv4 and IPv6).",
+            "keywords": [
+                "cidr",
+                "ipv4",
+                "ipv6",
+                "php"
+            ],
+            "time": "2018-11-09T02:13:13+00:00"
         }
     ],
     "packages-dev": [
@@ -1874,7 +1929,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.0.0",
+        "php": ">=7.1.0",
         "ext-mbstring": "*"
     },
     "platform-dev": []

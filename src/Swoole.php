@@ -191,7 +191,7 @@ class Swoole {
 	 * @param array $data 传递数据
 	 * @param boolean/callable $callback 回调函数
 	 */
-	public static function taskMulit($data, $callback) {
+	public static function taskMulti($data, $callback) {
 		if ($callback === true) {
 			return self::$server->taskCo($data);
 		} elseif (is_callable($callback)) {
