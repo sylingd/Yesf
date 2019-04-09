@@ -28,8 +28,9 @@ set_error_handler(function($errno, $errstr, $errfile, $errline, $errcontext) {
 }, E_WARNING | E_USER_ERROR | E_USER_WARNING | E_DEPRECATED | E_USER_DEPRECATED);
 
 class Yesf {
-	//缓存namespace
-	protected static $app_namespace = null;
+	const CONF_ENV = 1;
+	const CONF_PROJECT = 2;
+	const CONF_SERVER = 3;
 	//单例化
 	protected static $instance = null;
 	//运行环境，需要与配置文件中同名
@@ -82,7 +83,7 @@ class Yesf {
 			throw new NotFoundException('Server configure file not found');
 		}
 		//其他各项配置
-		self::$config_server = require(APP_PATH . 'Config/Server.php');
+		self::$config_server = new Arr(require(APP_PATH . 'Config/Server.php'));
 		self::loadProjectConfig();
 		//将APP的namespace添加到Autoload
 		self::addAppToLoader();
@@ -151,34 +152,30 @@ class Yesf {
 			throw new NotFoundException('Config can not be recognised');
 		}
 	}
-	public static function getProjectConfig($key = null) {
-		if ($key === null) {
-			return self::$config_project;
-		} else {
-			return isset(self::$config_project[$key]) ? self::$config_project[$key] : null;
-		}
-	}
 	public static function loadProjectConfig() {
 		$hash = md5_file(APP_PATH . 'Config/Project.php');
 		if (self::$config_project_hash === $hash) {
 			return;
 		}
 		self::$config_project_hash = $hash;
-		self::$config_project = require(APP_PATH . 'Config/Project.php');
-		self::$app_namespace = self::$config_project['namespace'];
+		self::$config_project = new Arr(require(APP_PATH . 'Config/Project.php'));
 	}
-	public static function getServerConfig($key = null) {
-		if ($key === null) {
-			return self::$config_server;
-		} else {
-			return isset(self::$config_server[$key]) ? self::$config_server[$key] : null;
+	public function getConfig($key = null, $type = self::CONF_ENV) {
+		switch ($type) {
+			case self::CONF_ENV:
+				$config = $this->config;
+				break;
+			case self::CONF_PROJECT:
+				$config = $this->config_project;
+				break;
+			case self::CONF_SERVER:
+				$config = $this->config_server;
+				break;
 		}
-	}
-	public function getConfig($key = null) {
 		if ($key === null) {
-			return $this->config;
+			return $config;
 		} else {
-			return $this->config->get($key);
+			return $config->get($key);
 		}
 	}
 	public function setEnvironment($env) {
@@ -186,9 +183,6 @@ class Yesf {
 	}
 	public function getEnvironment() {
 		return $this->environment;
-	}
-	public static function getAppNamespace() {
-		return self::$app_namespace;
 	}
 	/**
 	 * Bootstrap

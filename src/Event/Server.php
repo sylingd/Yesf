@@ -31,11 +31,11 @@ class Server {
 	 * @param object $serv
 	 */
 	public static function onStart($serv) {
-		self::setProcessName(Yesf::getProjectConfig('name') . ' master');
-		$pidPath = rtrim(Yesf::getServerConfig('pid'), '/') . '/';
+		self::setProcessName(Yesf::app()->getConfig('name', Yesf::CONF_PROJECT) . ' master');
+		$pidPath = rtrim(Yesf::app()->getConfig('pid', Yesf::CONF_SERVER), '/') . '/';
 		try {
-			file_put_contents($pidPath . Yesf::getProjectConfig('name') . '_master.pid', $serv->master_pid);
-			file_put_contents($pidPath . Yesf::getProjectConfig('name') . '_manager.pid', $serv->manager_pid);
+			file_put_contents($pidPath . Yesf::app()->getConfig('name', Yesf::CONF_PROJECT) . '_master.pid', $serv->master_pid);
+			file_put_contents($pidPath . Yesf::app()->getConfig('name', Yesf::CONF_PROJECT) . '_manager.pid', $serv->manager_pid);
 		} catch (\Exception $e) {
 			//忽略写入错误
 		}
@@ -46,9 +46,9 @@ class Server {
 	 * @param object $serv
 	 */
 	public static function onShutdown($serv) {
-		$pidPath = rtrim(Yesf::getServerConfig('pid'), '/') . '/';
-		@unlink($pidPath . Yesf::getProjectConfig('name') . '_master.pid');
-		@unlink($pidPath . Yesf::getProjectConfig('name') . '_manager.pid');
+		$pidPath = rtrim(Yesf::app()->getConfig('pid', Yesf::CONF_SERVER), '/') . '/';
+		@unlink($pidPath . Yesf::app()->getConfig('name', Yesf::CONF_PROJECT) . '_master.pid');
+		@unlink($pidPath . Yesf::app()->getConfig('name', Yesf::CONF_PROJECT) . '_manager.pid');
 	}
 	/**
 	 * 普通事件：启动Manager进程
@@ -56,7 +56,7 @@ class Server {
 	 * @param object $serv
 	 */
 	public static function onManagerStart($serv) {
-		self::setProcessName(Yesf::getProjectConfig('name') . ' manager');
+		self::setProcessName(Yesf::app()->getConfig('name', Yesf::CONF_PROJECT) . ' manager');
 	}
 	public static function onManagerStop() {
 	}
@@ -76,7 +76,7 @@ class Server {
 			return;
 		}
 		$pid = $serv->master_pid;
-		$watcher_name = Yesf::getProjectConfig('name') . ' hot reload';
+		$watcher_name = Yesf::app()->getConfig('name', Yesf::CONF_PROJECT) . ' hot reload';
 		$watcher_process = new \Swoole\Process(function($worker) use ($watcher_name, &$pid, &$worker_pid) {
 			if (function_exists('cli_set_process_title')) {
 				cli_set_process_title($watcher_name);
@@ -171,10 +171,10 @@ class Server {
 		Yesf::app()->initInWorker();
 		//根据类型，设置不同的进程名
 		if ($serv->taskworker) {
-			self::setProcessName(Yesf::getProjectConfig('name') . ' task ' . $worker_id);
+			self::setProcessName(Yesf::app()->getConfig('name', Yesf::CONF_PROJECT) . ' task ' . $worker_id);
 		} else {
 			self::initHotReload($serv);
-			self::setProcessName(Yesf::getProjectConfig('name') . ' worker ' . $worker_id);
+			self::setProcessName(Yesf::app()->getConfig('name', Yesf::CONF_PROJECT) . ' worker ' . $worker_id);
 		}
 		//清除opcache
 		if (function_exists('opcache_reset')) {

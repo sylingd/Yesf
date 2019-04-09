@@ -26,8 +26,8 @@ class Router implements RouterInterface {
 	protected $router = null;
 	protected $module = 'index';
 	public function __construct() {
-		$this->module = Yesf::getProjectConfig('index');
-		$this->router = Yesf::getProjectConfig('router');
+		$this->module = Yesf::app()->getConfig('index', Yesf::CONF_PROJECT);
+		$this->router = Yesf::app()->getConfig('router', Yesf::CONF_PROJECT);
 	}
 	public function setPrefix($prefix = '/') {
 		$this->prefix = $prefix;
@@ -171,7 +171,7 @@ class Router implements RouterInterface {
 		}
 		$request->uri = $uri;
 		//扩展名自动处理
-		if (Yesf::getProjectConfig('router')['extension']) {
+		if (Yesf::app()->getConfig('router.extension', Yesf::CONF_PROJECT)) {
 			$hasPoint = strrpos($uri, '.');
 			if ($hasPoint !== false) {
 				$request->extension = substr($uri, $hasPoint + 1);

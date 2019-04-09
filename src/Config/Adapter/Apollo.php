@@ -42,7 +42,7 @@ class Apollo implements ConfigInterface {
 	public function __construct($conf) {
 		$this->environment = Yesf::app()->getEnvironment();
 		if (is_string($conf)) {
-			$conf = Yesf::getProjectConfig($conf);
+			$conf = Yesf::app()->getConfig($conf, Yesf::CONF_PROJECT);
 		}
 		$this->conf = $conf;
 		if (!isset($this->conf['cluster'])) {

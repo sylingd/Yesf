@@ -34,22 +34,15 @@ class Swoole {
 	 * @access public
 	 */
 	public static function init() {
-		self::$server = new SwooleServer(Yesf::getServerConfig('ip'), Yesf::getServerConfig('port')); 
+		self::$server = new SwooleServer(Yesf::app()->getConfig('ip', Yesf::CONF_SERVER), Yesf::app()->getConfig('port', Yesf::CONF_SERVER)); 
 		//基本配置
-		$config = Yesf::getServerConfig('advanced');
-		if (is_object($config)) {
-			if (method_exists($config, 'toArray')) {
-				$config = $config->toArray();
-			} else {
-				$config = (array)$config;
-			}
-		}
-		$ssl = Yesf::getServerConfig('ssl');
+		$config = Yesf::app()->getConfig('advanced', Yesf::CONF_SERVER);
+		$ssl = Yesf::app()->getConfig('ssl', Yesf::CONF_SERVER);
 		if ($ssl && $ssl['enable']) {
 			$config['ssl_cert_file'] = $ssl['cert'];
 			$config['ssl_key_file'] = $ssl['key'];
 		}
-		if (Yesf::getServerConfig('http2')) {
+		if (Yesf::app()->getConfig('http2', Yesf::CONF_SERVER)) {
 			if (!isset($config['ssl_cert_file'])) {
 				throw new NotFoundException('Certfile not found');
 			}
@@ -103,14 +96,7 @@ class Swoole {
 	 */
 	public static function addListener(int $type, $config, callable $callback) {
 		if (is_string($config)) {
-			$config = Yesf::getServerConfig($config);
-			if (is_object($config)) {
-				if (method_exists($config, 'toArray')) {
-					$config = $config->toArray();
-				} else {
-					$config = (array)$config;
-				}
-			}
+			$config = Yesf::app()->getConfig($config, Yesf::CONF_SERVER);
 		}
 		//If type is unix, do not need port
 		if ($type === self::LISTEN_UNIX || $type === self::LISTEN_UNIX_DGRAM) {
@@ -124,7 +110,7 @@ class Swoole {
 			}
 			Server::$_listener[$addr] = $callback;
 		} else {
-			$addr = isset($config['ip']) ? $config['ip'] : Yesf::getServerConfig('ip');
+			$addr = isset($config['ip']) ? $config['ip'] : Yesf::app()->getConfig('ip', Yesf::CONF_SERVER);
 			if (!isset($config['port'])) {
 				return false;
 			}

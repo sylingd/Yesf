@@ -47,7 +47,7 @@ class Logger implements LoggerAwareInterface {
 			if (Yesf::app()->getConfig('logger.name')) {
 				$name = Yesf::app()->getConfig('logger.name');
 			} else {
-				$name = Yesf::getProjectConfig('name');
+				$name = Yesf::app()->getConfig('name', Yesf::CONF_PROJECT);
 			}
 		}
 		return $name;

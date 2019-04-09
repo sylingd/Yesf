@@ -47,7 +47,7 @@ class Response {
 	 * @access public
 	 */
 	public static function init() {
-		$view_config = Yesf::getProjectConfig('view');
+		$view_config = Yesf::app()->getConfig('view', Yesf::CONF_PROJECT);
 		self::$tpl_auto_config = ($view_config['auto'] == 1) ? true : false;
 		self::$tpl_extension = ($view_config['extension'] ? $view_config['extension'] : 'phtml');
 		self::$tpl_engine = Template::class;

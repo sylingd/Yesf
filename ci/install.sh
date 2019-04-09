@@ -48,7 +48,8 @@ main() {
 	installExt "swoole" "swoole/swoole-src" "v${swoole_ver}" "swoole-src-${swoole_ver}" "--enable-sockets=yes --enable-openssl=yes --enable-mysqlnd=yes"
 
 	# Install SeasLog
-	mkdir -p /var/log/www
+	mkdir -p $HOME/log/www
+	sed -i "s@LOG_DIR@$HOME/log/www@" $TRAVIS_BUILD_DIR/ci/config/seaslog.ini
 	chmod -R 0777 /var/log/www
 	installExt "seaslog" "SeasX/SeasLog" "SeasLog-${seaslog_ver}" "SeasLog-SeasLog-${seaslog_ver}"
 

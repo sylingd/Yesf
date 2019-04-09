@@ -27,7 +27,7 @@ class Dispatcher {
 	private $modules;
 	public function __construct(Router $router) {
 		$this->router = $router;
-		$this->modules = Yesf::getProjectConfig('modules');
+		$this->modules = Yesf::app()->getConfig('modules', Yesf::CONF_PROJECT);
 	}
 	/**
 	 * 判断路由是否合法

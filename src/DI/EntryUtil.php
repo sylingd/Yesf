@@ -12,13 +12,14 @@
 namespace Yesf\DI;
 
 use Psr\Container\ContainerInterface;
+use Yesf\Yesf;
 use Yesf\Exception\NotFoundException;
 use Yesf\Exception\InvalidClassException;
 use Yesf\Exception\CyclicDependencyException;
 
 class EntryUtil {
 	public static function controller($module, $controller) {
-		$controllerName = Yesf::getAppNamespace() . '\\Module\\' . $module . '\\Controller\\' . ucfirst($controller);
+		$controllerName = Yesf::app()->getConfig('namespace', Yesf::CONF_PROJECT) . '\\Module\\' . $module . '\\Controller\\' . ucfirst($controller);
 		return $controllerName;
 	}
 }
