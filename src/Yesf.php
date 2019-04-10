@@ -99,8 +99,8 @@ class Yesf {
 	 * 将APP的namespace添加到Autoload
 	 */
 	private static function addAppToLoader() {
-		$namespace = self::$config_project['namespace'];
-		if (strpos('\\', $namespace) === false) {
+		$namespace = self::$config_project->get('namespace');
+		if (substr($namespace, -1) !== '\\') {
 			$namespace .= '\\';
 		}
 		self::getLoader()->addPsr4($namespace, APP_PATH);
