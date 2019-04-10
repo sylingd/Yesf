@@ -89,7 +89,7 @@ class Yesf {
 		self::addAppToLoader();
 		//编码相关
 		if (function_exists('mb_internal_encoding')) {
-			mb_internal_encoding(self::$config_project['charset']);
+			mb_internal_encoding(self::$config_project->get('charset'));
 		}
 		if (!defined('YESF_UNIT')) {
 			Swoole::init();
