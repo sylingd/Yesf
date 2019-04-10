@@ -179,10 +179,10 @@ class Router implements RouterInterface {
 			}
 		}
 		// Try
-		if ($this->parseRewrite($request)) {
+		if ($this->parseRegex($request)) {
 			return;
 		}
-		if ($this->parseRegex($request)) {
+		if ($this->parseRewrite($request)) {
 			return;
 		}
 		$this->parseMap($request);

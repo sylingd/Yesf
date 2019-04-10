@@ -13,6 +13,7 @@
 namespace Yesf;
 use Yesf\Swoole;
 use Yesf\DI\Container;
+use Yesf\Event\Internal;
 use Yesf\Config\ConfigInterface;
 use Yesf\Config\Adapter\Arr;
 use Yesf\Exception\StartException;
@@ -87,6 +88,7 @@ class Yesf {
 		self::loadProjectConfig();
 		//将APP的namespace添加到Autoload
 		self::addAppToLoader();
+		Internal::onCreate();
 		//编码相关
 		if (function_exists('mb_internal_encoding')) {
 			mb_internal_encoding(self::$config_project->get('charset'));

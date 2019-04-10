@@ -24,8 +24,11 @@ class Internal {
 		Logger::init();
 		Response::init();
 		Response::initInWorker();
-		Pool::init();
 		Helper::setRDAlias();
 		Helper::setCacheAlias();
+		Pool::init();
+	}
+	public static function onCreate() {
+		Helper::setRouterAlias();
 	}
 }

@@ -16,6 +16,8 @@ use Yesf\Cache\File;
 use Yesf\DI\Container;
 use Yesf\RD\RDInterface;
 use Yesf\Connection\Pool;
+use Yesf\Http\Router;
+use Yesf\Http\RouterInterface;
 
 class Helper {
 	public static function setRDAlias() {
@@ -33,5 +35,8 @@ class Helper {
 				return Pool::getAdapter($default);
 			});
 		}
+	}
+	public static function setRouterAlias() {
+		Container::getInstance()->set(RouterInterface::class, Router::class);
 	}
 }
