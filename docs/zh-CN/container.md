@@ -7,6 +7,34 @@ lang: zh-CN
 
 容器是一个巨大的工厂，管理着大部分类的创建。所有控制器默认都由容器来创建。
 
+## 可用方法
+
+不建议直接使用Container，建议使用自动的依赖注入
+
+### get
+
+获取实例
+
+```php
+use Yesf\DI\Container;
+
+Container::getInstance()->get('FileCache');
+```
+
+### has
+
+检查是否存在此名称的类
+
+```php
+use Yesf\DI\Container;
+
+Container::getInstance()->has('FileCache');
+```
+
+### setMulti
+
+见下方《设置依赖注入》
+
 # 依赖注入
 
 为了方便使用，Yesf支持依赖注入。所有使用容器创建的类，均会自动进行依赖注入。

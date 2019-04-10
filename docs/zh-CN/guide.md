@@ -7,8 +7,8 @@ lang: zh-CN
 
 ![Php Version](https://img.shields.io/badge/php-%3E=7.1-brightgreen.svg?maxAge=2592000)
 ![Swoole Version](https://img.shields.io/badge/swoole-%3E=4.0-brightgreen.svg?maxAge=2592000)
-![Packagist](https://img.shields.io/packagist/v/sylingd/yesf-framework.svg)]
-![license](https://img.shields.io/github/license/sylingd/Yesf.svg)]
+![Packagist](https://img.shields.io/packagist/v/sylingd/yesf-framework.svg)
+![license](https://img.shields.io/github/license/sylingd/Yesf.svg)
 
 Yesf是基于Swoole 4.0+的框架。具有以下优点：
 

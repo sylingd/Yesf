@@ -37,7 +37,7 @@ module.exports = {
           text: '指南',
           link: '/zh-CN/guide'
         }, {
-          text: '镜像站点',
+          text: '镜像',
           items: [{
               text: '美国（由GitHub提供）',
               link: 'https://yesf.sylibs.com'
@@ -60,6 +60,15 @@ module.exports = {
           },
           '/zh-CN/container',
           {
+            title: '请求处理',
+            path: '/zh-CN/process_request/',
+            children: [
+              '/zh-CN/process_request/router',
+              '/zh-CN/process_request/request',
+              '/zh-CN/process_request/response'
+            ]
+          },
+          {
             title: '插件',
             path: '/zh-CN/plugin/',
             children: [
@@ -78,15 +87,6 @@ module.exports = {
               '/zh-CN/cache/file',
               '/zh-CN/cache/yac',
               '/zh-CN/cache/custom',
-            ]
-          },
-          {
-            title: '请求处理',
-            path: '/zh-CN/process_request/',
-            children: [
-              '/zh-CN/process_request/router',
-              '/zh-CN/process_request/request',
-              '/zh-CN/process_request/response'
             ]
           }
         ]
