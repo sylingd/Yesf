@@ -166,10 +166,10 @@ class Yesf {
 				$config = $this->config;
 				break;
 			case self::CONF_PROJECT:
-				$config = $this->config_project;
+				$config = self::$config_project;
 				break;
 			case self::CONF_SERVER:
-				$config = $this->config_server;
+				$config = self::$config_server;
 				break;
 		}
 		if ($key === null) {
