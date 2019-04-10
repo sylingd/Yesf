@@ -83,7 +83,7 @@ class Yesf {
 			throw new NotFoundException('Server configure file not found');
 		}
 		//其他各项配置
-		self::$config_server = new Arr(require(APP_PATH . 'Config/Server.php'));
+		self::$config_server = new Arr(require(APP_PATH . 'Config/Server.php'), '');
 		self::loadProjectConfig();
 		//将APP的namespace添加到Autoload
 		self::addAppToLoader();
@@ -158,7 +158,7 @@ class Yesf {
 			return;
 		}
 		self::$config_project_hash = $hash;
-		self::$config_project = new Arr(require(APP_PATH . 'Config/Project.php'));
+		self::$config_project = new Arr(require(APP_PATH . 'Config/Project.php'), '');
 	}
 	public function getConfig($key = null, $type = self::CONF_ENV) {
 		switch ($type) {

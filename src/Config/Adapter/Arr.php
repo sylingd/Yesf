@@ -21,8 +21,11 @@ class Arr implements ConfigInterface {
 	use ConfigTrait;
 	protected $environment;
 	protected $conf;
-	public function __construct(array $conf) {
-		$this->environment = Yesf::app()->getEnvironment();
+	public function __construct(array $conf, $env = null) {
+		if ($env === null) {
+			$env = Yesf::app()->getEnvironment();
+		}
+		$this->environment = $env;
 		$this->conf = $conf;
 	}
 	/**
@@ -34,7 +37,7 @@ class Arr implements ConfigInterface {
 	 */
 	public function get($key, $default = null) {
 		$keys = explode('.', $key);
-		$conf = $this->conf[$this->environment];
+		$conf = empty($this->environment) ? $this->conf : $this->conf[$this->environment];
 		foreach ($keys as $v) {
 			if (isset($conf[$v])) {
 				$conf = $conf[$v];
@@ -52,7 +55,7 @@ class Arr implements ConfigInterface {
 	 */
 	public function has($key) {
 		$keys = explode('.', $key);
-		$conf = $this->conf[$this->environment];
+		$conf = empty($this->environment) ? $this->conf : $this->conf[$this->environment];
 		foreach ($keys as $v) {
 			if (isset($conf[$v])) {
 				$conf = $conf[$v];
