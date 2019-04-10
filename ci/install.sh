@@ -49,8 +49,8 @@ main() {
 
 	# Install SeasLog
 	mkdir -p $HOME/log/www
+	chmod -R 0777 $HOME/log/www
 	sed -i "s@LOG_DIR@$HOME/log/www@" $TRAVIS_BUILD_DIR/ci/config/seaslog.ini
-	chmod -R 0777 /var/log/www
 	installExt "seaslog" "SeasX/SeasLog" "SeasLog-${seaslog_ver}" "SeasLog-SeasLog-${seaslog_ver}"
 
 	# Install Yac
