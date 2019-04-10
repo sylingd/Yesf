@@ -1,4 +1,9 @@
-# $response变量
+---
+title: response变量
+lang: zh-CN
+---
+
+# response变量
 
 用于响应一个请求
 

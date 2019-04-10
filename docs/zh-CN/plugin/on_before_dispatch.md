@@ -1,3 +1,8 @@
+---
+title: 分发开始（beforeDispatch）
+lang: zh-CN
+---
+
 # 分发开始（beforeDispatch）
 
 在路由解析完成后，分发请求开始前调用。若返回非NULL，则终止默认的请求分发流程

@@ -1,3 +1,8 @@
+---
+title: Redis
+lang: zh-CN
+---
+
 # Redis
 
 缓存至Redis

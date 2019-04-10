@@ -1,3 +1,8 @@
+---
+title: Hello World
+lang: zh-CN
+---
+
 # Hello World
 
 ## 安装Yesf

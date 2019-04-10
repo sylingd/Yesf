@@ -1,3 +1,8 @@
+---
+title: Yac
+lang: zh-CN
+---
+
 # Yac
 
 使用Yac缓存（需安装[Yac](https://github.com/laruence/yac)）

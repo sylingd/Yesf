@@ -1,3 +1,8 @@
+---
+title: 分发失败（dispatchFailed）
+lang: zh-CN
+---
+
 # 分发失败（dispatchFailed）
 
 当分发因为找不到相应模块/控制器/功能，或分发途中发生任何其他异常时，均会触发此事件

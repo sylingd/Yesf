@@ -1,3 +1,8 @@
+---
+title: 配置
+lang: zh-CN
+---
+
 # 配置
 
 ## 综述
@@ -28,8 +33,6 @@ Yesf将配置文件分为三类：
 
 配置可以通过`Yesf::app()->getConfig($key)`读取，例如`Yesf::app()->getConfig('name')`
 读取不存在的配置时，将会返回`NULL`
-
-特别的，读取`application.namespace`可以直接使用`Yesf::getAppNamespace()`
 
 ## 配置继承
 

@@ -1,4 +1,9 @@
-# $request变量
+---
+title: request变量
+lang: zh-CN
+---
+
+# request变量
 
 此变量用于储存一些请求信息
 

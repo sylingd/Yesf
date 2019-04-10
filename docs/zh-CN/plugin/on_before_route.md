@@ -1,3 +1,8 @@
+---
+title: 路由启动（beforeRoute）
+lang: zh-CN
+---
+
 # 路由启动（beforeRoute）
 
 在路由启动前触发。可以用于用户的自定义路由并拦截默认的路由解析方法。

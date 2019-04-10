@@ -24,22 +24,21 @@ main() {
 	nvm install $node_ver
 	nvm use $node_ver
 	nvm alias default $node_ver
-	npm install -g npm@latest
+	npm install -g yarn
 	node --version
-	npm -v
+	yarn -v
+	
+    cd $TRAVIS_BUILD_DIR
+    mkdir -p build/www
 
-	cd $TRAVIS_BUILD_DIR
-	mkdir -p build/www
-
-	# Build Gitbook
+	# Build
 	cd $TRAVIS_BUILD_DIR/docs
-	npm install gitbook-cli -g
-	gitbook install
-	gitbook build
-	mv $TRAVIS_BUILD_DIR/docs/_book $TRAVIS_BUILD_DIR/build/www/docs
+	yarn
+	yarn build
+	mv $TRAVIS_BUILD_DIR/docs/.vuepress/dist/* $TRAVIS_BUILD_DIR/build/www
 
-	# Copy all files
-	cp $TRAVIS_BUILD_DIR/ci/www/* $TRAVIS_BUILD_DIR/build/www/
+    # Copy all files
+    cp $TRAVIS_BUILD_DIR/ci/www/* $TRAVIS_BUILD_DIR/build/www/
 
 	# Upload
 	cd $TRAVIS_BUILD_DIR/build/www/
