@@ -55,7 +55,7 @@ class Session implements ArrayAccess {
 	}
 
 	public function clear() {
-		$this->sess[$offset] = [];
+		$this->sess = [];
 	}
 	
 	public function encode() {

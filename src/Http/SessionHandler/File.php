@@ -51,7 +51,7 @@ class File implements SessionHandlerInterface {
 	}
 
 	public function gc($maxlifetime) {
-		foreach (glob($this->path . '/sess_*') as $file) {
+		foreach (glob($this->path . 'sess_*') as $file) {
             if (filemtime($file) + $maxlifetime < time() && file_exists($file)) {
                 unlink($file);
             }
