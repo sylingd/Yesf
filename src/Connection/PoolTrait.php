@@ -18,12 +18,30 @@ use Yesf\Connection\Pool;
 use Yesf\Exception\NotFoundException;
 
 trait PoolTrait {
+	/** @var SplQueue $connection All connections */
 	protected $connection = null;
+
+	/** @var int $connection_count Current connected count */
 	protected $connection_count = 0;
+
+	/** @var int $last_run_out_time Last time when use out all connections */
 	protected $last_run_out_time = null;
+
+	/** @var SplQueue $wait Waiting coroutine queue */
 	protected $wait = null;
+
+	/** @var int $min_client Min count */
 	protected $min_client = PHP_INT_MAX;
+
+	/** @var int $max_client Max count */
 	protected $max_client = PHP_INT_MAX;
+
+	/**
+	 * Setup connection pool
+	 * 
+	 * @access public
+	 * @param array $config
+	 */
 	public function initPool($config) {
 		if (!method_exists($this, 'getMinClient') || !method_exists($this, 'getMaxClient')) {
 			throw new NotFoundException("Method getMinClient or getMaxClient not found");

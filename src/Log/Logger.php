@@ -25,7 +25,10 @@ class Logger implements LoggerAwareInterface {
 	const LOG_CRITICAL = 5;
 	const LOG_ALERT = 6;
 	const LOG_EMERGENCY = 7;
+
+	/** @var LoggerInterface $logger Logger */
 	private $logger = null;
+
 	public static function check($check) {
 		static $level = null;
 		if ($level === null) {

@@ -27,6 +27,7 @@ class Server {
 	}
 	/**
 	 * 普通事件：启动Master进程
+	 * 
 	 * @access public
 	 * @param object $serv
 	 */
@@ -42,6 +43,7 @@ class Server {
 	}
 	/**
 	 * 普通事件：关闭程序
+	 * 
 	 * @access public
 	 * @param object $serv
 	 */
@@ -52,6 +54,7 @@ class Server {
 	}
 	/**
 	 * 普通事件：启动Manager进程
+	 * 
 	 * @access public
 	 * @param object $serv
 	 */
@@ -163,6 +166,7 @@ class Server {
 	}
 	/**
 	 * 普通事件：启动一个进程
+	 * 
 	 * @access public
 	 * @param object $serv
 	 * @param int $worker_id
@@ -188,6 +192,7 @@ class Server {
 	}
 	/**
 	 * 普通事件：进程出错
+	 * 
 	 * @access public
 	 * @param object $serv
 	 * @param int $worker_id
@@ -198,6 +203,7 @@ class Server {
 	}
 	/**
 	 * 普通事件：接收到task
+	 * 
 	 * @access public
 	 * @param object $serv
 	 * @param int $task_id
@@ -215,6 +221,7 @@ class Server {
 	}
 	/**
 	 * 进程之间的消息推送
+	 * 
 	 * @param object $serv
 	 * @param int $from
 	 * @param string $message

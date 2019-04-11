@@ -23,6 +23,13 @@ class QConf implements ConfigInterface {
 		$this->appName = $appName;
 		$this->environment = Yesf::app()->getEnvironment();
 	}
+	/**
+	 * Get real key
+	 * 
+	 * @access protected
+	 * @param string $key original key
+	 * @return string
+	 */
 	protected function getKey($key) {
 		$key = '/' . $this->environment . '.' . $key;
 		$key = str_replace('.', '/', $key);
@@ -33,6 +40,7 @@ class QConf implements ConfigInterface {
 	}
 	/**
 	 * 获取配置
+	 * 
 	 * @access public
 	 * @param string $key 形似a.b.c的key
 	 * @param mixed $default 默认
@@ -45,6 +53,7 @@ class QConf implements ConfigInterface {
 	}
 	/**
 	 * 检查配置是否存在
+	 * 
 	 * @access public
 	 * @param string $key 形似a.b.c的key
 	 * @return bool

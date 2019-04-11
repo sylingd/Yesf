@@ -143,7 +143,7 @@ abstract class ModelAbstract {
 	 * 注意：$filter不能为空，如果要清除所有数据，必须传入$filter为TRUE
 	 * 
 	 * @access public
-	 * @param array|string|int|boolean $filter
+	 * @param array|string|int|bool $filter
 	 */
 	public function del($filter) {
 		$query = $this->newDelete();

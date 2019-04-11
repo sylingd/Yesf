@@ -16,7 +16,9 @@ use Yesf\Yesf;
 use Swoole\Coroutine as co;
 
 class File implements CacheInterface {
+	/** @var string $path Cache file directory */
 	private $path;
+
 	public function __construct() {
 		$this->path = Yesf::app()->getConfig('cache.file.path');
 		if ($this->path === '@TMP') {
@@ -32,13 +34,16 @@ class File implements CacheInterface {
 			$this->path .= '/';
 		}
 	}
+
 	private function getKey($key) {
 		return md5($key);
 	}
+
 	private function getPath($key) {
 		$name = $this->getKey($key);
 		return $this->path . $name;
 	}
+
 	public function get($key, $default = null) {
 		$path = $this->getPath($key);
 		if (!is_file($path)) {
@@ -57,6 +62,7 @@ class File implements CacheInterface {
 		$res = unserialize(substr($res, 10));
 		return $res;
 	}
+
 	public function set($key, $value, $ttl = null) {
 		if ($ttl === null) {
 			$time = 0;
@@ -67,9 +73,11 @@ class File implements CacheInterface {
 		$content = str_pad($time, 10, '0', STR_PAD_LEFT) . serialize($value);
 		co::writeFile($path, $content);
 	}
+
 	public function delete($key) {
 		@unlink($this->getPath($key));
 	}
+
 	public function clear() {
 		$dh = opendir($this->path);
 		while ($f = readdir($dh)) {
@@ -80,6 +88,7 @@ class File implements CacheInterface {
 		}
 		closedir($dh);
 	}
+
 	public function getMultiple($keys, $default = null) {
 		$result = [];
 		foreach ($keys as $v) {
@@ -92,16 +101,19 @@ class File implements CacheInterface {
 		}
 		return $result;
 	}
+
 	public function setMultiple($values, $ttl = null) {
 		foreach ($values as $k => $v) {
 			$this->set($k, $v, $ttl);
 		}
 	}
+
 	public function deleteMultiple($keys) {
 		foreach ($keys as $v) {
 			$this->delete($v);
 		}
 	}
+
 	public function has($key) {
 		return is_file($this->getPath($key));
 	}

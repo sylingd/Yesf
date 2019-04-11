@@ -46,9 +46,21 @@ class Pool {
 		self::setAdapter('mysql', \Yesf\RD\Adapter\Mysql::class);
 		self::setAdapter('redis', \Yesf\Cache\Adapter\Redis::class);
 	}
+	/**
+	 * Get min connection count
+	 * 
+	 * @access public
+	 * @return int
+	 */
 	public static function getMin() {
 		return self::$connection_default['min'];
 	}
+	/**
+	 * Get max connection count
+	 * 
+	 * @access public
+	 * @return int
+	 */
 	public static function getMax() {
 		return self::$connection_default['max'];
 	}
@@ -57,6 +69,7 @@ class Pool {
 	 * 
 	 * @access public
 	 * @param mixed $config
+	 * @return object
 	 */
 	public static function get($config = null) {
 		if (!isset($config['driver'])) {
@@ -119,6 +132,7 @@ class Pool {
 	 * 
 	 * @access public
 	 * @param mixed $config
+	 * @return object
 	 */
 	public static function getAdapter($config = null) {
 		if (is_string($config)) {

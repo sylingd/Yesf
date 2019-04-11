@@ -80,7 +80,7 @@ class Swoole {
 	 * 重载
 	 * 
 	 * @access public
-	 * @param boolean $task 是否重载Task进程
+	 * @param bool $task 是否重载Task进程
 	 */
 	public static function reload($task = true) {
 		self::$server->reload($task);
@@ -92,7 +92,7 @@ class Swoole {
 	 * @param int $type 监听类型
 	 * @param mixed $config 选项，可以为数组或配置项名称
 	 * @param callable $callback 回调函数
-	 * @return boolean
+	 * @return bool
 	 */
 	public static function addListener(int $type, $config, callable $callback) {
 		if (is_string($config)) {
@@ -175,7 +175,7 @@ class Swoole {
 	 * 
 	 * @access public
 	 * @param array $data 传递数据
-	 * @param boolean/callable $callback 回调函数
+	 * @param bool/callable $callback 回调函数
 	 */
 	public static function taskMulti($data, $callback) {
 		if ($callback === true) {

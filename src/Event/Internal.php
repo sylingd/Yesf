@@ -18,6 +18,11 @@ use Yesf\Http\Response;
 use Yesf\Connection\Pool;
 
 class Internal {
+	/**
+	 * 内部事件
+	 * 
+	 * @access public
+	 */
 	public static function onWorkerStart() {
 		Yesf::app()->loadEnvConfig();
 		Yesf::loadProjectConfig();
@@ -28,6 +33,11 @@ class Internal {
 		Helper::setCacheAlias();
 		Pool::init();
 	}
+	/**
+	 * 内部事件
+	 * 
+	 * @access public
+	 */
 	public static function onCreate() {
 		Helper::setRouterAlias();
 	}

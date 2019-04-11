@@ -18,8 +18,18 @@ use Yesf\Config\ConfigInterface;
 
 class Yaf implements ConfigInterface {
 	use ConfigTrait;
-	protected $conf;
+	/** @var string $environment Environment name */
 	protected $environment;
+
+	/** @var array $conf Configs */
+	protected $conf;
+
+	/**
+	 * Constructor
+	 * 
+	 * @access public
+	 * @param string $file
+	 */
 	public function __construct($file) {
 		if (!extension_loaded('Yaf')) {
 			throw new RequirementException("Extension Yaf is required");
@@ -33,6 +43,7 @@ class Yaf implements ConfigInterface {
 	}
 	/**
 	 * 获取配置
+	 * 
 	 * @access public
 	 * @param string $key 形似a.b.c的key
 	 * @param mixed $default 默认
@@ -50,6 +61,7 @@ class Yaf implements ConfigInterface {
 	}
 	/**
 	 * 检查配置是否存在
+	 * 
 	 * @access public
 	 * @param string $key 形似a.b.c的key
 	 * @return bool

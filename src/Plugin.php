@@ -16,6 +16,8 @@ class Plugin {
 	protected static $plugins = [];
 	/**
 	 * 注册一个插件
+	 * 
+	 * @access public
 	 * @param string $event 事件名称
 	 * @param callable $callback 回调函数
 	 */
@@ -27,6 +29,8 @@ class Plugin {
 	}
 	/**
 	 * 清除已注册的插件
+	 * 
+	 * @access public
 	 * @param string $event 事件名称
 	 */
 	public static function clear(string $event = '') {
@@ -38,6 +42,8 @@ class Plugin {
 	}
 	/**
 	 * 触发一个事件
+	 * 
+	 * @access public
 	 * @param string $event 事件名称
 	 * @param array $data 参数
 	 */

@@ -35,10 +35,24 @@ use Yesf\Config\ConfigInterface;
  * ])
  */
 class Apollo implements ConfigInterface {
+	/** @var array $conf Apollo Config */
 	protected $conf;
+
+	/** @var array $cache Config cache */
 	protected $cache;
+
+	/** @var int $last_fetch Last update time */
 	protected $last_fetch = 0;
+
+	/** @var array $last_key Last key returned by Apollo */
 	protected $last_key = [];
+
+	/**
+	 * Constructor
+	 * 
+	 * @access public
+	 * @param array/string $conf Apollo config
+	 */
 	public function __construct($conf) {
 		$this->environment = Yesf::app()->getEnvironment();
 		if (is_string($conf)) {
@@ -115,7 +129,7 @@ class Apollo implements ConfigInterface {
 	 * Refresh all configs
 	 * 
 	 * @access public
-	 * @param boolean $force Is force refresh or not
+	 * @param bool $force Is force refresh or not
 	 */
 	public function refresh($force = false) {
 		if (!$force && time() - $this->last_fetch < $this->config['refresh_interval']) {
@@ -139,6 +153,7 @@ class Apollo implements ConfigInterface {
 	}
 	/**
 	 * 获取配置
+	 * 
 	 * @access public
 	 * @param string $key 形似a.b.c的key
 	 * @param mixed $default 默认
@@ -159,6 +174,7 @@ class Apollo implements ConfigInterface {
 	}
 	/**
 	 * 检查配置是否存在
+	 * 
 	 * @access public
 	 * @param string $key 形似a.b.c的key
 	 * @return bool

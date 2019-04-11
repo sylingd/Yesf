@@ -17,12 +17,28 @@ use Yesf\Config\ConfigInterface;
 
 class Yaconf implements ConfigInterface {
 	use ConfigTrait;
+	/** @var string $appName Application name */
 	protected $appName;
+
+	/** @var string $environment Environment name */
 	protected $environment;
+	/**
+	 * Constructor
+	 * 
+	 * @access public
+	 * @param string $appName
+	 */
 	public function __construct($appName = null) {
 		$this->appName = $appName;
 		$this->environment = Yesf::app()->getEnvironment();
 	}
+	/**
+	 * Get full key
+	 * 
+	 * @access protected
+	 * @param string $key original key
+	 * @return string
+	 */
 	protected function getKey($key) {
 		$key = $this->environment . '.' . $key;
 		if (!empty($this->appName)) {

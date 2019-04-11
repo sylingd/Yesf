@@ -19,8 +19,19 @@ use Yesf\Config\ConfigInterface;
 
 class Arr implements ConfigInterface {
 	use ConfigTrait;
+	/** @var string $environment Environment name */
 	protected $environment;
+
+	/** @var array $conf Configs */
 	protected $conf;
+
+	/**
+	 * Constructor
+	 * 
+	 * @access public
+	 * @param array $conf
+	 * @param string $env
+	 */
 	public function __construct(array $conf, $env = null) {
 		if ($env === null) {
 			$env = Yesf::app()->getEnvironment();
@@ -30,6 +41,7 @@ class Arr implements ConfigInterface {
 	}
 	/**
 	 * 获取配置
+	 * 
 	 * @access public
 	 * @param string $key 形似a.b.c的key
 	 * @param mixed $default 默认
@@ -49,6 +61,7 @@ class Arr implements ConfigInterface {
 	}
 	/**
 	 * 检查配置是否存在
+	 * 
 	 * @access public
 	 * @param string $key 形似a.b.c的key
 	 * @return bool

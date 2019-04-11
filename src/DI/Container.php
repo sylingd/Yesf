@@ -21,10 +21,18 @@ class Container implements ContainerInterface {
 	const MULTI_CLONE = 1;
 	const MULTI_NEW = 2;
 
+	/** @var array $instance Storage all created beans */
 	private $instance = [];
+
+	/** @var array $getter Alias names and Closure creaters */
 	private $getter = [];
+
+	/** @var array $multi Multi beans */
 	private $multi = [];
+
+	/** @var array $creating Creating beans, for cyclic dependency check */
 	private $creating = [];
+
 	private static $_instance = null;
 	public static function getInstance() {
 		if (self::$_instance === null) {
@@ -35,14 +43,30 @@ class Container implements ContainerInterface {
 	private function __construct() {
 		// Do nothing
 	}
+	/**
+	 * Set alias or closure creaters
+	 * 
+	 * @access public
+	 * @param string $id1 ID
+	 * @param mixed $id2
+	 */
 	public function set($id1, $id2) {
 		$this->getter[$id1] = $id2;
 	}
+	/**
+	 * Set alias or closure creaters
+	 * 
+	 * @access public
+	 * @param string $id ID
+	 * @param int $type
+	 */
 	public function setMulti($id, $type = self::MULTI_CLONE) {
 		$this->multi[$id] = $type;
 	}
 	/**
 	 * Has
+	 * 
+	 * @access public
 	 * @param string $id
 	 * @return bool
 	 */
@@ -69,6 +93,8 @@ class Container implements ContainerInterface {
 	}
 	/**
 	 * Get
+	 * 
+	 * @access public
 	 * @param string $id
 	 * @return object
 	 */

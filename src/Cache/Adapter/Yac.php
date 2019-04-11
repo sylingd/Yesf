@@ -17,7 +17,9 @@ use Yesf\Exception\Exception;
 use Yesf\Exception\RequirementException;
 
 class Yac implements CacheInterface {
+	/** @var Yac $handler Yac class instance */
 	private $handler;
+
 	public function __construct() {
 		if (!class_exists(\Yac::class)) {
 			throw new RequirementException("Extension Yac is required");
@@ -32,9 +34,11 @@ class Yac implements CacheInterface {
 		}
 		$this->handler = new \Yac($prefix);
 	}
+
 	private function getKey($key) {
 		return strlen($key) > 32 ? md5($key) : $key;
 	}
+
 	public function get($key, $default = null) {
 		$res = $this->handler->get($this->getKey($key));
 		if ($res === false) {
@@ -42,15 +46,19 @@ class Yac implements CacheInterface {
 		}
 		return $res;
 	}
+
 	public function set($key, $value, $ttl = 0) {
 		$this->handler->set($this->getKey($key), $value, $ttl);
 	}
+
 	public function delete($key) {
 		$this->handler->delete($this->getKey($key));
 	}
+
 	public function clear() {
 		$this->handler->flush();
 	}
+
 	public function getMultiple($keys, $default = null) {
 		$toGet = [];
 		foreach ($keys as $v) {
@@ -67,6 +75,7 @@ class Yac implements CacheInterface {
 		}
 		return $result;
 	}
+
 	public function setMultiple($values, $ttl = 0) {
 		$toSet = [];
 		foreach ($values as $k => $v) {
@@ -74,12 +83,14 @@ class Yac implements CacheInterface {
 		}
 		$this->handler->set($toSet, $ttl);
 	}
+
 	public function deleteMultiple($keys) {
 		foreach ($keys as $k => $v) {
 			$keys[$k] = $this->getKey($v);
 		}
 		$this->handler->delete($keys);
 	}
+
 	public function has($key) {
 		return $this->get($key) !== null;
 	}

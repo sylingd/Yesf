@@ -19,7 +19,13 @@ use Yesf\Http\Response;
 use Yesf\Http\Dispatcher;
 
 class HttpServer {
-	//HTTP事件：收到请求
+	/**
+	 * HTTP事件：收到请求
+	 * 
+	 * @access public
+	 * @param Swoole\Http\Request $request
+	 * @param Swoole\Http\Response $response
+	 */
 	public static function onRequest($request, $response) {
 		$request = new Request($request);
 		$response = new Response($response);

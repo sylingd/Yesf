@@ -16,23 +16,30 @@ use Psr\SimpleCache\CacheInterface;
 use Yesf\Connection\PoolInterface;
 
 class Redis implements CacheInterface {
+	/** @var PoolInterface $pool Connection pool */
 	private $pool;
+
 	public function __construct(PoolInterface $pool) {
 		$this->pool = $pool;
 	}
+
 	public function get($key, $default = null) {
 		$result = $this->pool->get($key);
 		return ($result === false || $result === null) ? $default : unserialize($result);
 	}
+
 	public function set($key, $value, $ttl = null) {
 		return $this->pool->set($key, serialize($value), $ttl);
 	}
+
 	public function delete($key) {
 		return $this->pool->delete($key);
 	}
+
 	public function clear() {
 		$this->pool->flushDb();
 	}
+
 	public function getMultiple($keys, $default = null) {
 		$result = $this->pool->mGet($keys);
 		foreach ($result as $k => $v) {
@@ -44,6 +51,7 @@ class Redis implements CacheInterface {
 		}
 		return array_combine($keys, $result);
 	}
+
 	public function setMultiple($values, $ttl = null) {
 		foreach ($values as $k => $v) {
 			$values[$k] = serialize($v);
@@ -55,9 +63,11 @@ class Redis implements CacheInterface {
 			}
 		}
 	}
+
 	public function deleteMultiple($keys) {
 		return $this->pool->delete($keys);
 	}
+
 	public function has($key) {
 		return $this->pool->exists($key);
 	}

@@ -14,6 +14,7 @@ namespace Yesf\Config;
 interface ConfigInterface {
 	/**
 	 * 获取配置
+	 * 
 	 * @access public
 	 * @param string $key 形似a.b.c的key
 	 * @param mixed $default 默认
@@ -23,6 +24,7 @@ interface ConfigInterface {
 
 	/**
 	 * 检查配置是否存在
+	 * 
 	 * @access public
 	 * @param string $key 形似a.b.c的key
 	 * @return bool

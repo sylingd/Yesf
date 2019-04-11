@@ -122,7 +122,7 @@ class Response {
 	 * 
 	 * @access public
 	 * @param string $tpl 模板路径
-	 * @param boolean $is_abs_path 是否为绝对路径
+	 * @param bool $is_abs_path 是否为绝对路径
 	 */
 	public function display($tpl = null, $is_abs_path = false) {
 		if ($tpl === null) {
@@ -145,7 +145,7 @@ class Response {
 	 * 
 	 * @access public
 	 * @param string $tpl 模板路径
-	 * @param boolean $is_abs_path 是否为绝对路径
+	 * @param bool $is_abs_path 是否为绝对路径
 	 * @return string
 	 */
 	public function render($tpl, $is_abs_path = false) {
@@ -226,8 +226,8 @@ class Response {
 	 * @param int $param[expire] 过期时间，-1为失效，0为SESSION，不传递为从config读取，其他为当前时间+$expire
 	 * @param string $param[path] 若不传递，则从config读取
 	 * @param string $param[domain] 若不传递，则从config读取
-	 * @param boolean $param[https] 是否仅https传递，默认为否
-	 * @param boolean $param[httponly] 是否为httponly
+	 * @param bool $param[https] 是否仅https传递，默认为否
+	 * @param bool $param[httponly] 是否为httponly
 	 */
 	public function cookie($param) {
 		$name = $param['name'];
