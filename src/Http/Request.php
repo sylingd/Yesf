@@ -22,23 +22,43 @@ class Request {
 	public $action = null;
 	public $param = [];
 	public $request_uri = '';
-	public function __construct($sw_request) {
-		$this->sw_request = $sw_request;
+	/** from swoole */
+	public $get;
+	public $post;
+	public $server;
+	public $header;
+	public $cookie;
+	public $files;
+	public function __construct($req) {
+		$this->sw_request = $req;
+		$this->get = &$req->get;
+		$this->post = &$req->post;
+		$this->server = &$req->server;
+		$this->header = &$req->header;
+		$this->cookie = &$req->cookie;
+		$this->files = &$req->files;
 	}
 	public function rawContent() {
 		return $this->sw_request->rawContent();
+	}
+	public function file() {
+		static $res = null;
+		if ($res === null) {
+			$res = [];
+			foreach ($this->files as $v) {
+				$res[] = new File($v);
+			}
+		}
+		return $res;
 	}
 	public function __get($name) {
 		if (isset($this->extra_infos[$name])) {
 			return $this->extra_infos[$name];
 		}
-		if (isset($this->sw_request->{$name})) {
-			return $this->sw_request->{$name};
-		}
 		return null;
 	}
 	public function __isset($name) {
-		return isset($this->extra_infos[$name]) || isset($this->sw_request->{$name});
+		return isset($this->extra_infos[$name]);
 	}
 	public function __set($name, $value) {
 		$this->extra_infos[$name] = $value;
