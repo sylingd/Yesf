@@ -34,7 +34,7 @@ class File implements SessionHandlerInterface {
 		}
 	}
 	
-	public function open(string $save_path, string $session_name) {
+	public function open($save_path, $session_name) {
 		return true;
 	}
 
@@ -42,7 +42,7 @@ class File implements SessionHandlerInterface {
 		return true;
 	}
 
-	public function destroy(string $session_id) {
+	public function destroy($session_id) {
 		if (is_file($this->path . 'sess_' . $session_id)) {
 			unlink($this->path . 'sess_' . $session_id);
 		}
@@ -50,7 +50,7 @@ class File implements SessionHandlerInterface {
 		return true;
 	}
 
-	public function gc(int $maxlifetime) {
+	public function gc($maxlifetime) {
 		foreach (glob($this->path . '/sess_*') as $file) {
             if (filemtime($file) + $maxlifetime < time() && file_exists($file)) {
                 unlink($file);
@@ -58,11 +58,11 @@ class File implements SessionHandlerInterface {
         }
 	}
 
-	public function read(string $session_id) {
+	public function read($session_id) {
 		return (string) file_get_contents($this->path . 'sess_' . $session_id);
 	}
 
-	public function write(string $session_id, string $session_data) {
+	public function write($session_id, $session_data) {
 		return file_put_contents($this->path . 'sess_' . $session_id, $session_data) !== false;
 	}
 }

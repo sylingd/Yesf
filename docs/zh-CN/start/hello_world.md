@@ -53,7 +53,7 @@ require('vendor/autoload.php');
 //应用所在目录
 define("APP_PATH",  __DIR__ . '/application/');
 //初始化
-$app  = new Yesf\Yesf();
+$app = new Yesf\Yesf();
 $app->bootstrap()->run(APP_PATH . "/Config/env.ini");
 ```
 
@@ -68,19 +68,19 @@ server {
   root /web/wwwroot/public/;
   server_name example.com;
   underscores_in_headers on;
-  
+
   proxy_http_version 1.1;
   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
   proxy_set_header X-Real-IP $remote_addr;
   proxy_set_header Host $host;
   proxy_set_header Connection "keep-alive";
-  
+
   location / {
     try_files /$uri $uri/ @proxy;
   }
 
   location @proxy {
-    proxy_pass http://127.0.0.1:9000$request_uri;
+    proxy_pass http://127.0.0.1:9000;
   }
 }
 ```
@@ -133,7 +133,7 @@ class Index extends ControllerAbstract implements ControllerInterface {
 
 * 所有请求均会传入`$request`和`$response`两个参数，这两个参数分别包括了请求的基本信息和回复请求的方法。详细说明请参考下一节
 * 所有echo、var_dump等输出函数，均不会对浏览器输出任何内容
-* 请**不要**抛出异常
+* **不要**抛出异常
 
 ## 视图文件
 
