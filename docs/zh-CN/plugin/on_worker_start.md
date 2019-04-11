@@ -9,7 +9,7 @@ lang: zh-CN
 
 ### 传入参数
 
-* boolean $taskworker 是否为taskworker
+* bool $taskworker 是否为taskworker
 
 * int $worker_id Worker ID
 

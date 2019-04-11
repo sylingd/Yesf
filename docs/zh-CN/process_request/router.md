@@ -48,7 +48,7 @@ function run(Router $router) {
 
 // 当访问 thread-view-123-2.html 时
 class Forum extends ControllerAbstract implements ControllerInterface {
-	public function viewAction(Request $request, Response $response) {
+	public function ViewAction(Request $request, Response $response) {
 		echo $request->param['id']; // 123
 		echo $request->param['page']; // 2
 	}
@@ -61,9 +61,9 @@ class Forum extends ControllerAbstract implements ControllerInterface {
 
 匹配的路径使用一个特别的标识来告诉路由协议如何匹配到路径中的每一个段，这个标识有有两种，可以帮助我们创建我们的路由协议：
 
-* 冒号(:)：包含一个变量用于传递到我们动作控制器中的变量，例如我们使用`:name`，，我们可以在动作中使用`$request->param['name']`获取到它的值。
+* 冒号（：）：包含一个变量用于传递到我们动作控制器中的变量，例如我们使用`:name`，，我们可以在动作中使用`$request->param['name']`获取到它的值。
 
-* 星号(\*)：一个通配符, 意思是在它后面的所有段都将作为一个通配数据被存储，例如我们使用'path/:name/*'，我们访问的`/path/foo/test/value1/another/value2`，那么我们会得到下面的结果：
+* 星号（\*）：一个通配符, 意思是在它后面的所有段都将作为一个通配数据被存储，例如我们使用'path/:name/*'，我们访问的`/path/foo/test/value1/another/value2`，那么我们会得到下面的结果：
 
 ```php
 echo $request->param['test']; // value1
@@ -85,7 +85,7 @@ function run(Router $router) {
 
 // 当访问 user/123/feed/page/1/filter/video 时
 class User extends ControllerAbstract implements ControllerInterface {
-	public function feedAction(Request $request, Response $response) {
+	public function FeedAction(Request $request, Response $response) {
 		echo $request->param['id']; // 123
 		echo $request->param['page']; // 1
 		echo $request->param['filter']; // video
