@@ -28,6 +28,7 @@ class HttpServer {
 	 */
 	public static function onRequest($request, $response) {
 		$request = new Request($request);
+		$request->setCookieHandler([$response, 'cookie']);
 		$response = new Response($response);
 		Container::getInstance()
 			->get(Dispatcher::class)

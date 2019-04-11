@@ -9,8 +9,9 @@
  * @copyright Copyright (c) 2017-2018 ShuangYa
  * @license https://yesf.sylibs.com/license
  */
-
 namespace Yesf\Http;
+
+use SessionHandlerInterface;
 use Yesf\Yesf;
 use Yesf\Plugin;
 use Yesf\Logger;
@@ -24,9 +25,11 @@ class Dispatcher {
 	const ROUTE_ERR_ACTION = 3;
 
 	private $router;
+	private $session_handler;
 	private $modules;
-	public function __construct(Router $router) {
+	public function __construct(Router $router, SessionHandlerInterface $session) {
 		$this->router = $router;
+		$this->session_handler = $session;
 		$this->modules = Yesf::app()->getConfig('modules', Yesf::CONF_PROJECT);
 	}
 	/**
@@ -53,10 +56,38 @@ class Dispatcher {
 	}
 	/**
 	 * Set router
+	 * 
+	 * @access public
+	 * @param RouterInterface $router Router
 	 */
 	public function setRouter(RouterInterface $router) {
 		$this->router = $router;
 	}
+	/**
+	 * Set session handler
+	 * 
+	 * @access public
+	 * @param SessionHandlerInterface $handler Session handler
+	 */
+	public function setSessionHandler(SessionHandlerInterface $handler) {
+		$this->session_handler = $handler;
+		$handler->open('', '');
+	}
+	/**
+	 * Get session handler
+	 * 
+	 * @access public
+	 */
+	public function getSessionHandler() {
+		return $this->session_handler;
+	}
+	/**
+	 * Handle http request
+	 * 
+	 * @access public
+	 * @param Request $req Request
+	 * @param Response $res Response
+	 */
 	public function handleRequest(Request $req, Response $res) {
 		if (Plugin::trigger('beforeRoute', [$uri]) === null) {
 			$this->router->parse($req);
@@ -71,7 +102,7 @@ class Dispatcher {
 	}
 	/**
 	 * 进行路由分发
-	 * @codeCoverageIgnore
+	 * 
 	 * @access public
 	 * @param array $routeInfo 路由信息
 	 * @param object $request 请求内容
@@ -106,6 +137,7 @@ class Dispatcher {
 		} catch (\Throwable $e) {
 			$result = self::handleDispathException($request, $response, $e);
 		}
+		$request->end();
 		$response->end();
 		unset($request, $response);
 		return $result;

@@ -1,0 +1,72 @@
+<?php
+/**
+ * Session支持类
+ * 
+ * @author ShuangYa
+ * @package Yesf
+ * @category Base
+ * @link https://www.sylingd.com/
+ * @copyright Copyright (c) 2017-2018 ShuangYa
+ * @license https://yesf.sylibs.com/license
+ */
+namespace Yesf\Http;
+
+use ArrayAccess;
+
+class Session implements ArrayAccess {
+	private $id;
+	private $sess;
+	public function __construct($id, $sess = null) {
+		$this->id = $id;
+		if (!empty($sess)) {
+			$this->sess = unserialize($sess);
+		} else {
+			$this->sess = [];
+		}
+	}
+	public function id() {
+		return $this->id;
+	}
+	public function has($offset) {
+		return isset($this->sess[$offset]);
+	}
+
+	public function get($offset) {
+		return $this->sess[$offset];
+	}
+	
+	public function set($offset, $value) {
+		$this->sess[$offset] = $value;
+	}
+	
+	public function delete($offset) {
+		unset($this->sess[$offset]);
+	}
+
+	public function clear() {
+		$this->sess[$offset] = [];
+	}
+	
+	public function encode() {
+		return serialize($this->sess);
+	}
+
+	/**
+	 * ArrayAccess
+	 */
+	public function offsetExists($offset) {
+		return $this->has($offset);
+	}
+
+	public function offsetGet($offset) {
+		return $this->get($offset);
+	}
+
+	public function offsetSet($offset, $value) {
+		$this->set($offset, $value);
+	}
+
+	public function offsetUnset($offset) {
+		$this->delete($offset);
+	}
+}

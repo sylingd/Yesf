@@ -30,6 +30,7 @@ class Internal {
 		Response::init();
 		Response::initInWorker();
 		Helper::setRDAlias();
+		Helper::setSessionAlias();
 		Helper::setCacheAlias();
 		Pool::init();
 	}

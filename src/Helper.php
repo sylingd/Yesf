@@ -11,6 +11,7 @@
  */
 namespace Yesf;
 
+use SessionHandlerInterface;
 use Psr\SimpleCache\CacheInterface;
 use Yesf\Cache\File;
 use Yesf\DI\Container;
@@ -25,6 +26,11 @@ class Helper {
 		Container::getInstance()->set(RDInterface::class, function() use ($default) {
 			return Pool::getAdapter($default);
 		});
+	}
+	public static function setSessionAlias() {
+		$default = Yesf::app()->getConfig('session.handler');
+		$clazz = 'Yesf\\Http\\SessionHandler\\' . ucfirst($default);
+		Container::getInstance()->set(SessionHandlerInterface::class, $clazz);
 	}
 	public static function setCacheAlias() {
 		$default = Yesf::app()->getConfig('cache.default');
