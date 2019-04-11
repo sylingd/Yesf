@@ -25,6 +25,9 @@ class SessionHandler implements SessionHandlerInterface {
 	public function __construct(CacheInterface $cache) {
 		$this->cache = $cache;
 		$this->lifetime = Yesf::app()->getConfig('session.lifetime');
+		if ($this->lifetime === null) {
+			$this->lifetime = 720;
+		}
 	}
 	
 	public function open($save_path, $session_name) {

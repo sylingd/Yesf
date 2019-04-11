@@ -65,6 +65,7 @@ module.exports = {
             children: [
               '/zh-CN/process_request/router',
               '/zh-CN/process_request/request',
+              '/zh-CN/process_request/session',
               '/zh-CN/process_request/response'
             ]
           },
