@@ -29,7 +29,11 @@ class Redis implements CacheInterface {
 	}
 
 	public function set($key, $value, $ttl = null) {
-		return $this->pool->set($key, serialize($value), $ttl);
+		if ($ttl !== null) {
+			return $this->pool->setEx($key, $ttl * 100, serialize($value));
+		} else {
+			return $this->pool->set($key, serialize($value));
+		}
 	}
 
 	public function delete($key) {
@@ -59,7 +63,7 @@ class Redis implements CacheInterface {
 		$this->pool->mSet($values);
 		if ($ttl !== null) {
 			foreach ($values as $k => $v) {
-				$this->pool->expire($k, $ttl);
+				$this->pool->expire($k, $ttl * 100);
 			}
 		}
 	}

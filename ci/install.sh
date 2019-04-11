@@ -61,7 +61,7 @@ main() {
 		echo -e "Skip install Yac\n"
 	fi
 
-	# Install Yaconfcd $stage
+	# Install Yaconf
 	installExt "yaconf" "laruence/yaconf" "yaconf-${yaconf_ver}" "yaconf-yaconf-${yaconf_ver}"
 }
 
