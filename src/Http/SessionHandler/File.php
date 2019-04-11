@@ -59,7 +59,11 @@ class File implements SessionHandlerInterface {
 	}
 
 	public function read($session_id) {
-		return (string) file_get_contents($this->path . 'sess_' . $session_id);
+		if (is_file($this->path . 'sess_' . $session_id)) {
+			return (string) file_get_contents($this->path . 'sess_' . $session_id);
+		} else {
+			return '';
+		}
 	}
 
 	public function write($session_id, $session_data) {
