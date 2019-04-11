@@ -26,4 +26,30 @@ class RequestTest extends TestCase {
 		$this->assertEquals('test', $request->get['action']);
 		$this->assertNull($request->hahaha);
 	}
+	public function testSession() {
+		$id = uniqid();
+		$req = clone self::$fake_req;
+		$req->cookie['testsessid'] = $id;
+		$request = new Request($req);
+		$request->setCookieHandler([$this, 'handleCookie']);
+		$session = $request->session();
+		$this->assertNull($session->get('key'));
+		// Save session
+		$session->set('key', $id);
+		$request->end();
+		unset($req, $request, $session);
+		// Get session
+		$req = clone self::$fake_req;
+		$req->cookie['testsessid'] = $id;
+		$request = new Request($req);
+		$request->setCookieHandler([$this, 'handleCookie']);
+		$session = $request->session();
+		$this->assertSame($id, $session->get('key'));
+		// Clear
+		$session->clear();
+		$this->assertNull($session->get('key'));
+	}
+	public function handleCookie($name, $value, $expire, $path) {
+		//
+	}
 }

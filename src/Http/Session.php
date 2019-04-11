@@ -14,8 +14,19 @@ namespace Yesf\Http;
 use ArrayAccess;
 
 class Session implements ArrayAccess {
+	/** @var string $id Session ID */
 	private $id;
+
+	/** @var array $sess Session content */
 	private $sess;
+
+	/**
+	 * Constructor
+	 * 
+	 * @access public
+	 * @param string $id Session ID
+	 * @param string $sess Saved session content
+	 */
 	public function __construct($id, $sess = null) {
 		$this->id = $id;
 		if (!empty($sess)) {
@@ -32,7 +43,7 @@ class Session implements ArrayAccess {
 	}
 
 	public function get($offset) {
-		return $this->sess[$offset];
+		return isset($this->sess[$offset]) ? $this->sess[$offset] : null;
 	}
 	
 	public function set($offset, $value) {

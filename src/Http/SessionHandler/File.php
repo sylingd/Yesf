@@ -11,7 +11,10 @@
  */
 namespace Yesf\Http\SessionHandler;
 
-class File {
+use SessionHandlerInterface;
+use Yesf\Yesf;
+
+class File implements SessionHandlerInterface {
 	/** @var string $path Session file directory */
 	private $path;
 

@@ -41,9 +41,21 @@ class Request {
 		$this->cookie = &$req->cookie;
 		$this->files = &$req->files;
 	}
+	/**
+	 * Get original post body
+	 * 
+	 * @access public
+	 * @return string
+	 */
 	public function rawContent() {
 		return $this->sw_request->rawContent();
 	}
+	/**
+	 * Get uploaded files
+	 * 
+	 * @access public
+	 * @return array
+	 */
 	public function file() {
 		static $res = null;
 		if ($res === null) {
@@ -54,21 +66,39 @@ class Request {
 		}
 		return $res;
 	}
+	/**
+	 * Get session
+	 * 
+	 * @access public
+	 * @return object
+	 */
 	public function session() {
 		if ($this->session === null) {
 			$name = Yesf::app()->getConfig('session.name');
+			$type = Yesf::app()->getConfig('session.type');
 			if ($name === null) {
 				$name = 'YESFSESSID';
 			}
-			if (!isset($this->cookie[$name])) {
-				$id = uniqid();
-				if (is_array($this->cookie_handler)) {
-					$this->cookie_handler[0]->{$this->cookie_handler[1]}($name, $id, 0, '/');
+			if ($type === null) {
+				$type = 'cookie';
+			}
+			if ($type === 'cookie') {
+				if (!isset($this->cookie[$name])) {
+					$id = uniqid();
+					if (is_array($this->cookie_handler)) {
+						$this->cookie_handler[0]->{$this->cookie_handler[1]}($name, $id, 0, '/');
+					} else {
+						$this->cookie_handler($name, $id, 0, '/');
+					}
 				} else {
-					$this->cookie_handler($name, $id, 0, '/');
+					$id = $this->cookie[$name];
 				}
 			} else {
-				$id = $this->cookie[$name];
+				if (!isset($this->get[$name])) {
+					$id = uniqid();
+				} else {
+					$id = $this->get[$name];
+				}
 			}
 			$handler = Container::getInstance()->get(Dispatcher::class)->getSessionHandler();
 			$saved = $handler->read($id);
@@ -76,6 +106,12 @@ class Request {
 		}
 		return $this->session;
 	}
+	/**
+	 * Set cookie handler, used by session
+	 * 
+	 * @access public
+	 * @param callable $handler Cookie handler
+	 */
 	public function setCookieHandler($handler) {
 		$this->cookie_handler = $handler;
 	}
@@ -94,11 +130,23 @@ class Request {
 	public function __unset($name) {
 		unset($this->extra_infos[$name]);
 	}
+	/**
+	 * Finish request, release resources
+	 * 
+	 * @access public
+	 */
 	public function end() {
+		$this->get = null;
+		$this->post = null;
+		$this->server = null;
+		$this->header = null;
+		$this->cookie = null;
+		$this->files = null;
 		$this->sw_request = null;
 		if ($this->session !== null) {
 			$handler = Container::getInstance()->get(Dispatcher::class)->getSessionHandler();
 			$handler->write($this->session->id(), $this->session->encode());
+			$this->session = null;
 		}
 	}
 	public function __destruct() {
