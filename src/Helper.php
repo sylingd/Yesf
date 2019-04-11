@@ -19,6 +19,7 @@ use Yesf\RD\RDInterface;
 use Yesf\Connection\Pool;
 use Yesf\Http\Router;
 use Yesf\Http\RouterInterface;
+use Yesf\Http\SessionHandler;
 
 class Helper {
 	public static function setRDAlias() {
@@ -28,9 +29,7 @@ class Helper {
 		});
 	}
 	public static function setSessionAlias() {
-		$default = Yesf::app()->getConfig('session.handler');
-		$clazz = 'Yesf\\Http\\SessionHandler\\' . ucfirst($default);
-		Container::getInstance()->set(SessionHandlerInterface::class, $clazz);
+		Container::getInstance()->set(SessionHandlerInterface::class, SessionHandler::class);
 	}
 	public static function setCacheAlias() {
 		$default = Yesf::app()->getConfig('cache.default');
