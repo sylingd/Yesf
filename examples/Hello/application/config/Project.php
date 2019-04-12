@@ -5,8 +5,12 @@ return [
 	'charset' => 'utf-8',
 	'bootstrap' => 'Bootstrap',
 	'router' => [
-		'type' => 'map',
 		'extension' => true
+	],
+	'static' => [
+		'enable' => true,
+		'prefix' => '/',
+		'dir' => '@APP/Static'
 	],
 	'modules' => ['index', 'admin'],
 	'module' => 'index',

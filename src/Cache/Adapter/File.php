@@ -2,6 +2,7 @@
 /**
  * 文件
  * 
+ * @see Psr\SimpleCache\CacheInterface
  * @author ShuangYa
  * @package Yesf
  * @category Cache
@@ -30,6 +31,7 @@ class File implements CacheInterface {
 		if (!is_dir($this->path)) {
 			mkdir($this->path, 0777, true);
 		}
+		$this->path = str_replace('\\', '/', $this->path);
 		if (substr($this->path, -1) !== '/') {
 			$this->path .= '/';
 		}

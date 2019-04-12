@@ -47,6 +47,9 @@ module.exports = {
               link: 'http://yesf-cn.sylibs.com'
             }
           ]
+        }, {
+          text: 'PHPDoc',
+          link: 'https://apidoc.gitee.com/sy/Yesf/namespaces/Yesf.html'
         }],
         sidebar: [
           '/zh-CN/guide',
@@ -63,6 +66,7 @@ module.exports = {
             title: '请求处理',
             path: '/zh-CN/process_request/',
             children: [
+              '/zh-CN/process_request/static',
               '/zh-CN/process_request/router',
               '/zh-CN/process_request/request',
               '/zh-CN/process_request/session',
@@ -114,6 +118,9 @@ module.exports = {
               link: 'http://yesf-cn.sylibs.com'
             }
           ]
+        }, {
+          text: 'PHPDoc',
+          link: 'https://apidoc.gitee.com/sy/Yesf/namespaces/Yesf.html'
         }],
         sidebar: []
       }

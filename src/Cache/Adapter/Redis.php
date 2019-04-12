@@ -3,6 +3,7 @@
  * Redis
  * 在某些环境下，可能需要用户使用co::create手动创建协程环境
  * 
+ * @see Psr\SimpleCache\CacheInterface
  * @author ShuangYa
  * @package Yesf
  * @category Cache

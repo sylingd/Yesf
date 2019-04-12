@@ -17,6 +17,7 @@ use Yesf\Plugin;
 use Yesf\Logger;
 use Yesf\DI\Container;
 use Yesf\DI\GetEntryUtil;
+use Yesf\Exception\NotFoundException;
 
 class Dispatcher {
 	const ROUTE_VALID = 0;
@@ -24,13 +25,40 @@ class Dispatcher {
 	const ROUTE_ERR_CONTROLLER = 2;
 	const ROUTE_ERR_ACTION = 3;
 
+	/** @var RouterInterface $router Router */
 	private $router;
+
+	/** @var SessionHandlerInterface $session_handler Session Handler */
 	private $session_handler;
+
+	/** @var array $modules Avaliable modules */
 	private $modules;
+
+	/** @var bool $static_enable Enable static handler */
+	private $static_enable = false;
+	/** @var string $static_prefix Static files url prefix */
+	private $static_prefix = '';
+	/** @var string $static_dir Static directory */
+	private $static_dir = '';
+
 	public function __construct(Router $router, SessionHandlerInterface $session) {
 		$this->router = $router;
 		$this->session_handler = $session;
 		$this->modules = Yesf::app()->getConfig('modules', Yesf::CONF_PROJECT);
+
+		$static = Yesf::app()->getConfig('static', Yesf::CONF_PROJECT);
+		if ($static === true || (is_array($static) && $static['enable'])) {
+			$this->static_enable = true;
+			$this->static_prefix = isset($static['prefix']) ? $static['prefix'] : '/';
+			$this->static_dir = isset($static['dir']) ? str_replace('@APP', APP_PATH, $static['dir']) : APP_PATH . '/Static';
+			if (!is_dir($this->static_dir)) {
+				throw new NotFoundException("Directory {$this->static_dir} not exists");
+			}
+			$this->static_dir = str_replace('\\', '/', $this->static_dir);
+			if (substr($this->static_dir, -1) !== '/') {
+				$this->static_dir .= '/';
+			}
+		}
 	}
 	/**
 	 * 判断路由是否合法
@@ -89,6 +117,21 @@ class Dispatcher {
 	 * @param Response $res Response
 	 */
 	public function handleRequest(Request $req, Response $res) {
+		if ($this->static_enable) {
+			$uri = $req->server['request_uri'];
+			if (strpos($uri, $this->static_prefix) === 0) {
+				$uri = substr($uri, strlen($this->static_prefix));
+			}
+			$path = realpath($this->static_dir . $uri);
+			if ($path !== false && strpos($path, $this->static_dir) === 0) {
+				if (Plugin::trigger('beforeStatic', [$path, $request, $response]) === null) {
+					$res->mimeType(pathinfo($path, PATHINFO_EXTENSION));
+					$res->sendfile($path);
+				}
+				Plugin::trigger('afterStatic', [$path, $request, $response]);
+				return;
+			}
+		}
 		if (Plugin::trigger('beforeRoute', [$uri]) === null) {
 			$this->router->parse($req);
 		}

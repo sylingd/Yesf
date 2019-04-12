@@ -1,7 +1,8 @@
 <?php
 /**
- * 文件
+ * Yac
  * 
+ * @see Psr\SimpleCache\CacheInterface
  * @author ShuangYa
  * @package Yesf
  * @category Cache
