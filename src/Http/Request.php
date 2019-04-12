@@ -82,26 +82,29 @@ class Request {
 			if ($type === null) {
 				$type = 'cookie';
 			}
+			$handler = Container::getInstance()->get(Dispatcher::class)->getSessionHandler();
 			if ($type === 'cookie') {
 				if (!isset($this->cookie[$name])) {
-					$id = uniqid();
-					if (is_array($this->cookie_handler)) {
-						$this->cookie_handler[0]->{$this->cookie_handler[1]}($name, $id, 0, '/');
-					} else {
-						$this->cookie_handler($name, $id, 0, '/');
-					}
+					do {
+						$id = Session::generateId();
+					} while ($handler->read($id) !== '');
+					$saved = '';
+					$this->cookie_handler[0]->{$this->cookie_handler[1]}($name, $id, 0, '/');
 				} else {
 					$id = $this->cookie[$name];
+					$saved = $handler->read($id);
 				}
 			} else {
 				if (!isset($this->get[$name])) {
-					$id = uniqid();
+					do {
+						$id = Session::generateId();
+					} while ($handler->read($id) !== '');
+					$saved = '';
 				} else {
 					$id = $this->get[$name];
+					$saved = $handler->read($id);
 				}
 			}
-			$handler = Container::getInstance()->get(Dispatcher::class)->getSessionHandler();
-			$saved = $handler->read($id);
 			$this->session = new Session($id, $saved);
 		}
 		return $this->session;

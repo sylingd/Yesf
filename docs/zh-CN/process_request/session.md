@@ -51,7 +51,7 @@ public function MyAction(Request $request, Response $response) {
 
 | 方法 | 描述 | 参数 | 返回 | 示例 |
 | --- | ---- | --- | --- | ---- |
-| id | 获得Session ID | 无 | string | `$id = $session->id();` | 
+| id | 获得SessionID | 无 | string | `$id = $session->id();` | 
 | set | 赋值 | `set(mixed 名称, mixed 值)` | 无 | `$session->set('name', 'admin');` |
 | get | 获取 | `get(mixed 名称)` | mixed | `echo $session->get('name');` |
 | has | 判断是否存在 | `has(mixed 名称)` | bool | `var_dump($session->has('name'));` |
@@ -61,6 +61,7 @@ public function MyAction(Request $request, Response $response) {
 ```php
 public function MyAction(Request $request, Response $response) {
 	$session = $request->session();
+	echo $session->id();
 	$session->set('user', 'admin');
 	echo $session->get('user');
 	$session->delete('user');
@@ -70,7 +71,7 @@ public function MyAction(Request $request, Response $response) {
 
 ## 自定义SessionHandler
 
-编写类，实现[SessionHandlerInterface](https://www.php.net/manual/zh/class.sessionhandlerinterface.php)。其中，open、close、gc均只需一个空方法。主要实现read和write，如：
+编写类，实现[SessionHandlerInterface](https://www.php.net/manual/zh/class.sessionhandlerinterface.php)。其中，open、close、gc均只需一个空方法。主要实现read、write、destroy，如：
 
 ```php
 public function read($session_id) {
@@ -80,18 +81,24 @@ public function read($session_id) {
 public function write($session_id, $session_data) {
 	return $this->cache->set('sess_' . $session_id, $session_data, $this->lifetime);
 }
+
+public function destroy($session_id) {
+	return $this->cache->delete('sess_' . $session_id);
+}
 ```
 
 在Dispatcher上注册：
 
 ```php
 namespace YesfApp;
-use MySessionHandler;
-use Yesf\Http\Dispatcher;
 
 class Bootstrap {
-	public Dispatcher $dispatcher;
-	public MySessionHandler $session_handler;
+	/** @Autowired Yesf\Http\Dispatcher */
+	public  $dispatcher;
+
+	/** @Autowired MySessionHandler */
+	public $session_handler;
+
 	public function run() {
 		$this->dispatcher->setSessionHandler($this->session_handler);
 	}

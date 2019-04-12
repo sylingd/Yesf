@@ -127,12 +127,14 @@ class MyRouter implements RouterInterface {
 
 ```php
 namespace YesfApp;
-use MyRouter;
-use Yesf\Http\Dispatcher;
 
 class Bootstrap {
-	public Dispatcher $dispatcher;
-	public MyRouter $router;
+	/** @Autowired Yesf\Http\Dispatcher */
+	public $dispatcher;
+
+	/** @Autowired MyRouter */
+	public $router;
+
 	public function run() {
 		$this->dispatcher->setRouter($this->router);
 	}

@@ -21,6 +21,17 @@ class Session implements ArrayAccess {
 	private $sess;
 
 	/**
+	 * Generate session id
+	 * Notice this function didn't check is this id already use or not
+	 * 
+	 * @access public
+	 * @return string
+	 */
+	public static function generateId() {
+		return bin2hex(random_bytes(10));
+	}
+
+	/**
 	 * Constructor
 	 * 
 	 * @access public
