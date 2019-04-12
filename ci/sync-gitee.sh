@@ -16,6 +16,8 @@ main() {
 
 	# Upload
 	cd $TRAVIS_BUILD_DIR
+	git config user.name "ShuangYa"
+	git config user.email "$GIT_MAIL"
 	git push --quiet "https://sy:${GITEE_TOKEN}@gitee.com/${gitee_repo}.git" master:master
 }
 
