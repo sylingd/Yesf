@@ -41,7 +41,8 @@ class Container implements ContainerInterface {
 		return self::$_instance;
 	}
 	private function __construct() {
-		// Do nothing
+		$this->set(ContainerInterface::class, self::class);
+		$this->instance[Container::class] = $this;
 	}
 	/**
 	 * Set alias or closure creaters
