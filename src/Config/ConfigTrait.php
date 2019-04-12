@@ -12,7 +12,6 @@
 namespace Yesf\Config;
 
 trait ConfigTrait {
-	private $replace = [];
 	/**
 	 * 魔术方法，方便调用
 	 */

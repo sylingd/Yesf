@@ -24,7 +24,7 @@ class Vars {
 			return 'application/octet-stream';
 		}
 		$mimeType = self::$mimeTypes[$extension];
-		if (in_array($extension, ['js', 'json', 'atom', 'rss', 'xhtml'], true) || substr($mimeType, 0, 5) === 'text/') {
+		if ($includeCharset && in_array($extension, ['js', 'json', 'atom', 'rss', 'xhtml'], true) || substr($mimeType, 0, 5) === 'text/') {
 			$mimeType .= '; charset=' . Yesf::app()->getConfig('charset', Yesf::CONF_PROJECT);
 		}
 		return $mimeType;

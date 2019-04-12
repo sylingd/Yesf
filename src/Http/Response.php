@@ -48,7 +48,7 @@ class Response {
 	 */
 	public static function init() {
 		$view_config = Yesf::app()->getConfig('view', Yesf::CONF_PROJECT);
-		self::$tpl_auto_config = ($view_config['auto'] == 1) ? true : false;
+		self::$tpl_auto_config = $view_config['auto'] === true;
 		self::$tpl_extension = ($view_config['extension'] ? $view_config['extension'] : 'phtml');
 		self::$tpl_engine = Template::class;
 		Container::getInstance()->setMulti(Template::class, Container::MULTI_CLONE);
@@ -76,7 +76,7 @@ class Response {
 		if (!is_subclass_of($clazz, __NAMESPACE__ . '\\TemplateInterface')) {
 			throw new InvalidClassException("$clazz not implemented TemplateInterface");
 		}
-		self::$tpl_engine = $classId;
+		self::$tpl_engine = $id;
 	}
 	/**
 	 * 设置当前响应使用的模板类

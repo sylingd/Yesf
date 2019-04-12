@@ -124,11 +124,11 @@ class Dispatcher {
 			}
 			$path = realpath($this->static_dir . $uri);
 			if ($path !== false && strpos($path, $this->static_dir) === 0) {
-				if (Plugin::trigger('beforeStatic', [$path, $request, $response]) === null) {
+				if (Plugin::trigger('beforeStatic', [$path, $req, $res]) === null) {
 					$res->mimeType(pathinfo($path, PATHINFO_EXTENSION));
 					$res->sendfile($path);
 				}
-				Plugin::trigger('afterStatic', [$path, $request, $response]);
+				Plugin::trigger('afterStatic', [$path, $req, $res]);
 				return;
 			}
 		}
@@ -137,11 +137,11 @@ class Dispatcher {
 		}
 		$result = null;
 		//触发beforeDispatcher事件
-		if (Plugin::trigger('beforeDispatch', [$request, $response]) === null) {
+		if (Plugin::trigger('beforeDispatch', [$req, $res]) === null) {
 			$result = $this->dispatch($req, $res);
 		}
 		//触发afterDispatcher事件
-		Plugin::trigger('afterDispatch', [$request, $response, $result]);
+		Plugin::trigger('afterDispatch', [$req, $res, $result]);
 	}
 	/**
 	 * 进行路由分发

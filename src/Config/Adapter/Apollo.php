@@ -82,9 +82,9 @@ class Apollo implements ConfigInterface {
 			$this->last_key);
 		if ($this->conf['with_ip']) {
 			$cidr = Container::getInstance()->get(CIDRmatch::class);
-			foreach (swoole_get_local_ip() as $k => $v) {
+			foreach (swoole_get_local_ip() as $v) {
 				if ($cidr->match($v, $this->conf['with_ip'])) {
-					$url .= '&ip=' . $v;
+					$path .= '&ip=' . $v;
 					break;
 				}
 			}

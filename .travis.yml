@@ -18,6 +18,7 @@ cache:
     - $HOME/.composer/cache/files
 
 before_install:
+  - bash ci/sync-gitee.sh
   - mkdir build
   - phpenv config-rm xdebug.ini
   - bash ci/install.sh

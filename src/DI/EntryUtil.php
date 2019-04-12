@@ -19,7 +19,6 @@ use Yesf\Exception\CyclicDependencyException;
 
 class EntryUtil {
 	public static function controller($module, $controller) {
-		$controllerName = Yesf::app()->getConfig('namespace', Yesf::CONF_PROJECT) . '\\Module\\' . $module . '\\Controller\\' . ucfirst($controller);
-		return $controllerName;
+		return Yesf::app()->getConfig('namespace', Yesf::CONF_PROJECT) . '\\Module\\' . $module . '\\Controller\\' . ucfirst($controller);
 	}
 }

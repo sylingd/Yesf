@@ -47,11 +47,11 @@ class File implements CacheInterface {
 	}
 
 	public function get($key, $default = null) {
-		$path = $this->getPath($key);
-		if (!is_file($path)) {
+		$fullpath = $this->getPath($key);
+		if (!is_file($fullpath)) {
 			return $default;
 		}
-		$res = co::readFile($path);
+		$res = co::readFile($fullpath);
 		if ($res === false) {
 			return $default;
 		}
@@ -61,8 +61,7 @@ class File implements CacheInterface {
 			$this->delete($key);
 			return $default;
 		}
-		$res = unserialize(substr($res, 10));
-		return $res;
+		return unserialize(substr($res, 10));
 	}
 
 	public function set($key, $value, $ttl = null) {

@@ -5,7 +5,6 @@ return [
 	'charset' => 'utf-8',
 	'bootstrap' => 'Bootstrap',
 	'router' => [
-		'type' => 'map',
 		'extension' => true
 	],
 	'modules' => ['index', 'admin'],

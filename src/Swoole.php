@@ -184,8 +184,8 @@ class Swoole {
 			$result = [];
 			$ids = [];
 			foreach ($data as $k => $v) {
-				$task_id = self::$server->task($v, -1, function($serv, $id, $rs) use (&$data, &$result, &$callback) {
-					$result[$ids[$id]] = $rs;
+				$task_id = self::$server->task($v, -1, function($serv, $id, $res) use (&$data, &$result, &$callback) {
+					$result[$ids[$task_id]] = $res;
 					if (count($result) === count($data)) {
 						$callback($data);
 					}

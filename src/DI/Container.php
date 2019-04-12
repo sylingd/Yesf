@@ -77,16 +77,9 @@ class Container implements ContainerInterface {
 			$source = $this->getter[$source];
 		}
 		if (!is_string($source)) {
-			if ($source instanceof \Closure) {
-				return true;
-			} else {
-				return false;
-			}
+			return $source instanceof \Closure;
 		} else {
-			if (isset($this->instance[$source])) {
-				return true;
-			}
-			if (class_exists($source)) {
+			if (isset($this->instance[$source]) || class_exists($source)) {
 				return true;
 			}
 			return false;
