@@ -9,7 +9,6 @@
  * @copyright Copyright (c) 2017-2018 ShuangYa
  * @license https://yesf.sylibs.com/license
  */
-
 namespace Yesf\Exception;
 
 class DBException extends Exception {

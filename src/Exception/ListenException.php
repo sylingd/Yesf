@@ -1,6 +1,6 @@
 <?php
 /**
- * 启动异常类
+ * 普通异常类
  * 
  * @author ShuangYa
  * @package Yesf
@@ -11,5 +11,5 @@
  */
 namespace Yesf\Exception;
 
-class StartException extends Exception {
+class ListenException extends Exception {
 }

@@ -9,11 +9,12 @@
  * @copyright Copyright (c) 2017-2018 ShuangYa
  * @license https://yesf.sylibs.com/license
  */
-
 namespace Yesf;
+
 use Swoole\Http\Server as SwooleServer;
 use Yesf\Yesf;
 use Yesf\Event\Server;
+use Yesf\Event\Listener;
 use Yesf\Event\HttpServer;
 use Yesf\Exception\NotFoundException;
 
@@ -43,9 +44,6 @@ class Swoole {
 			$config['ssl_key_file'] = $ssl['key'];
 		}
 		if (Yesf::app()->getConfig('http2', Yesf::CONF_SERVER)) {
-			if (!isset($config['ssl_cert_file'])) {
-				throw new NotFoundException('Certfile not found');
-			}
 			$config['open_http2_protocol'] = true;
 		}
 		self::$server->set($config);
@@ -91,63 +89,13 @@ class Swoole {
 	 * @access public
 	 * @param int $type 监听类型
 	 * @param mixed $config 选项，可以为数组或配置项名称
-	 * @param callable $callback 回调函数
 	 * @return bool
 	 */
-	public static function addListener(int $type, $config, callable $callback) {
+	public static function listen(int $type, $config) {
 		if (is_string($config)) {
 			$config = Yesf::app()->getConfig($config, Yesf::CONF_SERVER);
 		}
-		//If type is unix, do not need port
-		if ($type === self::LISTEN_UNIX || $type === self::LISTEN_UNIX_DGRAM) {
-			$addr = $config['sock'];
-			$port = 0;
-			if (empty($addr)) {
-				return false;
-			}
-			if (isset(Server::$_listener[$addr])) {
-				return false;
-			}
-			Server::$_listener[$addr] = $callback;
-		} else {
-			$addr = isset($config['ip']) ? $config['ip'] : Yesf::app()->getConfig('ip', Yesf::CONF_SERVER);
-			if (!isset($config['port'])) {
-				return false;
-			}
-			$port = $config['port'];
-			if (isset(Server::$_listener[$port])) {
-				return false;
-			}
-			Server::$_listener[$port] = $callback;
-		}
-		if ($type === self::LISTEN_TCP || $type === self::LISTEN_TCP6 || $type === self::LISTEN_UNIX) {
-			//Unix或TCP
-			$service = self::$server->addListener($addr, $port, $type);
-			if (isset($config['advanced'])) {
-				$service->set($config['advanced']);
-			}
-			$callback_key = ($type === self::LISTEN_UNIX ? $addr : $port);
-			$service->on('Receive', function($server, $fd, $from_id, $data) use ($callback_key) {
-				Server::onReceive($callback_key, $fd, $from_id, $data);
-			});
-			$service->on('Connect', function($server, $fd, $from_id) use ($callback_key) {
-				Server::onConnect($callback_key, $fd, $from_id);
-			});
-			$service->on('Close', function($server, $fd, $from_id) use ($callback_key) {
-				Server::onClose($callback_key, $fd, $from_id);
-			});
-		} elseif ($type === self::LISTEN_UDP || $type === self::LISTEN_UDP6 || $type === self::LISTEN_UNIX_DGRAM) {
-			//Unix dgram或UDP
-			$service = self::$server->addListener($addr, $port, $type);
-			if (isset($config['advanced'])) {
-				$service->set($config['advanced']);
-			}
-			$callback_key = ($type === self::LISTEN_UNIX_DGRAM ? $addr : $port);
-			$service->on('Packet', function($server, string $data, array $client_info) use ($callback_key) {
-				Server::onPacket($callback_key, $data, $client_info);
-			});
-		}
-		return true;
+		return new Listener($type, $config);
 	}
 	/**
 	 * 投递Task
@@ -184,8 +132,8 @@ class Swoole {
 			$result = [];
 			$ids = [];
 			foreach ($data as $k => $v) {
-				$task_id = self::$server->task($v, -1, function($serv, $id, $res) use (&$data, &$result, &$callback) {
-					$result[$ids[$task_id]] = $res;
+				$task_id = self::$server->task($v, -1, function($serv, $id, $res) use (&$data, &$result, &$callback, &$ids) {
+					$result[$ids[$id]] = $res;
 					if (count($result) === count($data)) {
 						$callback($data);
 					}
