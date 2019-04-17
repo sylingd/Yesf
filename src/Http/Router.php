@@ -26,7 +26,7 @@ class Router implements RouterInterface {
 	protected $router = null;
 	protected $module = 'index';
 	public function __construct() {
-		$this->module = Yesf::app()->getConfig('index', Yesf::CONF_PROJECT);
+		$this->module = Yesf::app()->getConfig('module', Yesf::CONF_PROJECT);
 		$this->router = Yesf::app()->getConfig('router', Yesf::CONF_PROJECT);
 	}
 	public function setPrefix($prefix = '/') {
@@ -108,7 +108,6 @@ class Router implements RouterInterface {
 		$regex = '/^' . $regex . '$/';
 		$this->rewrite[] = [
 			'regex' => $regex,
-			'rule' => $rule,
 			'param' => $param,
 			'dispatch' => $dispatch
 		];
