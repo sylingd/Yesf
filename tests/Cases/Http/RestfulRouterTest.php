@@ -19,7 +19,7 @@ class RestfulRouterTest extends TestCase {
 	public function testParamCorrect() {
 		$this->req_content->server['request_method'] = 'get';
 		$this->req_content->server['request_uri'] = '/user/123';
-		$this->router->get('user/:id', [
+		$this->router->get('user/{id}', [
 			'module' => 'index',
 			'controller' => 'user',
 			'action' => 'view'
@@ -35,7 +35,7 @@ class RestfulRouterTest extends TestCase {
 	public function testParamIncorrect() {
 		$this->req_content->server['request_method'] = 'get';
 		$this->req_content->server['request_uri'] = '/user/someone';
-		$this->router->get('user/:id', [
+		$this->router->get('user/{id}', [
 			'module' => 'index',
 			'controller' => 'user',
 			'action' => 'view'
@@ -50,12 +50,12 @@ class RestfulRouterTest extends TestCase {
 	public function testMethod() {
 		$this->req_content->server['request_method'] = 'put';
 		$this->req_content->server['request_uri'] = '/user/123';
-		$this->router->get('user/:id', [
+		$this->router->get('user/{id}', [
 			'module' => 'index',
 			'controller' => 'user',
 			'action' => 'view'
 		]);
-		$this->router->put('user/:id', [
+		$this->router->put('user/{id}', [
 			'module' => 'index',
 			'controller' => 'user',
 			'action' => 'update'
@@ -66,19 +66,35 @@ class RestfulRouterTest extends TestCase {
 	public function testAny() {
 		$this->req_content->server['request_method'] = 'get';
 		$this->req_content->server['request_uri'] = '/user/someone';
-		$this->router->get('user/:id', [
+		$this->router->get('user/{id}', [
 			'module' => 'index',
 			'controller' => 'user',
 			'action' => 'update'
 		], [
 			'id' => '(\d+)'
 		]);
-		$this->router->any('user/:id', [
+		$this->router->any('user/{id}', [
 			'module' => 'index',
 			'controller' => 'user',
 			'action' => 'view'
 		]);
 		$this->router->parse($this->req);
+		$this->assertEquals('view', $this->req->action);
+	}
+	public function testClosure() {
+		$this->req_content->server['request_method'] = 'get';
+		$this->req_content->server['request_uri'] = '/user/123/view';
+		$this->router->get('user/{id}/{action}', function($param) {
+			return [
+				'module' => 'index',
+				'controller' => 'user',
+				'action' => $param['action']
+			];
+		}, [
+			'id' => '(\d+)'
+		]);
+		$this->router->parse($this->req);
+		$this->assertEquals('123', $this->req->param['id']);
 		$this->assertEquals('view', $this->req->action);
 	}
 }

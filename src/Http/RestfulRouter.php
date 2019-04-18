@@ -27,7 +27,7 @@ class RestfulRouter implements RouterInterface {
 	public function add($type, $rule, $action, $options = null) {
 		$param = [];
 		$regex = str_replace('/', '\\/', $rule);
-		$regex = preg_replace_callback('/:([a-zA-Z0-9_]+)/', function($matches) use (&$param, &$options) {
+		$regex = preg_replace_callback('/\{([a-zA-Z0-9_]+)\}/', function($matches) use (&$param, &$options) {
 			$paramInfo = [
 				'name' => $matches[1]
 			];
@@ -88,6 +88,12 @@ class RestfulRouter implements RouterInterface {
 					$param[$v['name']] = $it;
 				}
 				$dispatch = $rewrite['dispatch'];
+				if ($dispatch instanceof \Closure) {
+					$dispatch = $dispatch($param);
+					if ($dispatch === null) {
+						continue;
+					}
+				}
 				return [
 					'dispatch' => $dispatch,
 					'param' => $param
