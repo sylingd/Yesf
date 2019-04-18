@@ -1,17 +1,9 @@
 ---
-title: Hello World
+title: 结构
 lang: zh-CN
 ---
 
-# Hello World
-
-## 安装Yesf
-
-使用composer进行安装
-
-```shell
-composer require sylingd/yesf-framework
-```
+# 结构
 
 ## 目录结构
 

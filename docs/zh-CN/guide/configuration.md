@@ -49,7 +49,7 @@ database.port=3306
 
 此时，假定环境为`product`，可以使用`name`获取到“yesf”
 
-## 项目配置详解
+## 项目配置
 
 ```php
 <?php
@@ -57,7 +57,6 @@ return [
   'name' => 'yesf', //应用名称，用于设定进程名
   'namespace' => 'YesfApp\\', //应用的namespace，用于自动加载
   'charset' => 'utf-8', //应用的编码，数据库等均以此编码为准
-  'bootstrap' => 'Bootstrap', //Bootstrap类的名称
   'router' => [
     'type' => 'map', //路由类型，可选：map（默认）、rewrite、regex
     'extension' => true //路由是否包括扩展名。为1时，会自动去掉扩展名，并放入`$request->extension`中

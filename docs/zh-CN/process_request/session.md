@@ -92,15 +92,12 @@ public function destroy($session_id) {
 ```php
 namespace YesfApp;
 
-class Bootstrap {
-	/** @Autowired Yesf\Http\Dispatcher */
-	public  $dispatcher;
+use MySessionHandler;
+use Yesf\Http\Dispatcher;
 
-	/** @Autowired MySessionHandler */
-	public $session_handler;
-
-	public function run() {
-		$this->dispatcher->setSessionHandler($this->session_handler);
+class Configuration {
+	public function setSession(Dispatcher $dispatcher, MySessionHandler $handler) {
+		$dispatcher->setSessionHandler($handler);
 	}
 }
 ```

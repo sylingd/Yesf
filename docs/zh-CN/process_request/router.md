@@ -5,11 +5,11 @@ lang: zh-CN
 
 # 路由
 
-## 内置路由
+## 默认内置路由
 
-> 内置路由位于 src/Http/Router.php
+> 默认内置路由位于 src/Http/Router.php
 
-内置路由支持Rewrite、Regex、Map三种方式解析URL。优先级为 Regex > Rewrite > Map。
+默认内置路由支持Rewrite、Regex、Map三种方式解析URL。优先级为 Regex > Rewrite > Map。
 
 ### 前缀
 
@@ -99,6 +99,63 @@ class User extends ControllerAbstract implements ControllerInterface {
 
 如`index/user/view?id=1`会解析至Index模块、User控制器、View功能。
 
+## Restful风格内置路由
+
+> Restful风格内置路由位于 src/Http/RestfulRouter.php
+
+### 启用
+
+在Dispatcher上注册：
+
+```php
+namespace YesfApp;
+
+use Yesf\Http\RestfulRouter;
+use Yesf\Http\Dispatcher;
+
+class Configuration {
+	public function setRouter(Dispatcher $dispatcher, RestfulRouter $router) {
+		$dispatcher->setRouter($router);
+	}
+}
+```
+
+### 前缀
+
+URL若以此开头，则此部分不会参与解析。如：
+
+```php
+use Yesf\Http\Router;
+
+function run(Router $router) {
+	$router->setPrefix('/user');
+}
+```
+
+访问`http://example.com/user/index/user/view`时，实际参与解析的是`index/user/view`。
+
+默认为`/`。
+
+### 方法
+
+支持get、post、put、delete、head、options、connect。如：
+
+```php
+$router->get('user/:id', [
+	'module' => 'index',
+	'controller' => 'user',
+	'action' => 'view'
+], [
+	'id' => '(\d+)'
+]);
+```
+
+
+```php
+echo $request->param['test']; // value1
+echo $request->param['another']; // value2
+```
+
 ## 自定义路由
 
 可以自定义路由，不使用内置路由。
@@ -123,20 +180,17 @@ class MyRouter implements RouterInterface {
 }
 ```
 
-将其注册至Dispatcher：
+在Dispatcher上注册：
 
 ```php
 namespace YesfApp;
 
-class Bootstrap {
-	/** @Autowired Yesf\Http\Dispatcher */
-	public $dispatcher;
+use MyRouter;
+use Yesf\Http\Dispatcher;
 
-	/** @Autowired MyRouter */
-	public $router;
-
-	public function run() {
-		$this->dispatcher->setRouter($this->router);
+class Configuration {
+	public function setRouter(Dispatcher $dispatcher, MyRouter $router) {
+		$dispatcher->setRouter($router);
 	}
 }
 ```

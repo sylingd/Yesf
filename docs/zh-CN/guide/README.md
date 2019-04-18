@@ -51,8 +51,3 @@ Yesf基于Swoole，因此还支持TCP监听、UDP监听、异步任务等功能
 * [PSR-4: Autoloader](https://www.php-fig.org/psr/psr-4/)
 * [PSR-11: Container interface](https://www.php-fig.org/psr/psr-11/)
 * [PSR-16: Simple Cache](https://www.php-fig.org/psr/psr-16/)
-
-已经确定不会遵循或不完全遵循的PSR规范有：
-
-* PSR-2: Coding Style Guide 与作者编码习惯有一些差别，不完全遵循
-* PSR-6: Caching Interface 过于繁琐

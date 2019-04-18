@@ -47,25 +47,22 @@ module.exports = {
               link: 'http://yesf-cn.sylibs.com'
             }
           ]
-        }, {
-          text: 'PHPDoc',
-          link: 'https://apidoc.gitee.com/sy/Yesf/namespaces/Yesf.html'
         }],
         sidebar: [
-          '/zh-CN/guide',
           {
-            title: '快速开始',
-            path: '/zh-CN/start/',
+            title: '开发指南',
             children: [
-              '/zh-CN/start/hello_world',
-              '/zh-CN/start/configuration',
+              '/zh-CN/guide/',
+              '/zh-CN/guide/install',
+              '/zh-CN/guide/structure',
+              '/zh-CN/guide/configuration',
             ]
           },
           '/zh-CN/container',
           {
             title: '请求处理',
-            path: '/zh-CN/process_request/',
             children: [
+              '/zh-CN/process_request/',
               '/zh-CN/process_request/static',
               '/zh-CN/process_request/router',
               '/zh-CN/process_request/request',
@@ -75,8 +72,8 @@ module.exports = {
           },
           {
             title: '插件',
-            path: '/zh-CN/plugin/',
             children: [
+              '/zh-CN/plugin/',
               '/zh-CN/plugin/on_worker_start',
               '/zh-CN/plugin/on_before_route',
               '/zh-CN/plugin/on_before_dispatch',
@@ -86,8 +83,8 @@ module.exports = {
           },
           {
             title: '缓存',
-            path: '/zh-CN/cache/',
             children: [
+              '/zh-CN/cache/',
               '/zh-CN/cache/redis',
               '/zh-CN/cache/file',
               '/zh-CN/cache/yac',
@@ -118,9 +115,6 @@ module.exports = {
               link: 'http://yesf-cn.sylibs.com'
             }
           ]
-        }, {
-          text: 'PHPDoc',
-          link: 'https://apidoc.gitee.com/sy/Yesf/namespaces/Yesf.html'
         }],
         sidebar: []
       }
