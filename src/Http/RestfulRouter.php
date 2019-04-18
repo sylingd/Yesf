@@ -22,15 +22,7 @@ class RestfulRouter implements RouterInterface {
 	protected $prefix = '/';
 	protected $routes;
 	public function __construct() {
-		$this->routes = [
-			'any' => [],
-			'get' => [],
-			'post' => [],
-			'put' => [],
-			'delete' => [],
-			'head' => [],
-			'options' => []
-		];
+		$this->routes = [];
 	}
 	public function add($type, $rule, $action, $options = null) {
 		$param = [];
@@ -46,13 +38,14 @@ class RestfulRouter implements RouterInterface {
 			return '([^\/]+)';
 		}, $regex);
 		$regex = '/^' . $regex . '$/';
-		if (is_array($action)) {
-			$this->routes[$type][] = [
-				'regex' => $regex,
-				'param' => $param,
-				'dispatch' => $action
-			];
+		if (!isset($this->routes[$type])) {
+			$this->routes[$type] = [];
 		}
+		$this->routes[$type][] = [
+			'regex' => $regex,
+			'param' => $param,
+			'dispatch' => $action
+		];
 	}
 	public function any($rule, $action, $options = null) {
 		$this->add(__FUNCTION__, $rule, $action, $options);
@@ -73,6 +66,9 @@ class RestfulRouter implements RouterInterface {
 		$this->add(__FUNCTION__, $rule, $action, $options);
 	}
 	public function options($rule, $action, $options = null) {
+		$this->add(__FUNCTION__, $rule, $action, $options);
+	}
+	public function connect($rule, $action, $options = null) {
 		$this->add(__FUNCTION__, $rule, $action, $options);
 	}
 	public function setPrefix($rule = '/') {
@@ -112,8 +108,11 @@ class RestfulRouter implements RouterInterface {
 			$uri = substr($uri, $len);
 		}
 		$request->uri = $uri;
-		$res = $this->parseBy($this->routes[$request->server['request_method']], $uri);
-		if ($res === null) {
+		$res = null;
+		if (isset($this->routes[$request->server['request_method']])) {
+			$res = $this->parseBy($this->routes[$request->server['request_method']], $uri);
+		}
+		if ($res === null && isset($this->routes['any'])) {
 			$res = $this->parseBy($this->routes['any'], $uri);
 		}
 		if ($res === null) {
