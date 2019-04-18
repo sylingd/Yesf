@@ -141,7 +141,7 @@ function run(Router $router) {
 支持get、post、put、delete、head、options、connect。如：
 
 ```php
-$router->get('user/:id', [
+$router->get('user/{id}', [
 	'module' => 'index',
 	'controller' => 'user',
 	'action' => 'view'
@@ -150,10 +150,24 @@ $router->get('user/:id', [
 ]);
 ```
 
+这段代码做了：
+
+* URL格式为`user/{id}`
+* 将其解析为index模块、user控制器、view功能
+* id需要满足正则表达式`/^(\d+)$/`
+
+您也可以使用闭包：
 
 ```php
-echo $request->param['test']; // value1
-echo $request->param['another']; // value2
+$router->get('user/{id}/{action}', function($param) {
+	return [
+		'module' => 'index',
+		'controller' => 'user',
+		'action' => $param['action']
+	];
+}, [
+	'id' => '(\d+)'
+]);
 ```
 
 ## 自定义路由
