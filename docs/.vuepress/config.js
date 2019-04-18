@@ -35,7 +35,7 @@ module.exports = {
           link: '/'
         }, {
           text: '指南',
-          link: '/zh-CN/guide'
+          link: '/zh-CN/guide/'
         }, {
           text: '镜像',
           items: [{

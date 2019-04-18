@@ -4,7 +4,7 @@ home: true
 heroText: Yesf
 tagline: A php framework
 actionText: 开始使用
-actionLink: /zh-CN/guide
+actionLink: /zh-CN/guide/
 features:
 - title: 高性能
   details: 基于 Swoole 持久化运行，使用协程。
