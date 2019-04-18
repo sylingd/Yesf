@@ -55,7 +55,7 @@ database.port=3306
 <?php
 return [
   'name' => 'yesf', //应用名称，用于设定进程名
-  'namespace' => 'YesfApp', //应用的namespace，用于自动加载
+  'namespace' => 'YesfApp\\', //应用的namespace，用于自动加载
   'charset' => 'utf-8', //应用的编码，数据库等均以此编码为准
   'bootstrap' => 'Bootstrap', //Bootstrap类的名称
   'router' => [

@@ -12,7 +12,6 @@
 namespace Yesf\Http;
 
 use Yesf\Yesf;
-use Yesf\Http\Response;
 
 class Router implements RouterInterface {
 	/**

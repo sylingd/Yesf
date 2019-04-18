@@ -1,7 +1,7 @@
 <?php
 return [
 	'name' => 'yesf',
-	'namespace' => 'YesfApp',
+	'namespace' => 'YesfApp\\',
 	'charset' => 'utf-8',
 	'bootstrap' => 'Bootstrap',
 	'router' => [

@@ -9,8 +9,9 @@
  * @copyright Copyright (c) 2017-2019 ShuangYa
  * @license https://yesf.sylibs.com/license.html
  */
-
 namespace Yesf;
+
+use ReflectionClass;
 use Yesf\Swoole;
 use Yesf\DI\Container;
 use Yesf\Event\Internal;
@@ -61,6 +62,9 @@ class Yesf {
 	 * @param string/array/config $config 配置
 	 */
 	public function __construct() {
+		if (self::$instance !== null) {
+			throw new StartException('Yesf already constructed');
+		}
 		self::$instance = $this;
 		//swoole检查
 		if (!extension_loaded('swoole')) {
@@ -86,8 +90,13 @@ class Yesf {
 		//其他各项配置
 		self::$config_server = new Arr(require(APP_PATH . 'Config/Server.php'), '');
 		self::loadProjectConfig();
+		// Check app namespace
+		$namespace = self::$config_project->get('namespace');
+		if ('\\' !== $namespace[strlen($namespace) - 1]) {
+			throw new StartException("A non-empty PSR-4 prefix must end with a namespace separator.");
+		}
 		//将APP的namespace添加到Autoload
-		self::addAppToLoader();
+		$this->addAppToLoader();
 		Internal::onCreate();
 		//编码相关
 		if (function_exists('mb_internal_encoding')) {
@@ -96,15 +105,14 @@ class Yesf {
 		if (!defined('YESF_UNIT')) {
 			Swoole::init();
 		}
+		// Configuration
+		$this->callConfiguration();
 	}
 	/**
 	 * 将APP的namespace添加到Autoload
 	 */
-	private static function addAppToLoader() {
+	private function addAppToLoader() {
 		$namespace = self::$config_project->get('namespace');
-		if (substr($namespace, -1) !== '\\') {
-			$namespace .= '\\';
-		}
 		self::getLoader()->addPsr4($namespace, APP_PATH);
 	}
 	/**
@@ -187,19 +195,40 @@ class Yesf {
 		return $this->environment;
 	}
 	/**
-	 * Bootstrap
-	 * 调用自定义的bootstrap，进行另外的一些初始化操作
+	 * Configuration
 	 * 
-	 * @access public
+	 * @access private
 	 */
-	public function bootstrap() {
+	private function callConfiguration() {
 		$container = Container::getInstance();
-		$className = self::getProjectConfig('namespace') . '\\Bootstrap';
+		$className = $this->getConfig('namespace', self::CONF_PROJECT) . 'Configuration';
 		if ($container->has($className)) {
 			$clazz = $container->get($className);
-			$clazz->run();
+			$methods = (new ReflectionClass($clazz))->getMethods();
+			foreach ($methods as $method) {
+				if (strpos($method->name, 'set') !== 0) {
+					continue;
+				}
+				$params = $method->getParameters();
+				$init_params = [];
+				foreach ($params as $param) {
+					$type = $param->getType();
+					if (class_exists('ReflectionNamedType') && $type instanceof \ReflectionNamedType) {
+						$typeName = $type->getName();
+					} else {
+						$typeName = $type->__toString();
+					}
+					if ($type->isBuiltin()) {
+						$value = null;
+						settype($value, $typeName);
+						$init_params[] = $value;
+					} else {
+						$init_params[] = $container->get($typeName);
+					}
+				}
+				$method->invokeArgs($clazz, $init_params);
+			}
 		}
-		return $this;
 	}
 	/**
 	 * 初始化完成，开始运行

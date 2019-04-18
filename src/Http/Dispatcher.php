@@ -129,6 +129,9 @@ class Dispatcher {
 					$res->sendfile($path);
 				}
 				Plugin::trigger('afterStatic', [$path, $req, $res]);
+				$req->end();
+				$res->end();
+				unset($req, $res);
 				return;
 			}
 		}
