@@ -22,26 +22,6 @@ Yesf基于Swoole，因此还支持TCP监听、UDP监听、异步任务等功能
 
 本文档对应Yesf版本为`2.0.0`，如有错误请提交issue至[GitHub](https://github.com/sylingd/Yesf/issues/new)或[Gitee](https://gitee.com/sy/Yesf/issues/new)
 
-# 命名规范
-
-目前Yesf命名规范如下：
-
-### 类库命名
-
-* 所有类库均在`Yesf\\`命名空间下
-* 遵循PSR-1，类的命名都遵循大驼峰命名法，方法的命名均为小驼峰命名法
-
-### 变量命名
-
-* 大部分变量都遵循小驼峰命名法
-* 部分变量以“_”（下划线）开头时，会遵循以下划线分割的命名法则
-
-### 其他特殊命名
-
-* 抽象类名称均为“名称 + Abstract”，例如`SimpleAbstract`
-* Trait名称均为“名称 + Trait”，例如`SimpleTrait`
-* 接口名称均为“名称 + Interface”，例如`SimpleInterface`
-
 # PSR规范
 
 目前遵循以下PSR规范：
@@ -51,3 +31,12 @@ Yesf基于Swoole，因此还支持TCP监听、UDP监听、异步任务等功能
 * [PSR-4: Autoloader](https://www.php-fig.org/psr/psr-4/)
 * [PSR-11: Container interface](https://www.php-fig.org/psr/psr-11/)
 * [PSR-16: Simple Cache](https://www.php-fig.org/psr/psr-16/)
+
+# 功能说明
+
+部分功能因为和框架本身关系不大，且已经有很多优秀的第三方库，因此Yesf不再内置它们。建议直接使用composer安装，例如：
+
+* 输入验证：[respect/validation](https://packagist.org/packages/respect/validation) [nette/utils](https://packagist.org/packages/nette/utils)
+* 图片验证码：[gregwar/captcha](https://packagist.org/packages/gregwar/captcha) [dapphp/securimage](https://packagist.org/packages/dapphp/securimage)
+* 图片处理：[intervention/image](https://packagist.org/packages/intervention/image) [nette/utils](https://packagist.org/packages/nette/utils)
+* JWT：[firebase/php-jwt](https://packagist.org/packages/firebase/php-jwt) [lcobucci/jwt](https://packagist.org/packages/lcobucci/jwt)

@@ -1,10 +1,7 @@
 <?php
 namespace YesfApp\Module\Index\Controller;
 
-use Yesf\ControllerInterface;
-use Yesf\ControllerAbstract;
-
-class Index extends ControllerAbstract implements ControllerInterface {
+class Index {
 	/**
 	 * You can aslo using DI with those comment:
 	 * @Autowired YesfApp\Utils

@@ -111,10 +111,7 @@ Yesf将配置文件分为三类：
 <?php
 namespace YesfApp\Module\Index\Controller\Index;
 
-use Yesf\ControllerAbstract;
-use Yesf\ControllerInterface;
-
-class Index extends ControllerAbstract implements ControllerInterface {
+class Index {
    	public function IndexAction($request, $response) { //默认Action
        	$response->assign("content", "Hello World");
    	}
