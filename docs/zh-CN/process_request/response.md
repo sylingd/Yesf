@@ -82,4 +82,8 @@ $response->cookie([
 
 ### 渲染指定模板并输出至浏览器
 
+默认会自动渲染View目录下同名的模板，使用此方法并不会关闭默认的渲染。
+
 `display('模板路径，相对于当前模块的View目录')`
+
+如：`$response->display('user/view');`

@@ -135,16 +135,14 @@ class Dispatcher {
 				return;
 			}
 		}
-		if (Plugin::trigger('beforeRoute', [$uri]) === null) {
+		if (Plugin::trigger('beforeRoute', [$req, $res]) === null) {
 			$this->router->parse($req);
 		}
 		$result = null;
 		//触发beforeDispatcher事件
 		if (Plugin::trigger('beforeDispatch', [$req, $res]) === null) {
-			$result = $this->dispatch($req, $res);
+			$this->dispatch($req, $res);
 		}
-		//触发afterDispatcher事件
-		Plugin::trigger('afterDispatch', [$req, $res, $result]);
 	}
 	/**
 	 * 进行路由分发
@@ -176,6 +174,8 @@ class Dispatcher {
 				$clazz = Container::getInstance()->get($className);
 				$actionName = $action . 'Action';
 				$result = $clazz->$actionName($request, $response);
+				//触发afterDispatch事件
+				Plugin::trigger('afterDispatch', [$request, $response, $result]);
 			} else {
 				// Not found
 				self::handleNotFound($request, $response);

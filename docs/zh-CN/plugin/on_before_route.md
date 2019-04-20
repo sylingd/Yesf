@@ -5,13 +5,12 @@ lang: zh-CN
 
 # 路由启动（beforeRoute）
 
-在路由启动前触发。可以用于用户的自定义路由并拦截默认的路由解析方法。
-
-**注意：此事件仅会在HTTP请求中触发**
+在路由启动前触发。可以用于拦截默认的路由解析方法。可以直接设置$request的module、controller、action进行解析
 
 ### 传入参数
 
-* string $uri 请求的URL（不包含QUERY_STRING）
+* object $request [Request](../process_request/request.md)
+* object $response [Response](../process_request/response.md)
 
 ### 返回
 

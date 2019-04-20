@@ -9,9 +9,9 @@ lang: zh-CN
 
 ### 传入参数
 
-* object $request 《请求处理》章节中的“$request变量”
-* object $response 《请求处理》章节中的“$response变量
-* object/null $error 如果是因为发生异常而触发，则为Throwable类，否则为null
+* object $request [Request](../process_request/request.md)
+* object $response [Response](../process_request/response.md)
+* object/null $error 如果是因为发生异常而触发，则异常类，否则为null
 
 ### 返回
 
