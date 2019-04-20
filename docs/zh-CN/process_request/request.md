@@ -1,21 +1,148 @@
 ---
-title: request变量
+title: Request：请求
 lang: zh-CN
 ---
 
-# request变量
+# Request：请求
 
-此变量用于储存一些请求信息
+包含了请求相关的信息
 
-名称 | 类型 | 描述 | 
----|---|---|
-param | array | 从URL参数中解析出的参数 | 
-extension | string/null | 请求扩展名（如果开启了扩展名解析） | 
-header | array | HTTP请求的头部信息。所有key均为小写 | 
-server | array | HTTP请求相关的服务器信息，对应于PHP的$_SERVER数组。所有key均为小写 | 
-get | array | HTTP请求的GET参数 | 
-post | array | HTTP请求的POST参数 | 
-cookie | array | HTTP请求携带的Cookie | 
-files | array | 文件上传信息。类型为以form名称为key的二维数组。与PHP的$_FILES相同。 | 
-rawContent | function | 获取原始的POST包体 | 
+## GET、POST、COOKIE、HEADER、FILES
 
+通过对应的数组获取，其中，头信息所有key均为小写。如：
+
+```php
+echo $request->get['id'];
+echo $request->header['referer'];
+```
+
+## 服务器信息
+
+通过`server`数组获取，对应于PHP的$_SERVER数组。所有key均为小写。
+
+## 原始的POST包体
+
+通过`rawContent`方法获取。
+
+## 从URL中解析出的参数（路由）
+
+通过`param`数组获取。
+
+若使用了Map解析，且开启了扩展名解析，可通过`extension`获取请求扩展名。
+
+## 文件上传
+
+除了通过`files`数组获取外，可以通过`file`方法，操作更方便：
+
+```php
+$file = $request->file();
+foreach ($file as $f) {
+	// 可以直接读取内容
+	echo $f->getContent();
+	// 保存至指定路径
+	$f->save('/path/to/file');
+	// 打开文件
+	$handler = $f->getStream();
+	echo fread($handler, 1024);
+	fclose($handler);
+}
+```
+
+## Session
+
+### 配置
+
+在环境配置中：
+
+```ini
+; Session最大生命时长，单位：s，默认为720
+session.lifetime=720
+
+; Session位于cookie中，或get参数中，默认为cookie
+session.type=cookie
+; session.type=get
+
+; Cookie或Get参数名称，默认为yesfsessid
+session.name=testsessid
+```
+
+### 获得Session
+
+通过Request的session方法获得：
+
+```php
+public function MyAction(Request $request, Response $response) {
+	$session = $request->session();
+}
+```
+
+### 操作Session
+
+#### 使用数组操作
+
+你可以像操作数组一样，操作Session
+
+```php
+public function MyAction(Request $request, Response $response) {
+	$session = $request->session();
+	$session['user'] = 'admin';
+	echo $session['user'];
+	unset($session['user']);
+	var_dump(isset($session['user']));
+}
+```
+
+#### 使用方法操作
+
+| 方法 | 描述 | 参数 | 返回 | 示例 |
+| --- | ---- | --- | --- | ---- |
+| id | 获得SessionID | 无 | string | `$id = $session->id();` | 
+| set | 赋值 | `set(mixed 名称, mixed 值)` | 无 | `$session->set('name', 'admin');` |
+| get | 获取 | `get(mixed 名称)` | mixed | `echo $session->get('name');` |
+| has | 判断是否存在 | `has(mixed 名称)` | bool | `var_dump($session->has('name'));` |
+| delete | 删除 | `delete(mixed 名称)` | 无 | `$session->delete('name');` |
+| clear | 清空全部 | 无 | 无 | `$session->clear();` |
+
+```php
+public function MyAction(Request $request, Response $response) {
+	$session = $request->session();
+	echo $session->id();
+	$session->set('user', 'admin');
+	echo $session->get('user');
+	$session->delete('user');
+	var_dump($session->has('user'));
+}
+```
+
+### 自定义SessionHandler
+
+编写类，实现[SessionHandlerInterface](https://www.php.net/manual/zh/class.sessionhandlerinterface.php)。其中，open、close、gc均只需一个空方法。主要实现read、write、destroy，如：
+
+```php
+public function read($session_id) {
+	return $this->cache->get('sess_' . $session_id, '');
+}
+
+public function write($session_id, $session_data) {
+	return $this->cache->set('sess_' . $session_id, $session_data, $this->lifetime);
+}
+
+public function destroy($session_id) {
+	return $this->cache->delete('sess_' . $session_id);
+}
+```
+
+在Dispatcher上注册：
+
+```php
+namespace YesfApp;
+
+use MySessionHandler;
+use Yesf\Http\Dispatcher;
+
+class Configuration {
+	public function setSession(Dispatcher $dispatcher, MySessionHandler $handler) {
+		$dispatcher->setSessionHandler($handler);
+	}
+}
+```

@@ -58,7 +58,7 @@ return [
   'namespace' => 'YesfApp\\', //应用的namespace，用于自动加载
   'charset' => 'utf-8', //应用的编码，数据库等均以此编码为准
   'router' => [
-    'type' => 'map', //路由类型，可选：map（默认）、rewrite、regex
+    'map' => 'true', //是否开启map解析
     'extension' => true //路由是否包括扩展名。为1时，会自动去掉扩展名，并放入`$request->extension`中
   ],
   'modules' => ['index', 'admin'], //有效的模块列表

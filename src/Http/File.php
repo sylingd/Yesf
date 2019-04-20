@@ -9,8 +9,9 @@
  * @copyright Copyright (c) 2017-2019 ShuangYa
  * @license https://yesf.sylibs.com/license.html
  */
-
 namespace Yesf\Http;
+
+use Swoole\Coroutine as co;
 use Yesf\Yesf;
 
 class File {
@@ -44,6 +45,10 @@ class File {
 			$this->file['tmp_name'] = $path;
 		}
 		return $res;
+	}
+
+	public function getContent() {
+		return co::readFile($this->getPath());
 	}
 
 	public function getStream() {

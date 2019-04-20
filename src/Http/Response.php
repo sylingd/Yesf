@@ -37,7 +37,6 @@ class Response {
 	protected $is_end = false;
 	//Cookie相关配置
 	protected static $cookie = [
-		'expire' => -1,
 		'path' => '/',
 		'domain' => ''
 	];
@@ -54,9 +53,6 @@ class Response {
 		Container::getInstance()->setMulti(Template::class, Container::MULTI_CLONE);
 	}
 	public static function initInWorker() {
-		if (Yesf::app()->getConfig('cookie.expire')) {
-			self::$cookie['expire'] = Yesf::app()->getConfig('cookie.expire');
-		}
 		if (Yesf::app()->getConfig('cookie.path')) {
 			self::$cookie['path'] = Yesf::app()->getConfig('cookie.path');
 		}
@@ -184,6 +180,15 @@ class Response {
 		$this->sw_response->write($content);
 	}
 	/**
+	 * 将一个内容转为JSON输出至浏览器
+	 * 
+	 * @access public
+	 * @param mixed $content 要输出的内容
+	 */
+	public function json($content) {
+		$this->sw_response->write(json_encode($content));
+	}
+	/**
 	 * 发送一个文件
 	 * 
 	 * @access public
@@ -208,6 +213,15 @@ class Response {
 		$this->sw_response->header($k, $v);
 	}
 	/**
+	 * 发送mimeType的header
+	 * 
+	 * @access public
+	 * @param string $extension 扩展名，例如JSON
+	 */
+	public function mimeType($extension) {
+		$this->header('Content-Type', HttpVars::mimeType($extension));
+	}
+	/**
 	 * 向浏览器发送一个状态码
 	 * 
 	 * @access public
@@ -223,21 +237,18 @@ class Response {
 	 * @param array $param
 	 * @param string $param[name] 名称
 	 * @param string $param[value] 内容
-	 * @param int $param[expire] 过期时间，-1为失效，0为SESSION，不传递为从config读取，其他为当前时间+$expire
+	 * @param int $param[expire] 过期时间，-1为失效，不传递或0为SESSION，其他为当前时间+$expire
 	 * @param string $param[path] 若不传递，则从config读取
 	 * @param string $param[domain] 若不传递，则从config读取
-	 * @param bool $param[https] 是否仅https传递，默认为否
 	 * @param bool $param[httponly] 是否为httponly
 	 */
 	public function cookie($param) {
 		$name = $param['name'];
 		//处理过期时间
-		if (!isset($param['expire'])) {
-			$expire = self::$cookie['expire'] === -1 ? 0 : time() + self::$cookie['expire'];
+		if (!isset($param['expire']) || $param['expire'] === 0) {
+			$expire = 0;
 		} elseif ($param['expire'] === -1) {
 			$expire = time() - 3600;
-		} elseif ($param['expire'] === 0) {
-			$expire = 0;
 		} else {
 			$expire = time() + $param['expire'];
 		}
@@ -245,21 +256,8 @@ class Response {
 		!isset($param['path']) && $param['path'] = self::$cookie['path'];
 		!isset($param['domain']) && $param['domain'] = self::$cookie['domain'];
 		!isset($param['httponly']) && $param['httponly'] = false;
-		//HTTPS
-		if (!isset($param['https'])) {
-			$param['https'] = false;
-		}
 		//设置
 		$this->sw_response->cookie($name, $param['value'], $expire, $param['path'], $param['domain'], $param['https'], $param['httponly']);
-	}
-	/**
-	 * 发送mimeType的header
-	 * 
-	 * @access public
-	 * @param string $extension 扩展名，例如JSON
-	 */
-	public function mimeType($extension) {
-		$this->header('Content-Type', HttpVars::mimeType($extension));
 	}
 	/**
 	 * 析构函数

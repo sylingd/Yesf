@@ -1,21 +1,85 @@
 ---
-title: response变量
+title: Response：响应
 lang: zh-CN
 ---
 
-# response变量
+# Response：响应
 
 用于响应一个请求
 
-| 方法 | 说明 | 参数 | 返回 | 
-| --- | --- | --- | --- |
-| setTplPath | 设置模板路径 | * string $tpl_path 模板路径 | 无 |
-| disableView | 关闭模板自动渲染 | 无 | 无 |
-| display | 将一个模板的渲染结果输出至浏览器 | * string $tpl 模板文件 | 无 |
-| render | 获取一个模板的渲染结果但不输出 | * string $tpl 模板文件 | string |
-| write | 将一个字符串输出至浏览器 | * string $content 要输出的字符串 | 无 |
-| assign | 注册一个模板变量（注：例如名称为key，则模板中使用$key获取） | * string $k 名称<br>* mixed $v 值 | 无 |
-|header | 向浏览器发送一个header信息，例如`header('Content-Type', 'text/html')` | * string $k 名称<br>* mixed $v 内容 | 无 |
-| status | 向浏览器发送一个状态码 | * int $code 状态码 | 无 |
-cookie | 设置Cookie | * array $param 下面各项均为此数组中的具体项目<br>* string $param[name] 名称<br>* string $param[value] 内容<br>* int $param[expire] 过期时间，-1为失效，0为SESSION，不传递为从config读取，其他为当前时间+$expire<br>* string $param[path] 若不传递，则从config读取<br>* string $param[domain] 若不传递，则从config读取<br>* bool $param[https] 是否仅https传递，默认为否<br>* bool $param[httponly] 是否为httponly | 无 |
-| mimeType | 发送mimeType的header，基于`header`方法封装 | * string $extension 扩展名，例如`json` | 无 |
+## header
+
+`header('名称', '内容')`，如：`$response->header('Content-Type', 'text/html');`
+
+特别的，你可以使用`mimeType`来发送`Content-Type`头，如`$response->mimeType('html');`
+
+## HTTP状态码
+
+`status(状态码)`
+
+## 输出至浏览器
+
+`write('内容')`，如：`$response->write('Hello World');`
+
+特别的，你可以使用`json()`来输出JSON内容，如：`$response->json($res);`
+
+## 发送文件
+
+当文件较大时，你可以使用此方法发送文件，而无需将其读入内存中，如：
+
+```php
+$response->mimeType('zip');
+$response->sendfile('/path/to/file.zip');
+```
+
+## Cookie
+
+`cookie(Cookie信息)`
+
+| 名称 | 类型 | 内容 |
+| --- | ---- | --- |
+| name | string | 名称 |
+| value | string | 内容 |
+| expire | int | 过期时间，-1为失效，不传递或0为SESSION，其他为`当前时间+$expire` |
+| path | string | Cookie有效的服务器路径。若不传递，则从环境配置读取 |
+| domain | string | Cookie的有效域名。若不传递，则从环境配置读取 |
+| httponly | bool | 是否仅http传递，默认为否 |
+
+如：
+
+```php
+$response->cookie([
+	'name' => 'token',
+	'value' => '123456',
+	'expire' => '360', //一小时有效
+	'path' => '/',
+	'httponly' => true
+])
+```
+
+## 模板
+
+### 注册一个模板变量
+
+`assign('名称', '内容')`，如：`$response->assign('name', 'Admin');`
+
+### 设置模板引擎
+
+* 设置全部：`Response::setTemplateEngine(MyTemplate::class);`
+* 设置当前响应：`$response->setCurrentTemplateEngine(MyTemplate::class);`
+
+### 关闭模板自动渲染
+
+在项目配置中：
+
+```php
+'view' => [
+    'auto' => false
+]
+```
+
+当前响应：`$response->disableView();`
+
+### 渲染指定模板并输出至浏览器
+
+`display('模板路径，相对于当前模块的View目录')`

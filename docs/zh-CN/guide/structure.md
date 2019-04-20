@@ -46,7 +46,7 @@ require('vendor/autoload.php');
 define("APP_PATH",  __DIR__ . '/application/');
 //初始化
 $app = new Yesf\Yesf();
-$app->bootstrap()->run(APP_PATH . "/Config/env.ini");
+$app->run(APP_PATH . "/Config/env.ini");
 ```
 
 之后，在shell中执行`php start.php`即可运行
@@ -123,7 +123,7 @@ class Index extends ControllerAbstract implements ControllerInterface {
 
 注意：
 
-* 所有请求均会传入`$request`和`$response`两个参数，这两个参数分别包括了请求的基本信息和回复请求的方法。详细说明请参考下一节
+* 所有请求均会传入`$request`和`$response`两个参数，这两个参数分别包括了请求的基本信息和回复请求的方法。详细说明请参考《请求处理》
 * 所有echo、var_dump等输出函数，均不会对浏览器输出任何内容
 * **不要**抛出异常
 
