@@ -48,6 +48,19 @@ foreach ($file as $f) {
 }
 ```
 
+## Hook
+
+可以在Request对象中添加自己的属性。如：
+
+```php
+Request::hook('user', function($req) {
+	return $req->get['id'];
+});
+
+// 在Controller中
+echo $request->user;
+```
+
 ## Session
 
 ### 配置

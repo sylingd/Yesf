@@ -51,7 +51,7 @@ $response->sendfile('/path/to/file.zip');
 $response->cookie([
 	'name' => 'token',
 	'value' => '123456',
-	'expire' => '360', //一小时有效
+	'expire' => '3600', //一小时有效
 	'path' => '/',
 	'httponly' => true
 ])
