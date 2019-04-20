@@ -74,6 +74,8 @@ class Router implements RouterInterface {
 					'action' => $res[1]
 				];
 			}
+		} else {
+			$add['dispatch'] = $action;
 		}
 		$this->routes[$type][] = $add;
 	}
