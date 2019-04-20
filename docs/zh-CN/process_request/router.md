@@ -21,16 +21,16 @@ function run(Router $router) {
 }
 ```
 
-访问`http://example.com/user/index/user/view`时，实际参与解析的是`index/user/view`。
+访问`http://example.com/user/index/user/view`时，实际参与解析的是`/index/user/view`。
 
-默认为`/`。
+默认为空。
 
 ### Restful风格
 
 支持get、post、put、delete、head、options、connect。如：
 
 ```php
-$router->get('user/{id}', [
+$router->get('/user/{id}', [
 	'module' => 'index',
 	'controller' => 'user',
 	'action' => 'view'
@@ -48,7 +48,7 @@ $router->get('user/{id}', [
 您也可以使用闭包：
 
 ```php
-$router->get('user/{id}/{action}', function($param) {
+$router->get('/user/{id}/{action}', function($param) {
 	return [
 		'module' => 'index',
 		'controller' => 'user',
@@ -62,7 +62,7 @@ $router->get('user/{id}/{action}', function($param) {
 您也可以使用any，它的优先级是最低的：
 
 ```php
-$router->any('user/{id}', [
+$router->any('/user/{id}', [
 	'module' => 'index',
 	'controller' => 'user',
 	'action' => 'view'
@@ -74,7 +74,7 @@ $router->any('user/{id}', [
 您可以简写第二个参数：
 
 ```php
-$router->any('user/{id}', 'index.user.view');
+$router->any('/user/{id}', 'index.user.view');
 ```
 
 ### Map

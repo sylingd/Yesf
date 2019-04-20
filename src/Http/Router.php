@@ -14,14 +14,13 @@ namespace Yesf\Http;
 use Yesf\Yesf;
 
 class Router implements RouterInterface {
-	/**
-	 * 基本路径
-	 * 在进行路由解析时会忽略此前缀。默认为/，即根目录
-	 * 一般不会有此需要，仅当程序处于网站二级目录时会用到
-	 */
-	private $prefix = '/';
+	/** @var string $prefix URL prefix */
+	private $prefix = '';
+	/** @var array $routes All route rules */
 	private $routes;
+	/** @var bool $enable_map Enable map parser */
 	private $enable_map;
+	/** @var bool $enable_extension Enable extension parser */
 	private $enable_extension;
 	public function __construct() {
 		$this->routes = [];
@@ -29,42 +28,54 @@ class Router implements RouterInterface {
 		$this->enable_map = is_array($config) && isset($config['map']) ? $config['map'] : true;
 		$this->enable_extension = is_array($config) && isset($config['extension']) ? $config['extension'] : false;
 	}
+	/**
+	 * Add rule
+	 * 
+	 * @access public
+	 * @param string $type Request method
+	 * @param string $rule Match rule
+	 * @param mixed $action Dispath info
+	 * @param array $options Param options
+	 */
 	public function add($type, $rule, $action, $options = null) {
-		$param = [];
-		$regex = str_replace('/', '\\/', $rule);
-		$regex = preg_replace_callback('/\{([a-zA-Z0-9_]+)\}/', function($matches) use (&$param, &$options) {
-			$paramName = $matches[1];
-			$param[] = $paramName;
-			if (is_array($options) && isset($options[$paramName])) {
-				return $options[$paramName];
-			} else {
-				return '([^\/]+)';
-			}
-		}, $regex);
-		$regex = '/^' . $regex . '$/';
+		$add = [];
+		if (strpos($rule, '{') !== false) {
+			$param = [];
+			$regex = str_replace('/', '\\/', $rule);
+			$regex = preg_replace_callback('/\{([a-zA-Z0-9_]+)\}/', function($matches) use (&$param, &$options) {
+				$paramName = $matches[1];
+				$param[] = $paramName;
+				if (is_array($options) && isset($options[$paramName])) {
+					return $options[$paramName];
+				} else {
+					return '([^\/]+)';
+				}
+			}, $regex);
+			$regex = '/^' . $regex . '$/';
+			$add['regex'] = $regex;
+			$add['param'] = $param;
+		} else {
+			$add['uri'] = $rule;
+		}
 		if (!isset($this->routes[$type])) {
 			$this->routes[$type] = [];
 		}
 		if (is_string($action)) {
 			$res = explode('.', $action, 3);
 			if (count($res) === 3) {
-				$action = [
+				$add['dispatch'] = [
 					'module' => $res[0],
 					'controller' => $res[1],
 					'action' => $res[2]
 				];
 			} else {
-				$action = [
+				$add['dispatch'] = [
 					'controller' => $res[0],
 					'action' => $res[1]
 				];
 			}
 		}
-		$this->routes[$type][] = [
-			'regex' => $regex,
-			'param' => $param,
-			'dispatch' => $action
-		];
+		$this->routes[$type][] = $add;
 	}
 	public function any($rule, $action, $options = null) {
 		$this->add(__FUNCTION__, $rule, $action, $options);
@@ -90,12 +101,25 @@ class Router implements RouterInterface {
 	public function connect($rule, $action, $options = null) {
 		$this->add(__FUNCTION__, $rule, $action, $options);
 	}
-	public function setPrefix($rule = '/') {
-		$this->rule = $rule;
+	/**
+	 * Set url prefix
+	 * 
+	 * @access public
+	 * @param string $prefix
+	 */
+	public function setPrefix($prefix = '') {
+		$this->prefix = $prefix;
 	}
+	/**
+	 * Parse request in map way
+	 * 
+	 * @access private
+	 * @param Request $request
+	 * @return bool
+	 */
 	private function parseMap(Request $request) {
 		//解析
-		$res = explode('/', $request->uri, 3);
+		$res = explode('/', trim($request->uri, '/'), 3);
 		if (count($res) === 3) {
 			$request->module = $res[0];
 			$request->controller = $res[1];
@@ -107,37 +131,74 @@ class Router implements RouterInterface {
 		}
 		return true;
 	}
+	/**
+	 * Parse request with given rules
+	 * 
+	 * @access private
+	 * @param array $rules
+	 * @param Request $request
+	 * @return bool
+	 */
 	private function parseBy($rules, Request $request) {
 		foreach ($rules as $rewrite) {
-			if (preg_match($rewrite['regex'], $request->uri, $matches)) {
-				$param = [];
-				unset($matches[0]);
-				//参数
-				foreach ($rewrite['param'] as $k => $v) {
-					$param[$v] = $matches[$k + 1];
+			if (isset($rewrite['uri'])) {
+				if ($request->uri === $rewrite['uri']) {
+					$dispatch = $rewrite['dispatch'];
+					break;
 				}
-				$dispatch = $rewrite['dispatch'];
-				if ($dispatch instanceof \Closure) {
-					$dispatch = $dispatch($param);
-					if ($dispatch === null) {
-						continue;
+			} else {
+				if (preg_match($rewrite['regex'], $request->uri, $matches)) {
+					$param = [];
+					unset($matches[0]);
+					//参数
+					foreach ($rewrite['param'] as $k => $v) {
+						$param[$v] = $matches[$k + 1];
 					}
+					$dispatch = $rewrite['dispatch'];
+					if ($dispatch instanceof \Closure) {
+						$dispatch = $dispatch($param);
+						if ($dispatch === null) {
+							unset($dispatch);
+							continue;
+						}
+					}
+					break;
 				}
-				$request->param = $param;
-				$request->module = isset($dispatch['module']) ? $dispatch['module'] : $this->module;
-				$request->controller = $dispatch['controller'];
-				$request->action = $dispatch['action'];
-				return true;
 			}
+		}
+		if (isset($dispatch)) {
+			$request->module = isset($dispatch['module']) ? $dispatch['module'] : $this->module;
+			$request->controller = $dispatch['controller'];
+			$request->action = $dispatch['action'];
+			if (isset($param)) {
+				$request->param = $param;
+			}
+			return true;
 		}
 		return false;
 	}
+	/**
+	 * Enable map parser
+	 * 
+	 * @access public
+	 */
 	public function enableMap() {
 		$this->enable_map = true;
 	}
+	/**
+	 * Disable map parser
+	 * 
+	 * @access public
+	 */
 	public function disableMap() {
 		$this->enable_map = false;
 	}
+	/**
+	 * Parse a request
+	 * 
+	 * @access public
+	 * @param Request $request
+	 */
 	public function parse(Request $request) {
 		$len = strlen($this->prefix);
 		//路由解析
@@ -146,7 +207,7 @@ class Router implements RouterInterface {
 			$uri = substr($uri, 0, strpos($uri, '?'));
 		}
 		//去除开头的prefix
-		if (strpos($uri, $this->prefix) === 0) {
+		if ($len > 0 && strpos($uri, $this->prefix) === 0) {
 			$uri = substr($uri, $len);
 		}
 		$request->uri = $uri;
@@ -160,7 +221,7 @@ class Router implements RouterInterface {
 		if ($res === false) {
 			if ($this->enable_map) {
 				//为空则读取默认设置
-				if (empty($uri)) {
+				if (empty($uri) || $uri === '/') {
 					$request->module = $this->module;
 					$request->controller = 'index';
 					$request->action = 'index';

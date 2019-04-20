@@ -18,20 +18,30 @@ class RouterTest extends TestCase {
 	}
 	public function testMap() {
 		$this->router->enableMap();
-		$this->req_content->server['request_uri'] = 'ap/foo';
+		$this->req_content->server['request_uri'] = '/ap/foo';
 		$this->router->parse($this->req);
 		$this->assertEquals('ap', $this->req->controller);
 		$this->assertEquals('foo', $this->req->action);
-		$this->req_content->server['request_uri'] = 'ap/foo/bar';
+		$this->req_content->server['request_uri'] = '/ap/foo/bar';
 		$this->router->parse($this->req);
 		$this->assertEquals('ap', $this->req->module);
 		$this->assertEquals('foo', $this->req->controller);
 		$this->assertEquals('bar', $this->req->action);
 	}
+	public function testNoParam() {
+		$this->req_content->server['request_method'] = 'get';
+		$this->req_content->server['request_uri'] = '/user/list';
+		$this->router->get('/user/list', 'index.user.list');
+		$this->router->disableMap();
+		$this->router->parse($this->req);
+		$this->assertEquals('index', $this->req->module);
+		$this->assertEquals('user', $this->req->controller);
+		$this->assertEquals('list', $this->req->action);
+	}
 	public function testParamCorrect() {
 		$this->req_content->server['request_method'] = 'get';
 		$this->req_content->server['request_uri'] = '/user/123';
-		$this->router->get('user/{id}', [
+		$this->router->get('/user/{id}', [
 			'module' => 'index',
 			'controller' => 'user',
 			'action' => 'view'
@@ -48,7 +58,7 @@ class RouterTest extends TestCase {
 	public function testParamIncorrect() {
 		$this->req_content->server['request_method'] = 'get';
 		$this->req_content->server['request_uri'] = '/user/someone';
-		$this->router->get('user/{id}', 'index.user.view', [
+		$this->router->get('/user/{id}', 'index.user.view', [
 			'id' => '(\d+)'
 		]);
 		$this->router->disableMap();
@@ -60,12 +70,12 @@ class RouterTest extends TestCase {
 	public function testMethod() {
 		$this->req_content->server['request_method'] = 'put';
 		$this->req_content->server['request_uri'] = '/user/123';
-		$this->router->get('user/{id}', [
+		$this->router->get('/user/{id}', [
 			'module' => 'index',
 			'controller' => 'user',
 			'action' => 'view'
 		]);
-		$this->router->put('user/{id}', [
+		$this->router->put('/user/{id}', [
 			'module' => 'index',
 			'controller' => 'user',
 			'action' => 'update'
@@ -77,14 +87,14 @@ class RouterTest extends TestCase {
 	public function testAny() {
 		$this->req_content->server['request_method'] = 'get';
 		$this->req_content->server['request_uri'] = '/user/someone';
-		$this->router->get('user/{id}', [
+		$this->router->get('/user/{id}', [
 			'module' => 'index',
 			'controller' => 'user',
 			'action' => 'update'
 		], [
 			'id' => '(\d+)'
 		]);
-		$this->router->any('user/{id}', [
+		$this->router->any('/user/{id}', [
 			'module' => 'index',
 			'controller' => 'user',
 			'action' => 'view'
@@ -96,7 +106,7 @@ class RouterTest extends TestCase {
 	public function testClosure() {
 		$this->req_content->server['request_method'] = 'get';
 		$this->req_content->server['request_uri'] = '/user/123/view';
-		$this->router->get('user/{id}/{action}', function($param) {
+		$this->router->get('/user/{id}/{action}', function($param) {
 			return [
 				'module' => 'index',
 				'controller' => 'user',
