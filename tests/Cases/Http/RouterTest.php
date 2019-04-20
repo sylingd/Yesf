@@ -18,10 +18,12 @@ class RouterTest extends TestCase {
 	}
 	public function testMap() {
 		$this->router->enableMap();
+		$this->req_content->server['request_method'] = 'get';
 		$this->req_content->server['request_uri'] = '/ap/foo';
 		$this->router->parse($this->req);
 		$this->assertEquals('ap', $this->req->controller);
 		$this->assertEquals('foo', $this->req->action);
+		$this->req_content->server['request_method'] = 'get';
 		$this->req_content->server['request_uri'] = '/ap/foo/bar';
 		$this->router->parse($this->req);
 		$this->assertEquals('ap', $this->req->module);

@@ -16,6 +16,8 @@ use Yesf\Yesf;
 class Router implements RouterInterface {
 	/** @var string $prefix URL prefix */
 	private $prefix = '';
+	/** @var string $module Default module */
+	private $module;
 	/** @var array $routes All route rules */
 	private $routes;
 	/** @var bool $enable_map Enable map parser */
@@ -27,6 +29,7 @@ class Router implements RouterInterface {
 		$config = Yesf::app()->getConfig('router', Yesf::CONF_PROJECT);
 		$this->enable_map = is_array($config) && isset($config['map']) ? $config['map'] : true;
 		$this->enable_extension = is_array($config) && isset($config['extension']) ? $config['extension'] : false;
+		$this->module = Yesf::app()->getConfig('module', Yesf::CONF_PROJECT);
 	}
 	/**
 	 * Add rule
