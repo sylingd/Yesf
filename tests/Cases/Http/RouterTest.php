@@ -17,6 +17,7 @@ class RouterTest extends TestCase {
 		$this->req = new Request($this->req_content);
 	}
 	public function testMap() {
+		$this->router->enableMap();
 		$this->req_content->server['request_uri'] = 'ap/foo';
 		$this->router->parse($this->req);
 		$this->assertEquals('ap', $this->req->controller);
@@ -27,40 +28,86 @@ class RouterTest extends TestCase {
 		$this->assertEquals('foo', $this->req->controller);
 		$this->assertEquals('bar', $this->req->action);
 	}
-	public function testRewrite() {
-		$this->req_content->server['request_uri'] = 'controller/this-is-A/this-is-B/key-1/val-1/key-2/val-2';
-		$rule = 'controller/:paramA/:paramB/*';
-		$dispatch = ['controller' => 'SimpleController', 'action' => 'SimpleAction'];
-		$this->router->addRewrite($rule, $dispatch);
+	public function testParamCorrect() {
+		$this->req_content->server['request_method'] = 'get';
+		$this->req_content->server['request_uri'] = '/user/123';
+		$this->router->get('user/{id}', [
+			'module' => 'index',
+			'controller' => 'user',
+			'action' => 'view'
+		], [
+			'id' => '(\d+)'
+		]);
+		$this->router->disableMap();
 		$this->router->parse($this->req);
-		$this->assertSame([
-			'paramA' => 'this-is-A',
-			'paramB' => 'this-is-B',
-			'key-1' => 'val-1',
-			'key-2' => 'val-2'
-		], $this->req->param);
-		$this->assertSame($dispatch['controller'], $this->req->controller);
-		$this->assertSame($dispatch['action'], $this->req->action);
-		$this->req_content->server['request_uri'] = 'invalid_url/test/demo';
-		$this->router->parse($this->req);
-		$this->assertEquals('invalid_url', $this->req->module);
-		$this->assertEquals('test', $this->req->controller);
-		$this->assertEquals('demo', $this->req->action);
+		$this->assertEquals('index', $this->req->module);
+		$this->assertEquals('user', $this->req->controller);
+		$this->assertEquals('view', $this->req->action);
+		$this->assertEquals('123', $this->req->param['id']);
 	}
-	public function testRegex() {
-		$this->req_content->server['request_uri'] = 'thread-view-123-2.html';
-		$dispatch = ['controller' => 'SimpleController', 'action' => 'SimpleAction'];
-		$param = [
-			1 => 'id',
-			2 => 'page'
-		];
-		$this->router->addRegex('/^thread-view-([0-9]+)-([0-9]+)\\.html$/', $dispatch, $param);
+	public function testParamIncorrect() {
+		$this->req_content->server['request_method'] = 'get';
+		$this->req_content->server['request_uri'] = '/user/someone';
+		$this->router->get('user/{id}', 'index.user.view', [
+			'id' => '(\d+)'
+		]);
+		$this->router->disableMap();
 		$this->router->parse($this->req);
-		$this->assertSame([
-			'id' => '123',
-			'page' => '2'
-		], $this->req->param);
-		$this->assertSame($dispatch['controller'], $this->req->controller);
-		$this->assertSame($dispatch['action'], $this->req->action);
+		$this->assertNull($this->req->module);
+		$this->assertNull($this->req->controller);
+		$this->assertNull($this->req->action);
+	}
+	public function testMethod() {
+		$this->req_content->server['request_method'] = 'put';
+		$this->req_content->server['request_uri'] = '/user/123';
+		$this->router->get('user/{id}', [
+			'module' => 'index',
+			'controller' => 'user',
+			'action' => 'view'
+		]);
+		$this->router->put('user/{id}', [
+			'module' => 'index',
+			'controller' => 'user',
+			'action' => 'update'
+		]);
+		$this->router->disableMap();
+		$this->router->parse($this->req);
+		$this->assertEquals('update', $this->req->action);
+	}
+	public function testAny() {
+		$this->req_content->server['request_method'] = 'get';
+		$this->req_content->server['request_uri'] = '/user/someone';
+		$this->router->get('user/{id}', [
+			'module' => 'index',
+			'controller' => 'user',
+			'action' => 'update'
+		], [
+			'id' => '(\d+)'
+		]);
+		$this->router->any('user/{id}', [
+			'module' => 'index',
+			'controller' => 'user',
+			'action' => 'view'
+		]);
+		$this->router->disableMap();
+		$this->router->parse($this->req);
+		$this->assertEquals('view', $this->req->action);
+	}
+	public function testClosure() {
+		$this->req_content->server['request_method'] = 'get';
+		$this->req_content->server['request_uri'] = '/user/123/view';
+		$this->router->get('user/{id}/{action}', function($param) {
+			return [
+				'module' => 'index',
+				'controller' => 'user',
+				'action' => $param['action']
+			];
+		}, [
+			'id' => '(\d+)'
+		]);
+		$this->router->disableMap();
+		$this->router->parse($this->req);
+		$this->assertEquals('123', $this->req->param['id']);
+		$this->assertEquals('view', $this->req->action);
 	}
 }

@@ -5,6 +5,7 @@ return [
 	'charset' => 'utf-8',
 	'bootstrap' => 'Bootstrap',
 	'router' => [
+		'map' => true,
 		'extension' => true
 	],
 	'static' => [

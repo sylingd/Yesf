@@ -114,6 +114,6 @@ EOT;
 		//初始化
 		$app = new Yesf\Yesf();
 		$app->setEnvConfig($config);
-		$app->bootstrap()->run();
+		$app->run();
 	}
 }

@@ -19,25 +19,81 @@ class Router implements RouterInterface {
 	 * 在进行路由解析时会忽略此前缀。默认为/，即根目录
 	 * 一般不会有此需要，仅当程序处于网站二级目录时会用到
 	 */
-	protected $prefix = '/';
-	protected $rewrite = [];
-	protected $regex = [];
-	protected $router = null;
-	protected $module = 'index';
+	private $prefix = '/';
+	private $routes;
+	private $enable_map;
+	private $enable_extension;
 	public function __construct() {
-		$this->module = Yesf::app()->getConfig('module', Yesf::CONF_PROJECT);
-		$this->router = Yesf::app()->getConfig('router', Yesf::CONF_PROJECT);
+		$this->routes = [];
+		$config = Yesf::app()->getConfig('router', Yesf::CONF_PROJECT);
+		$this->enable_map = is_array($config) && isset($config['map']) ? $config['map'] : true;
+		$this->enable_extension = is_array($config) && isset($config['extension']) ? $config['extension'] : false;
 	}
-	public function setPrefix($prefix = '/') {
-		$this->prefix = $prefix;
+	public function add($type, $rule, $action, $options = null) {
+		$param = [];
+		$regex = str_replace('/', '\\/', $rule);
+		$regex = preg_replace_callback('/\{([a-zA-Z0-9_]+)\}/', function($matches) use (&$param, &$options) {
+			$paramName = $matches[1];
+			$param[] = $paramName;
+			if (is_array($options) && isset($options[$paramName])) {
+				return $options[$paramName];
+			} else {
+				return '([^\/]+)';
+			}
+		}, $regex);
+		$regex = '/^' . $regex . '$/';
+		if (!isset($this->routes[$type])) {
+			$this->routes[$type] = [];
+		}
+		if (is_string($action)) {
+			$res = explode('.', $action, 3);
+			if (count($res) === 3) {
+				$action = [
+					'module' => $res[0],
+					'controller' => $res[1],
+					'action' => $res[2]
+				];
+			} else {
+				$action = [
+					'controller' => $res[0],
+					'action' => $res[1]
+				];
+			}
+		}
+		$this->routes[$type][] = [
+			'regex' => $regex,
+			'param' => $param,
+			'dispatch' => $action
+		];
 	}
-	/**
-	 * 按照Map方式解析路由
-	 * 对于请求request_uri为"/ap/foo/bar"
-	 * base_uri为"/ap"
-	 * 则最后参加路由的request_uri为"/foo/bar"
-	 */
-	public function parseMap(Request $request) {
+	public function any($rule, $action, $options = null) {
+		$this->add(__FUNCTION__, $rule, $action, $options);
+	}
+	public function get($rule, $action, $options = null) {
+		$this->add(__FUNCTION__, $rule, $action, $options);
+	}
+	public function post($rule, $action, $options = null) {
+		$this->add(__FUNCTION__, $rule, $action, $options);
+	}
+	public function put($rule, $action, $options = null) {
+		$this->add(__FUNCTION__, $rule, $action, $options);
+	}
+	public function delete($rule, $action, $options = null) {
+		$this->add(__FUNCTION__, $rule, $action, $options);
+	}
+	public function head($rule, $action, $options = null) {
+		$this->add(__FUNCTION__, $rule, $action, $options);
+	}
+	public function options($rule, $action, $options = null) {
+		$this->add(__FUNCTION__, $rule, $action, $options);
+	}
+	public function connect($rule, $action, $options = null) {
+		$this->add(__FUNCTION__, $rule, $action, $options);
+	}
+	public function setPrefix($rule = '/') {
+		$this->rule = $rule;
+	}
+	private function parseMap(Request $request) {
 		//解析
 		$res = explode('/', $request->uri, 3);
 		if (count($res) === 3) {
@@ -51,11 +107,8 @@ class Router implements RouterInterface {
 		}
 		return true;
 	}
-	/**
-	 * 按照Rewrite方式解析路由
-	 */
-	public function parseRewrite(Request $request) {
-		foreach ($this->rewrite as $rewrite) {
+	private function parseBy($rules, Request $request) {
+		foreach ($rules as $rewrite) {
 			if (preg_match($rewrite['regex'], $request->uri, $matches)) {
 				$param = [];
 				unset($matches[0]);
@@ -63,91 +116,27 @@ class Router implements RouterInterface {
 				foreach ($rewrite['param'] as $k => $v) {
 					$param[$v] = $matches[$k + 1];
 				}
-				//处理星号部分
-				if (count($rewrite['param']) != count($matches)) {
-					end($matches);
-					$ext_param = explode('/', current($matches));
-					foreach ($ext_param as $k => $v) {
-						if ($k % 2 === 0) {
-							$param[$v] = $ext_param[$k + 1];
-						}
+				$dispatch = $rewrite['dispatch'];
+				if ($dispatch instanceof \Closure) {
+					$dispatch = $dispatch($param);
+					if ($dispatch === null) {
+						continue;
 					}
 				}
-				$dispatch = $rewrite['dispatch'];
-				break;
+				$request->param = $param;
+				$request->module = isset($dispatch['module']) ? $dispatch['module'] : $this->module;
+				$request->controller = $dispatch['controller'];
+				$request->action = $dispatch['action'];
+				return true;
 			}
 		}
-		if (isset($param)) {
-			$request->param = $param;
-			$request->module = isset($dispatch['module']) ? $dispatch['module'] : $this->module;
-			$request->controller = $dispatch['controller'];
-			$request->action = $dispatch['action'];
-			return true;
-		} else {
-			return false;
-		}
+		return false;
 	}
-	/**
-	 * 添加Rewrite解析规则
-	 * @param string $rule 基本规则
-	 * @param array $dispatch 分发规则
-	 */
-	public function addRewrite($rule, $dispatch) {
-		//将规则解析为正则
-		$param = [];
-		$regex = str_replace('/', '\\/', $rule);
-		$regex = preg_replace_callback('/:([a-zA-Z0-9_]+)/', function($matches) use (&$param) {
-			$param[] = $matches[1];
-			return '([^\/]+)';
-		}, $regex);
-		//处理结尾的星号
-		if (substr($regex, -1, 1) === '*') {
-			$regex = preg_replace('/\*$/', '(.*?)', $regex);
-		}
-		$regex = '/^' . $regex . '$/';
-		$this->rewrite[] = [
-			'regex' => $regex,
-			'param' => $param,
-			'dispatch' => $dispatch
-		];
+	public function enableMap() {
+		$this->enable_map = true;
 	}
-	/**
-	 * 按照Regex方式解析路由
-	 */
-	public function parseRegex(Request $request) {
-		foreach ($this->regex as $regex) {
-			if (preg_match($regex['regex'], $request->uri, $matches)) {
-				$param = [];
-				unset($matches[0]);
-				foreach ($matches as $k => $v) {
-					$param[$regex['param'][$k]] = $v;
-				}
-				$dispatch = $regex['dispatch'];
-				break;
-			}
-		}
-		if (isset($param)) {
-			$request->param = $param;
-			$request->module = isset($dispatch['module']) ? $dispatch['module'] : $this->module;
-			$request->controller = $dispatch['controller'];
-			$request->action = $dispatch['action'];
-			return true;
-		} else {
-			return false;
-		}
-	}
-	/**
-	 * 添加Regex解析规则
-	 * @param string $rule 规则
-	 * @param array $dispatch 分发规则
-	 * @param array $param 参数列表
-	 */
-	public function addRegex($rule, $dispatch, $param) {
-		$this->regex[] = [
-			'regex' => $rule,
-			'param' => $param,
-			'dispatch' => $dispatch
-		];
+	public function disableMap() {
+		$this->enable_map = false;
 	}
 	public function parse(Request $request) {
 		$len = strlen($this->prefix);
@@ -156,33 +145,37 @@ class Router implements RouterInterface {
 		if (strpos('?', $uri) !== false) {
 			$uri = substr($uri, 0, strpos($uri, '?'));
 		}
-		//去除开头的baseUri
+		//去除开头的prefix
 		if (strpos($uri, $this->prefix) === 0) {
 			$uri = substr($uri, $len);
 		}
-		//为空则读取默认设置
-		if (empty($uri)) {
-			$request->module = $this->module;
-			$request->controller = 'index';
-			$request->action = 'index';
-			return;
-		}
 		$request->uri = $uri;
-		//扩展名自动处理
-		if (Yesf::app()->getConfig('router.extension', Yesf::CONF_PROJECT)) {
-			$hasPoint = strrpos($uri, '.');
-			if ($hasPoint !== false) {
-				$request->extension = substr($uri, $hasPoint + 1);
-				$uri = substr($uri, 0, $hasPoint);
+		$res = false;
+		if (isset($this->routes[$request->server['request_method']])) {
+			$res = $this->parseBy($this->routes[$request->server['request_method']], $request);
+		}
+		if ($res === false && isset($this->routes['any'])) {
+			$res = $this->parseBy($this->routes['any'], $request);
+		}
+		if ($res === false) {
+			if ($this->enable_map) {
+				//为空则读取默认设置
+				if (empty($uri)) {
+					$request->module = $this->module;
+					$request->controller = 'index';
+					$request->action = 'index';
+				} else {
+					if ($this->enable_extension) {
+						$hasPoint = strrpos($uri, '.');
+						if ($hasPoint !== false) {
+							$request->extension = substr($uri, $hasPoint + 1);
+							$uri = substr($uri, 0, $hasPoint);
+							$request->uri = $uri;
+						}
+					}
+					$this->parseMap($request);
+				}
 			}
 		}
-		// Try
-		if ($this->parseRegex($request)) {
-			return;
-		}
-		if ($this->parseRewrite($request)) {
-			return;
-		}
-		$this->parseMap($request);
 	}
 }
