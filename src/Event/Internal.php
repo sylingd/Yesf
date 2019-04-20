@@ -12,7 +12,7 @@
 namespace Yesf\Event;
 
 use Yesf\Yesf;
-use Yesf\Helper;
+use Yesf\Utils;
 use Yesf\Log\Logger;
 use Yesf\Http\Response;
 use Yesf\Connection\Pool;
@@ -29,9 +29,9 @@ class Internal {
 		Logger::init();
 		Response::init();
 		Response::initInWorker();
-		Helper::setRDAlias();
-		Helper::setSessionAlias();
-		Helper::setCacheAlias();
+		Utils::setRDAlias();
+		Utils::setSessionAlias();
+		Utils::setCacheAlias();
 		Pool::init();
 	}
 	/**
@@ -40,6 +40,6 @@ class Internal {
 	 * @access public
 	 */
 	public static function onCreate() {
-		Helper::setRouterAlias();
+		Utils::setRouterAlias();
 	}
 }

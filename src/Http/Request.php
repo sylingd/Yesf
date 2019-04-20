@@ -12,26 +12,51 @@
 namespace Yesf\Http;
 
 use Yesf\Yesf;
+use Yesf\Utils;
 use Yesf\DI\Container;
 
 class Request {
+	/** @var callback $cookie_handler Cookie handler */
 	private $cookie_handler;
+
+	/** @var object $sw_request Swoole request object */
 	private $sw_request;
+
+	/** @var array $extra_infos extra infos */
 	private $extra_infos = [];
+
+	/** @var object $session Cached session */
 	private $session = null;
+
+	/** @var string $extension Request extension name */
 	public $extension = null;
+
+	/** @var string $module Module */
 	public $module = null;
+	/** @var string $controller Controoler */
 	public $controller = null;
+	/** @var string $action Action */
 	public $action = null;
+
+	/** @var array $param Request params */
 	public $param = [];
-	public $request_uri = '';
-	/** from swoole */
+
+	/** @var string $uri Parsed request uri */
+	public $uri = '';
+
+	/** @var array Same as swoole */
 	public $get;
 	public $post;
 	public $server;
 	public $header;
 	public $cookie;
 	public $files;
+
+	/** @var array $hooked */
+	protected static $hooked = [];
+	/** @var array $hook */
+	protected $hook;
+
 	public function __construct($req) {
 		$this->sw_request = $req;
 		$this->get = &$req->get;
@@ -40,6 +65,7 @@ class Request {
 		$this->header = &$req->header;
 		$this->cookie = &$req->cookie;
 		$this->files = &$req->files;
+		$this->hook = [];
 	}
 	/**
 	 * Get original post body
@@ -89,7 +115,7 @@ class Request {
 						$id = Session::generateId();
 					} while ($handler->read($id) !== '');
 					$saved = '';
-					$this->cookie_handler[0]->{$this->cookie_handler[1]}($name, $id, 0, '/');
+					Utils::call($this->cookie_handler, [$name, $id, 0, '/']);
 				} else {
 					$id = $this->cookie[$name];
 					$saved = $handler->read($id);
@@ -118,9 +144,27 @@ class Request {
 	public function setCookieHandler($handler) {
 		$this->cookie_handler = $handler;
 	}
+	/**
+	 * Set hook
+	 * 
+	 * @access public
+	 * @param string $name
+	 * @param callable $handler
+	 */
+	public static function hook($name, $handler) {
+		self::$hooked[$name] = $handler;
+	}
 	public function __get($name) {
 		if (isset($this->extra_infos[$name])) {
 			return $this->extra_infos[$name];
+		}
+		if (isset($this->hook[$name])) {
+			return $this->hook[$name];
+		}
+		if (isset(self::$hooked[$name])) {
+			$res = Utils::call(self::$hooked[$name], [$this]);
+			$this->hook[$name] = $res;
+			return $res;
 		}
 		return null;
 	}

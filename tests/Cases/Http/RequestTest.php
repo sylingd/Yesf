@@ -26,6 +26,16 @@ class RequestTest extends TestCase {
 		$this->assertEquals('test', $request->get['action']);
 		$this->assertNull($request->hahaha);
 	}
+	public function testHook() {
+		Request::hook('user', function($req) {
+			return $req->get['user'];
+		});
+		$req = clone self::$fake_req;
+		$id = uniqid();
+		$req->get['user'] = $id;
+		$request = new Request($req);
+		$this->assertSame($id, $request->user);
+	}
 	public function testSession() {
 		$id = uniqid();
 		$req = clone self::$fake_req;
