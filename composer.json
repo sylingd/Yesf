@@ -29,7 +29,10 @@
 	"autoload-dev": {
 		"psr-4": {
 			"YesfTest\\": "tests/Cases/",
-			"TestApp\\": "tests/TestApp/"
+			"YesfApp\\": "tests/TestApp/"
 		}
+	},
+	"scripts": {
+		"test": "php tests/run.php -c phpunit.xml"
 	}
 }

@@ -31,7 +31,7 @@ before_script:
   - bash ci/init-mysql.sh
 
 script:
-  - php tests/run.php -c phpunit.xml
+  - composer test
 
 after_success:
   - bash ci/deploy-www.sh
