@@ -3,7 +3,6 @@ return [
 	'name' => 'yesf',
 	'namespace' => 'YesfApp\\',
 	'charset' => 'utf-8',
-	'bootstrap' => 'Bootstrap',
 	'router' => [
 		'extension' => true
 	],

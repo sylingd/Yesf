@@ -1,10 +1,14 @@
 {
 	"name": "sylingd/yesf-framework",
 	"description": "Yesf framework",
-	"keywords": ["framework"],
+	"keywords": [
+		"framework"
+	],
 	"license": "Apache-2.0",
 	"type": "library",
-	"bin": ["bin/yesf"],
+	"bin": [
+		"bin/yesf"
+	],
 	"require": {
 		"php": ">=7.1.0",
 		"ext-mbstring": "*",
@@ -20,6 +24,12 @@
 	"autoload": {
 		"psr-4": {
 			"Yesf\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"YesfTest\\": "tests/Cases/",
+			"TestApp\\": "tests/TestApp/"
 		}
 	}
 }
