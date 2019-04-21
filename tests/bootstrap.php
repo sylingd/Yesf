@@ -27,10 +27,10 @@ function getLoader() {
 	return $loader;
 }
 
-$app = new Yesf();
-$app->setEnvConfig(APP_PATH . 'Config/env.ini');
-
 getLoader()->addPsr4('YesfTest\\', TEST_SRC);
 getLoader()->addPsr4('TestApp\\', TEST_APP);
+
+$app = new Yesf();
+$app->setEnvConfig(APP_PATH . 'Config/env.ini');
 
 Internal::onWorkerStart();
