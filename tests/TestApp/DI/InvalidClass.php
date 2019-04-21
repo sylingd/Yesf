@@ -1,5 +1,5 @@
 <?php
-namespace TestApp\DI;
+namespace YesfApp\DI;
 
 abstract class InvalidClass {
 }

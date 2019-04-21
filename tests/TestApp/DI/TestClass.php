@@ -1,17 +1,17 @@
 <?php
-namespace TestApp\DI;
+namespace YesfApp\DI;
 
 class TestClass {
 	/**
 	 * Should be ignored
-	 * @Autowired TestApp\DI\ClassOne
+	 * @Autowired YesfApp\DI\ClassOne
 	 */
 	public static $static_one = null;
 
 	/** @Autowired ClassOneAlias */
 	public $one_alias;
 
-	/** @Autowired TestApp\DI\ClassOne */
+	/** @Autowired YesfApp\DI\ClassOne */
 	private $one;
 
 	private $two;
@@ -23,7 +23,7 @@ class TestClass {
 	public $plain_var_with_default;
 
 	/**
-	 * @Autowired obj2_from_constructor TestApp\DI\ClassTwo
+	 * @Autowired obj2_from_constructor YesfApp\DI\ClassTwo
 	 */
 	public function __construct(
 		ClassOne $obj1_from_constructor,
@@ -39,7 +39,7 @@ class TestClass {
 		$this->plain_var_with_default = $plain_var_with_default;
 	}
 
-	public function setTwo(\TestApp\DI\ClassTwo $obj) {
+	public function setTwo(\YesfApp\DI\ClassTwo $obj) {
 		$this->two = $obj;
 	}
 	public function getTwo() {

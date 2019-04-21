@@ -1,5 +1,5 @@
 <?php
-namespace TestApp\DI;
+namespace YesfApp\DI;
 
 class ClassTwo {
 	public function getName() {

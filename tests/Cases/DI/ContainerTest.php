@@ -8,7 +8,7 @@ use Yesf\DI\Container;
 use Yesf\Exception\NotFoundException;
 use Yesf\Exception\InvalidClassException;
 use Yesf\Exception\CyclicDependencyException;
-use TestApp\DI as DITest;
+use YesfApp\DI as DITest;
 
 class ContainerTest extends TestCase {
 	public static function setUpBeforeClass() {

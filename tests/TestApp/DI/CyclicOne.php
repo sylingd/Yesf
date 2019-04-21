@@ -1,7 +1,7 @@
 <?php
-namespace TestApp\DI;
+namespace YesfApp\DI;
 
 class CyclicOne {
-	/** @Autowired TestApp\DI\CyclicTwo */
+	/** @Autowired YesfApp\DI\CyclicTwo */
 	public $two;
 }
