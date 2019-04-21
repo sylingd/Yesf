@@ -95,8 +95,6 @@ class Yesf {
 		if ('\\' !== $namespace[strlen($namespace) - 1]) {
 			throw new StartException("A non-empty PSR-4 prefix must end with a namespace separator.");
 		}
-		//将APP的namespace添加到Autoload
-		$this->addAppToLoader();
 		Internal::onCreate();
 		//编码相关
 		if (function_exists('mb_internal_encoding')) {
@@ -107,35 +105,6 @@ class Yesf {
 		}
 		// Configuration
 		$this->callConfiguration();
-	}
-	/**
-	 * 将APP的namespace添加到Autoload
-	 */
-	private function addAppToLoader() {
-		$namespace = self::$config_project->get('namespace');
-		self::getLoader()->addPsr4($namespace, APP_PATH);
-	}
-	/**
-	 * 通过读取文件，获取Composer的Loader
-	 * 
-	 * @access public
-	 * @return object(ClassLoader)
-	 */
-	public static function getLoader() {
-		static $loader = null;
-		if ($loader === null) {
-			$classes = get_declared_classes();
-			foreach ($classes as $clazz) {
-				if (strpos($clazz, 'ComposerAutoloaderInit') === 0 && method_exists($clazz, 'getLoader')) {
-					$loader = $clazz::getLoader();
-					break;
-				}
-			}
-			if ($loader === null) {
-				throw new RequirementException('Composer loader not found');
-			}
-		}
-		return $loader;
 	}
 	/**
 	 * 将部分变量对外暴露，方便使用
