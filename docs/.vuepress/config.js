@@ -81,6 +81,12 @@ module.exports = {
             ]
           },
           {
+            title: '连接池',
+            children: [
+              '/zh-CN/connection/'
+            ]
+          },
+          {
             title: '缓存',
             children: [
               '/zh-CN/cache/',

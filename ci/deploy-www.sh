@@ -28,8 +28,8 @@ main() {
 	node --version
 	yarn -v
 	
-    cd $TRAVIS_BUILD_DIR
-    mkdir -p build/www
+	cd $TRAVIS_BUILD_DIR
+	mkdir -p build/www
 
 	# Build
 	cd $TRAVIS_BUILD_DIR/docs
@@ -37,8 +37,8 @@ main() {
 	yarn build
 	mv $TRAVIS_BUILD_DIR/docs/.vuepress/dist/* $TRAVIS_BUILD_DIR/build/www
 
-    # Copy all files
-    cp $TRAVIS_BUILD_DIR/ci/www/* $TRAVIS_BUILD_DIR/build/www/
+	# Copy all files
+	cp $TRAVIS_BUILD_DIR/ci/www/* $TRAVIS_BUILD_DIR/build/www/
 
 	# Upload
 	cd $TRAVIS_BUILD_DIR/build/www/
