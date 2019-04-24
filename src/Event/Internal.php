@@ -30,7 +30,6 @@ class Internal {
 		Response::init();
 		Response::initInWorker();
 		Utils::setRDAlias();
-		Utils::setSessionAlias();
 		Utils::setCacheAlias();
 		Pool::init();
 	}
@@ -41,6 +40,7 @@ class Internal {
 	 */
 	public static function onCreate() {
 		Utils::setRouterAlias();
+		Utils::setSessionAlias();
 		Utils::setDefaultInterceptor();
 	}
 }

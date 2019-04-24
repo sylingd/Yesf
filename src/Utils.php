@@ -30,9 +30,6 @@ class Utils {
 			return Pool::getAdapter($default);
 		});
 	}
-	public static function setSessionAlias() {
-		Container::getInstance()->set(SessionHandlerInterface::class, SessionHandler::class);
-	}
 	public static function setCacheAlias() {
 		$default = Yesf::app()->getConfig('cache.default');
 		if ($default === 'file') {
@@ -46,8 +43,13 @@ class Utils {
 	public static function setRouterAlias() {
 		Container::getInstance()->set(RouterInterface::class, Router::class);
 	}
+	public static function setSessionAlias() {
+		Container::getInstance()->set(SessionHandlerInterface::class, SessionHandler::class);
+	}
 	public static function setDefaultInterceptor() {
-		Container::getInstance()->get(Dispatcher::class)->addInterceptor('/**', Container::getInstance()->get(DefaultInterceptor::class));
+		$interceptor = Container::getInstance()->get(DefaultInterceptor::class);
+		Container::getInstance()->get(Dispatcher::class)
+			->addInterceptor('/**', $interceptor);
 	}
 	public static function call($action, $args) {
 		if ($action instanceof \Closure) {
