@@ -11,11 +11,7 @@
  */
 namespace Yesf\DI;
 
-use Psr\Container\ContainerInterface;
 use Yesf\Yesf;
-use Yesf\Exception\NotFoundException;
-use Yesf\Exception\InvalidClassException;
-use Yesf\Exception\CyclicDependencyException;
 
 class EntryUtil {
 	public static function controller($module, $controller) {

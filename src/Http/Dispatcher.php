@@ -15,7 +15,7 @@ use SessionHandlerInterface;
 use Yesf\Yesf;
 use Yesf\Plugin;
 use Yesf\DI\Container;
-use Yesf\DI\GetEntryUtil;
+use Yesf\DI\EntryUtil;
 use Yesf\Exception\NotFoundException;
 use Yesf\Http\Interceptor\BaseInterface;
 use Yesf\Http\Interceptor\BeforeInterface;
@@ -84,7 +84,7 @@ class Dispatcher {
 		if (!in_array($module, $this->modules, true)) {
 			return self::ROUTE_ERR_MODULE;
 		}
-		$className = GetEntryUtil::controller($module, $controller);
+		$className = EntryUtil::controller($module, $controller);
 		if (!Container::getInstance()->has($className)) {
 			return self::ROUTE_ERR_CONTROLLER;
 		}
@@ -233,7 +233,6 @@ class Dispatcher {
 	 * @return mixed
 	 */
 	public function dispatch(Request $request, Response $response) {
-		$result = null;
 		$module = ucfirst($request->module);
 		$controller = ucfirst($request->controller);
 		$action = ucfirst($request->action);
@@ -245,7 +244,7 @@ class Dispatcher {
 		try {
 			$code = self::isValid($module, $controller, $action);
 			if ($code === self::ROUTE_VALID) {
-				$className = GetEntryUtil::controller($module, $controller);
+				$className = EntryUtil::controller($module, $controller);
 				if (!Container::getInstance()->has($className)) {
 					return self::ROUTE_ERR_CONTROLLER;
 				}
