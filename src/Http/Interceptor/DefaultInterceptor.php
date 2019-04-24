@@ -33,9 +33,9 @@ class DefaultInterceptor implements AfterInterface {
 		$response->status(404);
 		if (Yesf::app()->getEnvironment() === 'develop') {
 			$response->assign('request', $request);
-			$response->display(YESF_ROOT . 'Data/error_404_debug.php', true);
+			$response->display(YESF_PATH . 'Data/error_404_debug.php', true);
 		} else {
-			$response->display(YESF_ROOT . 'Data/error_404.php', true);
+			$response->display(YESF_PATH . 'Data/error_404.php', true);
 		}
 	}
 	private function handleException(Request $request, Response $response) {
@@ -45,9 +45,9 @@ class DefaultInterceptor implements AfterInterface {
 		if (Yesf::app()->getEnvironment() === 'develop') {
 			$response->assign('exception', $exception);
 			$response->assign('request', $request);
-			$response->display(YESF_ROOT . 'Data/error_debug.php', true);
+			$response->display(YESF_PATH . 'Data/error_debug.php', true);
 		} else {
-			$response->display(YESF_ROOT . 'Data/error.php', true);
+			$response->display(YESF_PATH . 'Data/error.php', true);
 		}
 	}
 }

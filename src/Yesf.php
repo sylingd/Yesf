@@ -21,8 +21,8 @@ use Yesf\Exception\StartException;
 use Yesf\Exception\NotFoundException;
 use Yesf\Exception\RequirementException;
 
-if (!defined('YESF_ROOT')) {
-	define('YESF_ROOT', __DIR__ . '/');
+if (!defined('YESF_PATH')) {
+	define('YESF_PATH', __DIR__ . '/');
 }
 
 set_error_handler(function($errno, $errstr, $errfile, $errline, $errcontext) {
