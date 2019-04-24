@@ -245,9 +245,6 @@ class Dispatcher {
 			$code = self::isValid($module, $controller, $action);
 			if ($code === self::ROUTE_VALID) {
 				$className = EntryUtil::controller($module, $controller);
-				if (!Container::getInstance()->has($className)) {
-					return self::ROUTE_ERR_CONTROLLER;
-				}
 				$clazz = Container::getInstance()->get($className);
 				$actionName = $action . 'Action';
 				$clazz->$actionName($request, $response);
