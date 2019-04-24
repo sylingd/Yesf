@@ -12,7 +12,7 @@
 
 namespace Yesf;
 
-class Plugin {
+class Event {
 	protected static $plugins = [];
 	/**
 	 * 注册一个插件
@@ -21,7 +21,7 @@ class Plugin {
 	 * @param string $event 事件名称
 	 * @param callable $callback 回调函数
 	 */
-	public static function register(string $event, callable $callback) {
+	public static function listen(string $event, callable $callback) {
 		if (!isset(self::$plugins[$event])) {
 			self::$plugins[$event] = [];
 		}
