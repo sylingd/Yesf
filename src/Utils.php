@@ -18,10 +18,8 @@ use Yesf\DI\Container;
 use Yesf\RD\RDInterface;
 use Yesf\Connection\Pool;
 use Yesf\Http\Router;
-use Yesf\Http\Dispatcher;
 use Yesf\Http\RouterInterface;
 use Yesf\Http\SessionHandler;
-use Yesf\Http\Interceptor\DefaultInterceptor;
 
 class Utils {
 	public static function setRDAlias() {
@@ -45,11 +43,6 @@ class Utils {
 	}
 	public static function setSessionAlias() {
 		Container::getInstance()->set(SessionHandlerInterface::class, SessionHandler::class);
-	}
-	public static function setDefaultInterceptor() {
-		$interceptor = Container::getInstance()->get(DefaultInterceptor::class);
-		Container::getInstance()->get(Dispatcher::class)
-			->addInterceptor('/**', $interceptor);
 	}
 	public static function call($action, $args) {
 		if ($action instanceof \Closure) {

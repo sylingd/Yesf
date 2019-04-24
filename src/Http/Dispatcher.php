@@ -20,6 +20,7 @@ use Yesf\Exception\NotFoundException;
 use Yesf\Http\Interceptor\BaseInterface;
 use Yesf\Http\Interceptor\BeforeInterface;
 use Yesf\Http\Interceptor\AfterInterface;
+use Yesf\Http\Interceptor\DefaultInterceptor;
 
 class Dispatcher {
 	const ROUTE_VALID = 0;
@@ -54,6 +55,8 @@ class Dispatcher {
 			'before' => [],
 			'after' => []
 		];
+		$interceptor = Container::getInstance()->get(DefaultInterceptor::class);
+		$this->addInterceptor('/**', $interceptor);
 
 		$static = Yesf::app()->getConfig('static', Yesf::CONF_PROJECT);
 		if ($static === true || (is_array($static) && $static['enable'])) {
