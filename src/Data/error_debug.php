@@ -93,9 +93,9 @@
 	<div class="request">
 		<div class="title">Request</div>
 		<table>
-			<tr><td class="name">module</td><td><?=htmlspecialchars($module)?></td></tr>
-			<tr><td class="name">controller</td><td><?=htmlspecialchars($controller)?></td></tr>
-			<tr><td class="name">action</td><td><?=htmlspecialchars($action)?></td></tr>
+			<tr><td class="name">module</td><td><?=htmlspecialchars($request->module)?></td></tr>
+			<tr><td class="name">controller</td><td><?=htmlspecialchars($request->controller)?></td></tr>
+			<tr><td class="name">action</td><td><?=htmlspecialchars($request->action)?></td></tr>
 			<tr><td class="name">request_uri</td><td><?=htmlspecialchars($request->server['request_uri'])?></td></tr>
 			<tr><td class="name">uri</td><td><?=htmlspecialchars($request->uri)?></td></tr>
 			<tr><td class="name">extension</td><td><?=htmlspecialchars($request->extension)?></td></tr>

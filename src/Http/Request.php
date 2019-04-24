@@ -31,6 +31,9 @@ class Request {
 	/** @var string $extension Request extension name */
 	public $extension = null;
 
+	/** @var mixed $status Request status, 404, or exception */
+	public $status = null;
+
 	/** @var string $module Module */
 	public $module = null;
 	/** @var string $controller Controoler */

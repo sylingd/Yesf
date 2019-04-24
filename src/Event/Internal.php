@@ -41,5 +41,6 @@ class Internal {
 	 */
 	public static function onCreate() {
 		Utils::setRouterAlias();
+		Utils::setDefaultInterceptor();
 	}
 }

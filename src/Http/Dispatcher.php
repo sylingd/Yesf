@@ -14,10 +14,12 @@ namespace Yesf\Http;
 use SessionHandlerInterface;
 use Yesf\Yesf;
 use Yesf\Plugin;
-use Yesf\Logger;
 use Yesf\DI\Container;
 use Yesf\DI\GetEntryUtil;
 use Yesf\Exception\NotFoundException;
+use Yesf\Http\Interceptor\BaseInterface;
+use Yesf\Http\Interceptor\BeforeInterface;
+use Yesf\Http\Interceptor\AfterInterface;
 
 class Dispatcher {
 	const ROUTE_VALID = 0;
@@ -41,10 +43,17 @@ class Dispatcher {
 	/** @var string $static_dir Static directory */
 	private $static_dir = '';
 
-	public function __construct(Router $router, SessionHandlerInterface $session) {
+	/** @var array $interceptor Interceptors */
+	private $interceptor;
+
+	public function __construct(RouterInterface $router, SessionHandlerInterface $session) {
 		$this->router = $router;
 		$this->session_handler = $session;
 		$this->modules = Yesf::app()->getConfig('modules', Yesf::CONF_PROJECT);
+		$this->interceptor = [
+			'before' => [],
+			'after' => []
+		];
 
 		$static = Yesf::app()->getConfig('static', Yesf::CONF_PROJECT);
 		if ($static === true || (is_array($static) && $static['enable'])) {
@@ -110,39 +119,106 @@ class Dispatcher {
 		return $this->session_handler;
 	}
 	/**
+	 * Add interceptor
+	 * 
+	 * @access public
+	 * @param string $include
+	 * @param object $interceptor
+	 * @param array $exclude
+	 */
+	public function addInterceptor(string $include, BaseInterface $interceptor, $exclude = null) {
+		$add = ['handler' => $interceptor];
+		if ($include === '**' || $include === '/**') {
+			$add['all'] = true;
+		} elseif (strpos($include, '*') !== false) {
+			$regex = str_replace('/', '\\/', $include);
+			$regex = str_replace('\\/**', '(.*?)', $regex);
+			$regex = str_replace('**', '(.*?)', $regex);
+			$regex = str_replace('*', '([^\/]?)', $regex);
+			$add['regex'] = '/^' . $regex . '$/';
+		} else {
+			$add['uri'] = $include;
+		}
+		if ($exclude !== null) {
+			$add['exclude'] = $exclude;
+		}
+		if ($interceptor instanceof BeforeInterface) {
+			array_unshift($this->interceptor['before'], $add);
+		}
+		if ($interceptor instanceof AfterInterface) {
+			array_unshift($this->interceptor['after'], $add);
+		}
+	}
+	/**
+	 * Execute interceptor
+	 * 
+	 * @access private
+	 * @param string $type
+	 * @param object $request
+	 * @param object $response
+	 * @return bool
+	 */
+	private function executeInterceptor($type, Request $request, Response $response) {
+		foreach ($this->interceptor[$type] as $it) {
+			if (isset($it['all'])) {
+				if ($it['handler']->{$type}($request, $response) !== null) {
+					return true;
+				}
+			} elseif (isset($it['uri'])) {
+				if ($request->uri === $it['uri']) {
+					if ($it['handler']->{$type}($request, $response) !== null) {
+						return true;
+					}
+				}
+			} else {
+				if (preg_match($it['regex'], $request->uri)) {
+					if ($it['handler']->{$type}($request, $response) !== null) {
+						return true;
+					}
+				}
+			}
+		}
+		return null;
+	}
+	/**
 	 * Handle http request
 	 * 
 	 * @access public
 	 * @param Request $req Request
 	 * @param Response $res Response
 	 */
-	public function handleRequest(Request $req, Response $res) {
+	public function handleRequest(Request $request, Response $response) {
 		if ($this->static_enable) {
-			$uri = $req->server['request_uri'];
+			$request->uri = $request->server['request_uri'];
+			$uri = $request->server['request_uri'];
 			if (strpos($uri, $this->static_prefix) === 0) {
 				$uri = substr($uri, strlen($this->static_prefix));
 			}
 			$path = realpath($this->static_dir . $uri);
 			if ($path !== false && strpos($path, $this->static_dir) === 0) {
-				if (Plugin::trigger('beforeStatic', [$path, $req, $res]) === null) {
-					$res->mimeType(pathinfo($path, PATHINFO_EXTENSION));
-					$res->sendfile($path);
+				if ($this->executeInterceptor('before', $request, $response) !== null) {
+					$request->end();
+					$response->end();
+					unset($request, $response);
+					return;
 				}
-				Plugin::trigger('afterStatic', [$path, $req, $res]);
-				$req->end();
-				$res->end();
-				unset($req, $res);
+				$response->mimeType(pathinfo($path, PATHINFO_EXTENSION));
+				$response->sendfile($path);
+				$this->executeInterceptor('after', $request, $response);
+				$request->end();
+				$response->end();
+				unset($request, $response);
 				return;
 			}
 		}
-		if (Plugin::trigger('beforeRoute', [$req, $res]) === null) {
-			$this->router->parse($req);
+		$this->router->parse($request);
+		if ($this->executeInterceptor('before', $request, $response) !== null) {
+			$request->end();
+			$response->end();
+			unset($request, $response);
+			return;
 		}
-		$result = null;
-		//触发beforeDispatcher事件
-		if (Plugin::trigger('beforeDispatch', [$req, $res]) === null) {
-			$this->dispatch($req, $res);
-		}
+		$this->dispatch($request, $response);
 	}
 	/**
 	 * 进行路由分发
@@ -163,7 +239,6 @@ class Dispatcher {
 		if (!empty($request->extension)) {
 			$response->mimeType($request->extension);
 		}
-		$result = null;
 		try {
 			$code = self::isValid($module, $controller, $action);
 			if ($code === self::ROUTE_VALID) {
@@ -173,58 +248,17 @@ class Dispatcher {
 				}
 				$clazz = Container::getInstance()->get($className);
 				$actionName = $action . 'Action';
-				$result = $clazz->$actionName($request, $response);
-				//触发afterDispatch事件
-				Plugin::trigger('afterDispatch', [$request, $response, $result]);
+				$clazz->$actionName($request, $response);
 			} else {
 				// Not found
-				self::handleNotFound($request, $response);
+				$request->status = $code;
 			}
 		} catch (\Throwable $e) {
-			$result = self::handleDispathException($request, $response, $e);
+			$request->status = $e;
 		}
+		$this->executeInterceptor('after', $request, $response);
 		$request->end();
 		$response->end();
 		unset($request, $response);
-		return $result;
-	}
-	private static function handleNotFound($request, $response) {
-		$arr = [$request, $yesf_response];
-		if (Plugin::trigger('dispatchFailed', $arr) === null) {
-			$response->status(404);
-			$response->disableView();
-			$response->setCurrentTemplateEngine(Template::class);
-			if (Yesf::app()->getEnvironment() === 'develop') {
-				$response->assign('module', $request->module);
-				$response->assign('controller', $request->controller);
-				$response->assign('action', $request->action);
-				$response->assign('code', $code);
-				$response->assign('request', $request);
-				$response->display(YESF_ROOT . 'Data/error_404_debug.php', true);
-			} else {
-				$response->display(YESF_ROOT . 'Data/error_404.php', true);
-			}
-		}
-	}
-	private static function handleDispathException($request, $response, $exception) {
-		//日志记录
-		Logger::error('Uncaught exception: ' . $e->getMessage() . '. Trace: ' . $e->getTraceAsString());
-		//触发失败事件
-		$arr = [$request, $response, $exception];
-		if (Plugin::trigger('dispatchFailed', $arr) === null) {
-			//如果用户没有自行处理，输出默认模板
-			$response->disableView();
-			$response->setCurrentTemplateEngine(Template::class);
-			if (Yesf::app()->getEnvironment() === 'develop') {
-				$response->assign('module', $request->module);
-				$response->assign('controller', $request->controller);
-				$response->assign('action', $request->action);
-				$response->assign('exception', $exception);
-				$response->assign('request', $request);
-				$response->display(YESF_ROOT . 'Data/error_debug.php', true);
-			} else {
-				$response->display(YESF_ROOT . 'Data/error.php', true);
-			}
-		}
 	}
 }
