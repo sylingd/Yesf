@@ -45,14 +45,6 @@ class Utils {
 		Container::getInstance()->set(SessionHandlerInterface::class, SessionHandler::class);
 	}
 	public static function call($action, $args) {
-		if ($action instanceof \Closure) {
-			return $action(...$args);
-		} elseif (is_array($action)) {
-			if (is_object($action[0])) {
-				$action[0]->$action[1](...$args);
-			} else {
-				$action[0]::$action[1](...$args);
-			}
-		}
+		return $action(...$args);
 	}
 }
