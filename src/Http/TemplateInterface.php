@@ -9,7 +9,6 @@
  * @copyright Copyright (c) 2017-2019 ShuangYa
  * @license https://yesf.sylibs.com/license.html
  */
-
 namespace Yesf\Http;
 
 interface TemplateInterface {

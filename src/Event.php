@@ -1,6 +1,6 @@
 <?php
 /**
- * 插件主类
+ * Event主类
  * 
  * @author ShuangYa
  * @package Yesf
@@ -9,11 +9,10 @@
  * @copyright Copyright (c) 2017-2019 ShuangYa
  * @license https://yesf.sylibs.com/license.html
  */
-
 namespace Yesf;
 
 class Event {
-	protected static $plugins = [];
+	protected static $events = [];
 	/**
 	 * 注册一个插件
 	 * 
@@ -22,10 +21,10 @@ class Event {
 	 * @param callable $callback 回调函数
 	 */
 	public static function listen(string $event, callable $callback) {
-		if (!isset(self::$plugins[$event])) {
-			self::$plugins[$event] = [];
+		if (!isset(self::$events[$event])) {
+			self::$events[$event] = [];
 		}
-		self::$plugins[$event][] = $callback;
+		self::$events[$event][] = $callback;
 	}
 	/**
 	 * 清除已注册的插件
@@ -35,9 +34,9 @@ class Event {
 	 */
 	public static function clear(string $event = '') {
 		if (empty($event)) {
-			self::$plugins = [];
+			self::$events = [];
 		} else {
-			self::$plugins[$event] = [];
+			self::$events[$event] = [];
 		}
 	}
 	/**
@@ -49,9 +48,9 @@ class Event {
 	 */
 	public static function trigger(string $event, $data = []) {
 		$result = null;
-		if (isset(self::$plugins[$event])) {
-			foreach (self::$plugins[$event] as $callback) {
-				$result = $callback(...$data);
+		if (isset(self::$events[$event])) {
+			foreach (self::$events[$event] as $callback) {
+				$result = Utils::call($callback, $data);
 				if ($result !== null) {
 					break;
 				}
