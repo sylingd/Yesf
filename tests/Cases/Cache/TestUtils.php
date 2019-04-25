@@ -23,17 +23,17 @@ class TestUtils {
 		$that->assertSame($arr['key1'], $handler->get('key1'));
 		$that->assertSame($arr['key2'], $handler->get('key2'));
 		$that->assertSame($arr['key3'], $handler->get('key3'));
-		$that->assertSame($arr, $handler->getMultiple(array_keys($arr)));
+		$that->assertEquals($arr, $handler->getMultiple(array_keys($arr)));
 		$arr['key1'] = rand(1, 999);
 		$handler->set('key1', $arr['key1']);
-		$that->assertSame($arr, $handler->getMultiple(array_keys($arr)));
-		$that->assertSame([
+		$that->assertEquals($arr, $handler->getMultiple(array_keys($arr)));
+		$that->assertEquals([
 			'not_exists' => -1,
 			'key1' => $arr['key1'],
 			'not_exists_2' => -1
 		], $handler->getMultiple(['not_exists', 'key1', 'not_exists_2'], -1));
 		$handler->deleteMultiple(['key1', 'key2']);
-		$that->assertSame([
+		$that->assertEquals([
 			'key1' => -1,
 			'key2' => -1,
 			'key3' => $arr['key3']

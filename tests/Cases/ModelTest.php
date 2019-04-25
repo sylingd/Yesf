@@ -23,14 +23,14 @@ class ModelTest extends TestCase {
 	public function testGet() {
 		$user = self::$pdo->query('SELECT * FROM `user` LIMIT 0,1')->fetch(PDO::FETCH_ASSOC);
 		$res = self::$model->get($user['id']);
-		$this->assertSame($user['name'], $res['name']);
+		$this->assertEquals($user['name'], $res['name']);
 	}
 	public function testSet() {
 		$user = self::$pdo->query('SELECT * FROM `user` LIMIT 0,1')->fetch(PDO::FETCH_ASSOC);
 		$newName = uniqid();
 		self::$model->set(['name' => $newName], $user['id']);
 		$res = self::$pdo->query("SELECT name FROM `user` WHERE id = {$user['id']} LIMIT 0,1")->fetch(PDO::FETCH_ASSOC);
-		$this->assertSame($newName, $res['name']);
+		$this->assertEquals($newName, $res['name']);
 	}
 	public function testAdd() {
 		$name = uniqid();
@@ -42,7 +42,7 @@ class ModelTest extends TestCase {
 		]);
 		$this->assertNotNull($res);
 		$selected = self::$pdo->query('SELECT * FROM `user` WHERE id = ' . $res)->fetch(PDO::FETCH_ASSOC);
-		$this->assertSame($name, $selected['name']);
+		$this->assertEquals($name, $selected['name']);
 		$this->assertTrue(password_verify($password, $selected['password']));
 	}
 	public function testDel() {

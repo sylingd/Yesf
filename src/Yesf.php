@@ -139,7 +139,7 @@ class Yesf {
 		self::$config_project_hash = $hash;
 		self::$config_project = new Arr(require(APP_PATH . 'Config/Project.php'), '');
 	}
-	public function getConfig($key = null, $type = self::CONF_ENV) {
+	public function getConfig($key = null, $type = self::CONF_ENV, $default = null) {
 		switch ($type) {
 			case self::CONF_ENV:
 				$config = $this->config;
@@ -154,7 +154,7 @@ class Yesf {
 		if ($key === null) {
 			return $config;
 		} else {
-			return $config->get($key);
+			return $config->get($key, $default);
 		}
 	}
 	public function setEnvironment($env) {

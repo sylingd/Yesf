@@ -46,9 +46,8 @@ class Response {
 	 * @access public
 	 */
 	public static function init() {
-		$view_config = Yesf::app()->getConfig('view', Yesf::CONF_PROJECT);
-		self::$tpl_auto_config = $view_config['auto'] === true;
-		self::$tpl_extension = ($view_config['extension'] ? $view_config['extension'] : 'phtml');
+		self::$tpl_auto_config = Yesf::app()->getConfig('view.auto', Yesf::CONF_PROJECT) === true;
+		self::$tpl_extension = Yesf::app()->getConfig('view.extension', Yesf::CONF_PROJECT, 'phtml');
 		self::$tpl_engine = Template::class;
 		Container::getInstance()->setMulti(Template::class, Container::MULTI_CLONE);
 	}

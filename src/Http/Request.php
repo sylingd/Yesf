@@ -103,14 +103,8 @@ class Request {
 	 */
 	public function session() {
 		if ($this->session === null) {
-			$name = Yesf::app()->getConfig('session.name');
-			$type = Yesf::app()->getConfig('session.type');
-			if ($name === null) {
-				$name = 'YESFSESSID';
-			}
-			if ($type === null) {
-				$type = 'cookie';
-			}
+			$name = Yesf::app()->getConfig('session.name', Yesf::CONF_ENV, 'YESFSESSID');
+			$type = Yesf::app()->getConfig('session.type', Yesf::CONF_ENV, 'cookie');
 			$handler = Container::getInstance()->get(Dispatcher::class)->getSessionHandler();
 			if ($type === 'cookie') {
 				if (!isset($this->cookie[$name])) {

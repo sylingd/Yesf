@@ -26,9 +26,8 @@ class Router implements RouterInterface {
 	private $enable_extension;
 	public function __construct() {
 		$this->routes = [];
-		$config = Yesf::app()->getConfig('router', Yesf::CONF_PROJECT);
-		$this->enable_map = is_array($config) && isset($config['map']) ? $config['map'] : true;
-		$this->enable_extension = is_array($config) && isset($config['extension']) ? $config['extension'] : false;
+		$this->enable_map = Yesf::app()->getConfig('router.map', Yesf::CONF_PROJECT, true);
+		$this->enable_extension = Yesf::app()->getConfig('router.extension', Yesf::CONF_PROJECT, false);
 		$this->module = Yesf::app()->getConfig('module', Yesf::CONF_PROJECT);
 	}
 	/**

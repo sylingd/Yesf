@@ -27,18 +27,14 @@ class Pool {
 	 * @access public
 	 */
 	public static function init() {
-		$c = Yesf::app()->getConfig('connection.default');
-		if ($c === null) {
-			self::$connection_default = [
-				'min' => 1,
-				'max' => 3,
-			];
-		} else {
-			self::$connection_default = [
-				'min' => isset($c['min']) ? intval($c['min']) : 1,
-				'max' => isset($c['max']) ? intval($c['max']) : 1,
-			];
-		}
+		$c = Yesf::app()->getConfig('connection.default', Yesf::CONF_ENV, [
+			'min' => 1,
+			'max' => 3,
+		]);
+		self::$connection_default = [
+			'min' => isset($c['min']) ? intval($c['min']) : 1,
+			'max' => isset($c['max']) ? intval($c['max']) : 1,
+		];
 		// 注册默认Driver和Adapter
 		self::setDriver('mysql', \Yesf\Connection\Driver\Mysql::class);
 		self::setDriver('redis', \Yesf\Connection\Driver\Redis::class);

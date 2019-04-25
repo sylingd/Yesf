@@ -30,4 +30,7 @@ class Template implements TemplateInterface {
 		}
 		return ob_get_clean();
 	}
+	public function __clone() {
+		$this->clearAssign();
+	}
 }
