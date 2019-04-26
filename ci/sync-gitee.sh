@@ -6,6 +6,11 @@ main() {
 		echo -e "Not push, skip sync gitee\n"
 		return 0
 	fi
+	# Only master
+	if [[ "$TRAVIS_BRANCH" != "master" ]];then
+		echo -e "Not master, skip deploy www\n"
+		return 0
+	fi
 	# Only first build job
 	if ! [[ "$TRAVIS_JOB_NUMBER" =~ \.1$ ]];then
 		echo -e "Not first build job, skip sync gitee\n"

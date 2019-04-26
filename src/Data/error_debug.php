@@ -99,7 +99,7 @@
 			<tr><td class="name">request_uri</td><td><?=htmlspecialchars($request->server['request_uri'])?></td></tr>
 			<tr><td class="name">uri</td><td><?=htmlspecialchars($request->uri)?></td></tr>
 			<tr><td class="name">extension</td><td><?=htmlspecialchars($request->extension)?></td></tr>
-			<tr><td class="name">param</td><td><?=htmlspecialchars(var_export($req->param, true))?></td></tr>
+			<tr><td class="name">param</td><td><?=htmlspecialchars(var_export($request->param, true))?></td></tr>
 		</table>
 		<div class="title">Server</div>
 		<table>
