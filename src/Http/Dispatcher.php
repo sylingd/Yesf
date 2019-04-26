@@ -247,7 +247,10 @@ class Dispatcher {
 				$className = EntryUtil::controller($module, $controller);
 				$clazz = Container::getInstance()->get($className);
 				$actionName = $action . 'Action';
-				$clazz->$actionName($request, $response);
+				$result = $clazz->$actionName($request, $response);
+				if ($result !== null) {
+					$response->result = $result;
+				}
 			} else {
 				// Not found
 				$request->status = $code;

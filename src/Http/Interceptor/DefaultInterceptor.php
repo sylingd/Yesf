@@ -18,6 +18,14 @@ use Yesf\Http\Template;
 
 class DefaultInterceptor implements AfterInterface {
 	public function after(Request $request, Response $response) {
+		if ($response->result !== null) {
+			if (is_array($response->result) || is_object($response->result)) {
+				$result = json_encode($response->result);
+			} else {
+				$result = $response->result;
+			}
+			$response->write($result);
+		}
 		if ($request->status !== null) {
 			$response->disableView();
 			$response->setCurrentTemplateEngine(Template::class);

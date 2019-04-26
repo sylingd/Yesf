@@ -18,6 +18,7 @@ use Yesf\Http\Vars as HttpVars;
 use Yesf\Exception\InvalidClassException;
 
 class Response {
+	public $result;
 	protected static $tpl_auto_config = false;
 	//模板文件扩展名
 	protected static $tpl_extension = 'phtml';
@@ -97,6 +98,7 @@ class Response {
 		$this->sw_response = $response;
 		$this->tpl_path = APP_PATH . 'View/';
 		$this->tpl_engine_obj = Container::getInstance()->get(self::$tpl_engine);
+		$this->result = null;
 	}
 	public function setTemplatePath($path) {
 		$this->tpl_path = $path;
