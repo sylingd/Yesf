@@ -73,17 +73,15 @@ module.exports = {
             title: '插件',
             children: [
               '/zh-CN/plugin/',
-              '/zh-CN/plugin/on_worker_start',
-              '/zh-CN/plugin/on_before_route',
-              '/zh-CN/plugin/on_before_dispatch',
-              '/zh-CN/plugin/on_dispatch_failed',
-              '/zh-CN/plugin/on_after_dispatch',
+              '/zh-CN/plugin/on_worker_start'
             ]
           },
           {
             title: '连接池',
             children: [
-              '/zh-CN/connection/'
+              '/zh-CN/connection/',
+              '/zh-CN/connection/write_driver.md',
+              '/zh-CN/connection/write_adapter.md'
             ]
           },
           {
