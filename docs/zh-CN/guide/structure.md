@@ -108,7 +108,6 @@ Yesf将配置文件分为三类：
 例如，这是一个控制器：
 
 ```php
-<?php
 namespace YesfApp\Module\Index\Controller\Index;
 
 class Index {
@@ -138,7 +137,7 @@ Yesf自带的视图引擎十分简单
    <title>Hello World</title>
  </head>
  <body>
-  <?php echo $content;?>
+  <?=$content?>
  </body>
 </html>
 ```

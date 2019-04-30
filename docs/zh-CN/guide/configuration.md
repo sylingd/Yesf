@@ -52,7 +52,6 @@ database.port=3306
 ## 项目配置
 
 ```php
-<?php
 return [
   'name' => 'yesf', //应用名称，用于设定进程名
   'namespace' => 'YesfApp\\', //应用的namespace，用于自动加载
@@ -73,7 +72,6 @@ return [
 ## 服务器配置
 
 ```php
-<?php
 return [
   'ip' => "0.0.0.0", //监听IP
   'port' => 9501, //监听端口

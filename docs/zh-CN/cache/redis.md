@@ -25,7 +25,6 @@ connection.re.index=数据库编号
 建议直接使用依赖注入进行。若有必要，可以使用Pool类获取：
 
 ```php
-<?php
 use Yesf\Connection\Pool;
 
 $pool = Pool::getAdapter('组件名称');

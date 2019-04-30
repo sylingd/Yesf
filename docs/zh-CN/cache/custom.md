@@ -126,23 +126,4 @@ interface CacheInterface
 
 ## 配置连接池
 
-若需要进行远程连接，如连接Redis、Memcached等，则需要先配置连接池，下面例子中，`name`是组件名称：
-
-```ini
-; 连接驱动
-connection.name.driver=mydriver
-; 适配器
-connection.name.adapter=myadapter
-; 其他连接需要的配置
-connection.name.host=localhost
-connection.name.port=9000
-```
-
-在Pool上注册驱动和适配器：
-
-```php
-self::setDriver('mydriver', \YesfApp\Driver\My::class);
-self::setAdapter('myadapter', \YesfApp\Adapter\My::class);
-```
-
-如何编写连接池驱动，请参见连接池章节。
+若需要进行远程连接，如连接Redis、Memcached等，则需要配置连接池。请参见[连接池](../connection/)章节。

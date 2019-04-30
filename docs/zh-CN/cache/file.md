@@ -27,7 +27,6 @@ cache.fs.path=@APP/tmp
 建议直接使用依赖注入进行。若有必要，可以使用Container获取：
 
 ```php
-<?php
 use Yesf\DI\Container;
 use Yesf\Cache\Adapter\File;
 

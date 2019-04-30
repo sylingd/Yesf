@@ -32,7 +32,7 @@ class Configuration {
 }
 ```
 
-在配置中使用：
+接下来，在配置中这样使用：
 
 ```ini
 connection.my.adapter=myadapter

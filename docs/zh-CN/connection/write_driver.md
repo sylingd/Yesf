@@ -72,7 +72,7 @@ class MyDriver implements PoolInterface {
 }
 ```
 
-在Pool上注册：
+接下来，在Pool上注册：
 
 ```php
 namespace YesfApp;
@@ -87,8 +87,12 @@ class Configuration {
 }
 ```
 
-在配置中使用：
+接下来，在配置中这样使用：
 
 ```ini
+; 连接驱动
 connection.my.driver=mydriver
+; 其他连接需要的配置
+connection.name.host=localhost
+connection.name.port=9000
 ```
