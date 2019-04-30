@@ -8,6 +8,9 @@ module.exports = {
       includeLevel: [1, 2, 3]
     }
   },
+  plugins: ['vuepress-plugin-baidu-tongji', {
+    hm: '44b41bc63385a6b27e692272bb1fb393'
+  }],
   locales: {
     '/': {
       lang: 'zh-CN',
