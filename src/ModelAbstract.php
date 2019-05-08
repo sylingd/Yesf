@@ -157,7 +157,8 @@ abstract class ModelAbstract {
 				}
 			}
 		}
-		return $this->execute($query);
+		$result = $this->execute($query);
+		return intval($result['_affected_rows']);
 	}
 	/**
 	 * 添加数据
