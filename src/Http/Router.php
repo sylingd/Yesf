@@ -207,7 +207,7 @@ class Router implements RouterInterface {
 		$len = strlen($this->prefix);
 		//路由解析
 		$uri = $request->server['request_uri'];
-		if (strpos('?', $uri) !== false) {
+		if (strpos($uri, '?') !== false) {
 			$uri = substr($uri, 0, strpos($uri, '?'));
 		}
 		//去除开头的prefix
@@ -216,8 +216,9 @@ class Router implements RouterInterface {
 		}
 		$request->uri = $uri;
 		$res = false;
-		if (isset($this->routes[$request->server['request_method']])) {
-			$res = $this->parseBy($this->routes[$request->server['request_method']], $request);
+		$method = strtolower($request->server['request_method']);
+		if (isset($this->routes[$method])) {
+			$res = $this->parseBy($this->routes[$method], $request);
 		}
 		if ($res === false && isset($this->routes['any'])) {
 			$res = $this->parseBy($this->routes['any'], $request);
