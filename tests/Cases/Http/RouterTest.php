@@ -122,4 +122,22 @@ class RouterTest extends TestCase {
 		$this->assertEquals('123', $this->req->param['id']);
 		$this->assertEquals('view', $this->req->action);
 	}
+	public function testEmpty() {
+		$this->req_content->server['request_method'] = 'get';
+		$this->req_content->server['request_uri'] = '/';
+		$this->router->parse($this->req);
+		$this->assertEquals('index', $this->req->module);
+		$this->assertEquals('index', $this->req->controller);
+		$this->assertEquals('index', $this->req->action);
+	}
+	public function testOther() {
+		$this->router->setPrefix('/api');
+		$this->req_content->server['request_method'] = 'get';
+		$this->req_content->server['request_uri'] = '/api/user/view.html?id=1';
+		$this->router->parse($this->req);
+		$this->assertEquals('index', $this->req->module);
+		$this->assertEquals('user', $this->req->controller);
+		$this->assertEquals('view', $this->req->action);
+		$this->assertEquals('html', $this->req->extension);
+	}
 }
