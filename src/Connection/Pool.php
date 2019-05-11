@@ -12,11 +12,13 @@
 namespace Yesf\Connection;
 
 use Yesf\Yesf;
+use Yesf\Swoole;
 use Yesf\Exception\ConnectionException;
 use Yesf\Exception\InvalidClassException;
 
 class Pool {
 	protected static $connection_default;
+	protected static $connection_task;
 	protected static $driver = [];
 	protected static $created_driver = [];
 	protected static $adapter = [];
@@ -35,6 +37,14 @@ class Pool {
 			'min' => isset($c['min']) ? intval($c['min']) : 1,
 			'max' => isset($c['max']) ? intval($c['max']) : 1,
 		];
+		$task = Yesf::app()->getConfig('connection.task', Yesf::CONF_ENV, [
+			'min' => 0,
+			'max' => 1,
+		]);
+		self::$connection_task = [
+			'min' => isset($task['min']) ? intval($task['min']) : 0,
+			'max' => isset($task['max']) ? intval($task['max']) : 1,
+		];
 		// 注册默认Driver和Adapter
 		self::setDriver('mysql', \Yesf\Connection\Driver\Mysql::class);
 		self::setDriver('redis', \Yesf\Connection\Driver\Redis::class);
@@ -49,7 +59,7 @@ class Pool {
 	 * @return int
 	 */
 	public static function getMin() {
-		return self::$connection_default['min'];
+		return Swoole::$isTaskWorker ? self::$connection_task['min'] : self::$connection_default['min'];
 	}
 	/**
 	 * Get max connection count
@@ -58,7 +68,7 @@ class Pool {
 	 * @return int
 	 */
 	public static function getMax() {
-		return self::$connection_default['max'];
+		return Swoole::$isTaskWorker ? self::$connection_task['max'] : self::$connection_default['max'];
 	}
 	/**
 	 * Get a connection

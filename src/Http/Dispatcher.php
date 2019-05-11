@@ -13,7 +13,6 @@ namespace Yesf\Http;
 
 use SessionHandlerInterface;
 use Yesf\Yesf;
-use Yesf\Plugin;
 use Yesf\DI\Container;
 use Yesf\DI\EntryUtil;
 use Yesf\Exception\NotFoundException;
@@ -137,7 +136,7 @@ class Dispatcher {
 			$regex = str_replace('/', '\\/', $include);
 			$regex = str_replace('\\/**', '(.*?)', $regex);
 			$regex = str_replace('**', '(.*?)', $regex);
-			$regex = str_replace('*', '([^\/]?)', $regex);
+			$regex = preg_replace('/(?!\\.)\\*(?<=\\?)/', '([^\/]?)', $regex);
 			$add['regex'] = '/^' . $regex . '$/';
 		} else {
 			$add['uri'] = $include;

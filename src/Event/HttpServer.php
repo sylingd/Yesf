@@ -12,7 +12,6 @@
 namespace Yesf\Event;
 
 use Yesf\Yesf;
-use Yesf\Plugin;
 use Yesf\DI\Container;
 use Yesf\Http\Request;
 use Yesf\Http\Response;

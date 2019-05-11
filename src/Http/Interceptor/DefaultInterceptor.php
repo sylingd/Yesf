@@ -11,7 +11,8 @@
  */
 namespace Yesf\Http\Interceptor;
 
-use Yesf\Logger;
+use Yesf\Yesf;
+use Yesf\Log\Logger;
 use Yesf\Http\Request;
 use Yesf\Http\Response;
 use Yesf\Http\Template;

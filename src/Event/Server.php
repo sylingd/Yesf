@@ -13,11 +13,10 @@ namespace Yesf\Event;
 
 use Yesf\Yesf;
 use Yesf\Swoole;
-use Yesf\Plugin;
+use Yesf\Event;
 
 class Server {
 	public static $_listener = [];
-	private static $_hot_reload_lock = null;
 	private static function setProcessName($name) {
 		if (function_exists('cli_set_process_title')) {
 			cli_set_process_title($name);
@@ -40,6 +39,7 @@ class Server {
 		} catch (\Exception $e) {
 			//忽略写入错误
 		}
+		echo sprintf("Server listen at: http://%s:%s\n", Yesf::app()->getConfig('ip', Yesf::CONF_SERVER), Yesf::app()->getConfig('port', Yesf::CONF_SERVER));
 	}
 	/**
 	 * 普通事件：关闭程序
@@ -59,6 +59,10 @@ class Server {
 	 * @param object $serv
 	 */
 	public static function onManagerStart($serv) {
+		// Init hot reload
+		if (Yesf::app()->getEnvironment() === 'develop' && function_exists('inotify_init')) {
+			self::initHotReload($serv->master_pid);
+		}
 		self::setProcessName(Yesf::app()->getConfig('name', Yesf::CONF_PROJECT) . ' manager');
 	}
 	public static function onManagerStop() {
@@ -68,19 +72,10 @@ class Server {
 	 * 
 	 * @access protected
 	 */
-	public static function prepareHotReload() {
-		if (Yesf::app()->getEnvironment() === 'develop' && function_exists('inotify_init')) {
-			self::$_hot_reload_lock = new \Swoole\Lock(SWOOLE_MUTEX);
-		}
-	}
-	protected static function initHotReload($serv) {
+	protected static function initHotReload($pid) {
 		//判断是否启动热更新功能
-		if (self::$_hot_reload_lock === null || !self::$_hot_reload_lock->trylock()) {
-			return;
-		}
-		$pid = $serv->master_pid;
 		$watcher_name = Yesf::app()->getConfig('name', Yesf::CONF_PROJECT) . ' hot reload';
-		$watcher_process = new \Swoole\Process(function($worker) use ($watcher_name, &$pid, &$worker_pid) {
+		$watcher_process = new \Swoole\Process(function($worker) use ($watcher_name, $pid, &$worker_pid) {
 			if (function_exists('cli_set_process_title')) {
 				cli_set_process_title($watcher_name);
 			} else {
@@ -144,6 +139,7 @@ class Server {
 							$reload_timer = null;
 						}
 						$reload_timer = swoole_timer_after(500, function() use (&$pid, &$reload_timer) {
+							echo "File change detected, restarting...\n";
 							$reload_timer = null;
 							\Swoole\Process::kill($pid, SIGUSR1);
 						});
@@ -158,11 +154,6 @@ class Server {
 			});
 		}, false);
 		$watcher_process->start();
-		\Swoole\Process::signal(SIGCHLD, function($sig) {
-			//必须为false，非阻塞模式
-			while ($ret = \Swoole\Process::wait(false)) {
-			}
-		});
 	}
 	/**
 	 * 普通事件：启动一个进程
@@ -172,12 +163,10 @@ class Server {
 	 * @param int $worker_id
 	 */
 	public static function onWorkerStart($serv, $worker_id) {
-		Yesf::app()->initInWorker();
 		//根据类型，设置不同的进程名
 		if ($serv->taskworker) {
 			self::setProcessName(Yesf::app()->getConfig('name', Yesf::CONF_PROJECT) . ' task ' . $worker_id);
 		} else {
-			self::initHotReload($serv);
 			self::setProcessName(Yesf::app()->getConfig('name', Yesf::CONF_PROJECT) . ' worker ' . $worker_id);
 		}
 		//清除opcache
@@ -188,7 +177,7 @@ class Server {
 		Swoole::$isTaskWorker = $serv->taskworker;
 		//回调
 		Internal::onWorkerStart();
-		Plugin::trigger('workerStart', [$serv->taskworker, $worker_id]);
+		Event::trigger('workerStart', [$serv->taskworker, $worker_id]);
 	}
 	/**
 	 * 普通事件：进程出错
@@ -211,13 +200,13 @@ class Server {
 	 * @param mixed $data
 	 */
 	public static function onTask($serv, $task_id, $worker_id, $data) {
-		$rs = Plugin::trigger('taskStart', [$task_id, $worker_id, $data]);
-		if (is_string($rs)) {
-			return $rs;
+		$res = Event::trigger('taskStart', [$task_id, $worker_id, $data]);
+		if (is_string($res)) {
+			return $res;
 		}
 	}
 	public static function onFinish($serv, int $task_id, string $data) {
-		Plugin::trigger('taskEnd', [$task_id, $data]);
+		Event::trigger('taskEnd', [$task_id, $data]);
 	}
 	/**
 	 * 进程之间的消息推送
@@ -227,7 +216,7 @@ class Server {
 	 * @param string $message
 	 */
 	public static function onPipeMessage($serv, $from, $message) {
-		Plugin::trigger('pipeMessage', [$from, $message]);
+		Event::trigger('pipeMessage', [$from, $message]);
 	}
 	/**
 	 * TCP事件

@@ -11,9 +11,7 @@
  */
 namespace Yesf;
 
-use ReflectionClass;
 use Yesf\Swoole;
-use Yesf\DI\Container;
 use Yesf\Event\Internal;
 use Yesf\Config\ConfigInterface;
 use Yesf\Config\Adapter\Arr;
@@ -103,8 +101,6 @@ class Yesf {
 		if (!defined('YESF_UNIT')) {
 			Swoole::init();
 		}
-		// Configuration
-		$this->callConfiguration();
 	}
 	/**
 	 * 将部分变量对外暴露，方便使用
@@ -162,42 +158,6 @@ class Yesf {
 	}
 	public function getEnvironment() {
 		return $this->environment;
-	}
-	/**
-	 * Configuration
-	 * 
-	 * @access private
-	 */
-	private function callConfiguration() {
-		$container = Container::getInstance();
-		$className = $this->getConfig('namespace', self::CONF_PROJECT) . 'Configuration';
-		if ($container->has($className)) {
-			$clazz = $container->get($className);
-			$methods = (new ReflectionClass($clazz))->getMethods();
-			foreach ($methods as $method) {
-				if (strpos($method->name, 'set') !== 0) {
-					continue;
-				}
-				$params = $method->getParameters();
-				$init_params = [];
-				foreach ($params as $param) {
-					$type = $param->getType();
-					if (class_exists('ReflectionNamedType') && $type instanceof \ReflectionNamedType) {
-						$typeName = $type->getName();
-					} else {
-						$typeName = $type->__toString();
-					}
-					if ($type->isBuiltin()) {
-						$value = null;
-						settype($value, $typeName);
-						$init_params[] = $value;
-					} else {
-						$init_params[] = $container->get($typeName);
-					}
-				}
-				$method->invokeArgs($clazz, $init_params);
-			}
-		}
 	}
 	/**
 	 * 初始化完成，开始运行

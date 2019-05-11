@@ -47,8 +47,6 @@ class Swoole {
 			$config['open_http2_protocol'] = true;
 		}
 		self::$server->set($config);
-		//是否启用热更新
-		Server::prepareHotReload();
 		//基本事件
 		self::$server->on('Start', [Server::class, 'onStart']);
 		self::$server->on('Shutdown', [Server::class, 'onShutdown']);
